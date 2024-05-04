@@ -30,7 +30,7 @@ services:
     build:
       context: ./proxy/
     restart: unless-stopped
-    container_name: vault-36-proxy
+    container_name: vault-36-terminal
     ports:
        - 80:80
     depends_on:
