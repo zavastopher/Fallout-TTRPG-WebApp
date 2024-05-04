@@ -1,0 +1,21 @@
+# dependencies
+frontend/pip-boy-36/node_modules
+frontend/pip-boy-36/.pnp
+frontend/pip-boy-36/.pnp.js
+
+# testing
+frontend/pip-boy-36/coverage
+
+# production
+frontend/pip-boy-36/build
+
+# misc
+frontend/pip-boy-36/.DS_Store
+frontend/pip-boy-36/.env.local
+frontend/pip-boy-36/.env.development.local
+frontend/pip-boy-36/.env.test.local
+frontend/pip-boy-36/.env.production.local
+
+frontend/pip-boy-36/npm-debug.log*
+frontend/pip-boy-36/yarn-debug.log*
+frontend/pip-boy-36/yarn-error.log*
