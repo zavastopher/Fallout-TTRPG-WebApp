@@ -1,0 +1,70 @@
+## Rest API
+
+| Function name                           | Relative Url         | Description | Input                        | Output                |
+| --------------------------------------- | -------------------- | ----------- | ---------------------------- | --------------------- |
+| PlayerLogin(string name)                | GET /login/{name}    | For players | String name of player        | Player in json format |
+| GetAllPlayers()                         | GET /players         | For DM      | N/A                          | Array of players      |
+| UpdateHP(int currentHP)                 | PUT /players/hp      |             | New hp of player             | Success/Failure       |
+| AddItemToPlayer(Item item, int id)      | PUT /players/item    |             | Item to add and Player id    | Success/Failure       |
+| RemoveItemfromPlayer(Item item, int id) | DELETE /players/item |             | Item to remove and Player id | Success/Failure       |
+
+| Function name                | Relative Url    | Description | Input            | Output         |
+| ---------------------------- | --------------- | ----------- | ---------------- | -------------- |
+| GetAllItems()                | GET /items      |             | N/A              | Array of items |
+| GetInventoryByPlayer(int id) | GET /items/{id} |             | Int id of player | Array of items |
+
+| Function name                                         | Relative Url       | Description | Input            | Output          |
+| ----------------------------------------------------- | ------------------ | ----------- | ---------------- | --------------- |
+| GetAllQuests()                                        | GET /quests        |             | N/A              | Array of quests |
+| GetQuestsByPlayer(int id)                             | GET /quests/{id}   |             | Int id of player | Array of quests |
+| CreateQuest(Quest quest)                              | POST /quest/create |             |                  |                 |
+| AssignQuest(int questId, int playerId)                | PUT /quest/assign  |             |                  |                 |
+| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quest/update  |             |                  |                 |
+
+## Data Formats
+
+TBD
+
+## Database
+
+Person
+
+- id (int, primary key)
+- Name (varchar 40)
+- HP (int)
+- Limbs (Limb: One to Many)
+- Quests (Quest: Many to Many)
+- Inventory (Item: Many to Many)
+
+Limb
+
+- id (int, primary key)
+- Name (varchar 10)
+- status (bool)
+- Person (Person: Many to One)
+
+Quest
+
+- id (int, primary key)
+- Name (varchar 50)
+- Description (varchar 200)
+- Person (Many to Many)
+
+Item
+
+- id (int, primary key)
+- Person (Person: Many to Many)
+- Name (varchar 50)
+- Quantity (int)
+
+Person_Quest
+
+- id (int primary key)
+- person_id (int)
+- quest_id (int)
+
+Person_Item
+
+- id (int primary key)
+- person_id (int)
+- item_id (int)
