@@ -2,18 +2,19 @@ services:
   backend:
     build:
       context: ./backend/
-    dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.dev
     container_name: vault-36-central-computer
     restart: unless-stopped
     volumes:
       - "./backend:/usr/src/app"
+      - sqlite_data:/db/data
     ports:
       - 4001:3001
 
   frontend:
     build:
       context: ./frontend/
-    dockerfile: Dockerfile
+      dockerfile: Dockerfile
     container_name: vault-36-terminal
     restart: unless-stopped
     ports:
@@ -24,27 +25,16 @@ services:
       - "./frontend:/usr/src/app"
       - "/usr/src/app/node_modules"
   
-    nginx:
-      build:
-        context: ./proxy/
-      restart: unless-stopped
-      container_name: vault-36-proxy
-      ports:
-        - 80:80
-      depends_on:
-        - frontend
-        - backend
-
-  database:
-    volumes:
-        - sqlite_data:/data
+  nginx:
     build:
-      context: ./db/
-      dockerfile: Dockerfile.dev
-    restart: always
-    container_name: vault-36-database
+      context: ./proxy/
+    restart: unless-stopped
+    container_name: vault-36-proxy
     ports:
-        - 4306:3306
-    
+      - 80:80
+    depends_on:
+      - frontend
+      - backend
+
 volumes:
    sqlite_data:
