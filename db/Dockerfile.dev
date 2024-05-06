@@ -4,8 +4,9 @@ RUN apk --no-cache add sqlite
 # Create a directory to store the database
 WORKDIR /db
 # Copy our SQLite database file into the container
-COPY initial-db.sqlite /db/
+COPY ./vault-36-db.sqlite /db/
+COPY ./create_script.sqlite /db/
 # Expose the port if needed
-# Expose 1433
+Expose 3306
 # Command to run when the container starts
-CMD ["sqlite3", "/data/initial-db.sqlite"]
+RUN cat /data/create_script.sqlite | sqlite3 /data/vault-36-db.sqlite
