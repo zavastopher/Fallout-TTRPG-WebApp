@@ -1,0 +1,129 @@
+$beginRect: -20%;
+$endRect: 130%;
+
+$fontGreen: #09a209;
+$lineGreen: green;
+
+a {
+  color: $fontGreen;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+nav {
+  width: 100%;
+}
+
+nav > ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+@keyframes flicker {
+  $steps: 20;
+  @for $i from 0 through $steps {
+    #{percentage($i * calc(1/$steps))} {
+      opacity: random();
+    }
+  }
+}
+
+/*This adds a "crt scanlines" effect to the screen*/
+#scan {
+  width: 100%;
+  background: #366c39;
+  height: 120px;
+  position: absolute;
+  top: $beginRect;
+  animation: scan-screen 10s infinite;
+  -webkit-mask-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(rgba(0, 0, 0, 0)),
+    to(rgba(0, 0, 0, 0.1))
+  );
+  z-index: 100;
+}
+
+@keyframes scan-screen {
+  $steps: 100;
+  @for $i from 0 through $steps {
+    #{percentage($i * calc(1/$steps))} {
+      top: $beginRect + (calc($i/$steps) * $endRect);
+    }
+  }
+}
+
+#pipIcon {
+  mask-size: 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  width: 450px;
+  height: 457px;
+  background-color: $lineGreen;
+  background-color: rgb(59, 189, 22);
+  filter: blur(400px);
+}
+
+.outlet {
+  height: 550px;
+  //width: 94%;
+  width: 893px;
+  padding-top: 28px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  border: solid 4px;
+  border-image: linear-gradient(to bottom, $lineGreen, transparent) 1;
+  height: 40px;
+  color: $fontGreen;
+}
+
+.title-box {
+  width: fit-content;
+  padding: 6px;
+
+  margin-left: 110px;
+  margin-top: -23px;
+  background-image: linear-gradient(to bottom, rgb(8, 15, 7), rgb(10, 21, 7));
+}
+
+.navbar-container {
+  height: 40px;
+  //width: 94%;
+  width: 893px;
+  border: solid 4px;
+  border-image: linear-gradient(to top, $lineGreen, transparent) 1;
+}
+
+.navbar {
+  position: absolute;
+  bottom: 34px;
+  left: 0;
+}
+
+.navbar li {
+  background-image: linear-gradient(to bottom, rgb(12, 36, 15), rgb(12, 26, 9));
+  padding: 5px;
+  margin-bottom: -5px;
+}
+
+.stats-container {
+  flex-direction: column;
+  align-items: center;
+}
+
+.pipboy {
+  padding: 20px;
+}

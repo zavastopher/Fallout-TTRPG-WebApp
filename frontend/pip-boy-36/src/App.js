@@ -1,22 +1,27 @@
-import logo from "./logo.svg";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Stats from "./components/stats";
+import Inventory from "./components/inventory";
+import Quests from "./components/quests";
+import Navbar from "./components/navbar";
+
 import "./App.css";
+import "./App.scss";
 
 function App() {
   return (
-    <div className="App crt">
+    <div className="App crt crt-scanlines">
+      <div id="scan"></div>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link crt"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navbar />}>
+              <Route index element={<Stats />} />
+              <Route path="inventory" element={<Inventory />} />
+              <Route path="quests" element={<Quests />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </header>
     </div>
   );
