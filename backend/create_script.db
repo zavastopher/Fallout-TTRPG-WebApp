@@ -1,0 +1,48 @@
+DROP TABLE IF EXISTS person;
+DROP TABLE IF EXISTS limb;
+DROP TABLE IF EXISTS quest;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS person_quest;
+DROP TABLE IF EXISTS person_item;
+
+CREATE TABLE person ( 
+	persionid INTEGER PRIMARY KEY, 
+	name TEXT, 
+	hp INTEGER
+); 
+
+CREATE TABLE limb( 
+	limbid 		INTEGER PRIMARY KEY, 
+	status 		INTEGER, 
+	name		TEXT, 
+	limbowner 	INTEGER, 
+	FOREIGN KEY (limbowner) REFERENCES person(personid)
+);
+
+CREATE TABLE quest ( I	
+	questid		INTEGER PRIMARY KEY, 
+	name 		TEXT, 
+	description	TEXT
+);
+
+CREATE TABLE item (
+	itemid		INTEGER PRIMARY KEY,
+	name		TEXT
+);
+
+CREATE TABLE person_quest( 
+	personquestid	INTEGER PRIMARY KEY, 
+	questassignee	INTEGER, 
+	assignedquest	INTEGER, 
+	FOREIGN KEY (questassignee) REFERENCES person(personid), 
+	FOREIGN KEY (assignedquest) REFERENCES quest(questid)
+);
+
+CREATE TABLE person_item(
+	personitemid 	INTEGER PRIMARY KEY,
+	quantity	INTEGER,
+	itemowner 	INTEGER,
+	owneditem	INTEGER,
+	FOREIGN KEY (itemowner) REFERENCES person(personid),
+	FOREIGN KEY (owneditem) REFERENCES item(itemid)
+);
