@@ -2,7 +2,7 @@ $beginRect: -20%;
 $endRect: 130%;
 
 $fontGreen: #09a209;
-$lineGreen: green;
+$lineGreen: #1c9512;
 
 a {
   color: $fontGreen;
@@ -120,10 +120,33 @@ nav > ul {
 }
 
 .stats-container {
+  display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .pipboy {
   padding: 20px;
+}
+
+#hp {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 200px;
+  color: $lineGreen;
+}
+
+.limb {
+  position: absolute;
+}
+
+.limb img {
+  height: 450px;
+}
+
+.stats {
+  position: relative;
 }
