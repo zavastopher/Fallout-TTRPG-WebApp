@@ -1,6 +1,6 @@
 from flask import Flask
-from flask_jwt import JWT, jwt_required, current_identity
-from werkzeug.security import safe_str_cmp
+# from flask_jwt import JWT, jwt_required, current_identity
+# from werkzeug.security import safe_str_cmp
 
 # This import is importing all of the Flask Configurations deffined in config.py
 from config import *
@@ -15,9 +15,9 @@ def hello_geek():
     return '<h1>Hello from Vault 36<h1>'
 
 @app.route('/login/<name>', methods=['GET', 'POST'])
-def login_user(username):
+def login_user(name):
     return {
-            "username" : "Placeholder-sama"
+            "username" : name
     }
 
 @app.route('/players')
@@ -28,10 +28,10 @@ def players_get():
             "player3" : "Placeholder-kun"
     }
 
-@app.route('players/hp/<playerid>/<hp>')
-def GetAllPlayers(player, hp):
+@app.route('/players/hp/<playerid>/<hp>')
+def GetAllPlayers(playerid, hp):
     return {
-            "player" : player,
+            "player" : playerid,
             "health" : hp
     }
 
