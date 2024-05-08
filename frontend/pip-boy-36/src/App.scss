@@ -105,11 +105,12 @@ nav > ul {
   width: 893px;
   border: solid 4px;
   border-image: linear-gradient(to top, $lineGreen, transparent) 1;
+  position: relative;
 }
 
 .navbar {
-  position: absolute;
-  bottom: 34px;
+  position: relative;
+  bottom: 5px;
   left: 0;
 }
 
@@ -149,4 +150,40 @@ nav > ul {
 
 .stats {
   position: relative;
+}
+
+.list {
+  height: 400px;
+  width: 45%;
+  overflow: scroll;
+  position: relative;
+  z-index: 101;
+}
+
+.list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 50px;
+  padding: 5px 0px;
+  font-size: 24px;
+  box-sizing: border-box;
+}
+
+.selected {
+  color: yellow;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.description {
+  width: 54%;
+}
+
+.description p {
+  font-size: 20px;
 }
