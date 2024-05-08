@@ -19,3 +19,6 @@ frontend/pip-boy-36/.env.production.local
 frontend/pip-boy-36/npm-debug.log*
 frontend/pip-boy-36/yarn-debug.log*
 frontend/pip-boy-36/yarn-error.log*
+
+#pythonenvironment
+backend/.venv/*
