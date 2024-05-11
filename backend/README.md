@@ -20,8 +20,7 @@
 | ToggleQuestVisibility(int questId)                    | PATCH /quests      |             |                  |                 |
 | UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests        |             |                  |                 |
 
-| Function name                      | Relative Url    | Description | Input                               | Output     https://dev.to/nagatodev/how-to-add-login-authentication-to-a-flask-and-react-application-23i7
-    |
+| Function name                      | Relative Url    | Description | Input                               | Output         |
 | ---------------------------------- | --------------- | ----------- | ----------------------------------- | -------------- |
 | GetLimbsByPlayer(int id)           | GET /limbs      |             | Player id, -1 if player request     | Array of limbs |
 | UpdateLimb(int id)                 | PATCH /limbs    |             | limb id, player token               | N/A            |
@@ -32,13 +31,10 @@
 <code>{
   id: 1,
   name: Camille,
-  Limbs: [
-    {}
-  ],
-  Inventory:  [
-    {}
-  ]
+  Limbs: [{...}],
+  Inventory:  [{...}]
 }
+</code>
 
 #### Quest Status enum 
 <code> {
