@@ -16,14 +16,41 @@
 | Function name                                         | Relative Url       | Description | Input            | Output          |
 | ----------------------------------------------------- | ------------------ | ----------- | ---------------- | --------------- |
 | GetAllQuests()                                        | GET /quests        |             | N/A              | Array of quests |
-| GetQuestsByPlayer(int id)                             | GET /quests/{id}   |             | Int id of player | Array of quests |
-| CreateQuest(Quest quest)                              | POST /quest/create |             |                  |                 |
-| AssignQuest(int questId, int playerId)                | PUT /quest/assign  |             |                  |                 |
-| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quest/update  |             |                  |                 |
+| CreateQuest(Quest quest)                              | POST /quests       |             |                  |                 |
+| ToggleQuestVisibility(int questId)                    | PATCH /quests      |             |                  |                 |
+| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests        |             |                  |                 |
+
+| Function name                      | Relative Url    | Description | Input                               | Output     https://dev.to/nagatodev/how-to-add-login-authentication-to-a-flask-and-react-application-23i7
+    |
+| ---------------------------------- | --------------- | ----------- | ----------------------------------- | -------------- |
+| GetLimbsByPlayer(int id)           | GET /limbs      |             | Player id, -1 if player request     | Array of limbs |
+| UpdateLimb(int id)                 | PATCH /limbs    |             | limb id, player token               | N/A            |
 
 ## Data Formats
 
-TBD
+#### Person
+<code>{
+  id: 1,
+  name: Camille,
+  Limbs: [
+    {}
+  ],
+  Inventory:  [
+    {}
+  ]
+}
+
+#### Quest Status enum 
+<code> {
+  InProgress,
+  Success,
+  Failure
+}
+</code>
+
+TBA
+
+</code>
 
 ## Database
 
@@ -33,7 +60,7 @@ Person
 - Name (varchar 40)
 - HP (int)
 - Limbs (Limb: One to Many)
-- Quests (Quest: Many to Many)
+- Quests (Quest: Many to Many) (Deprecated)
 - Inventory (Item: Many to Many)
 
 Limb
@@ -48,7 +75,8 @@ Quest
 - id (int, primary key)
 - Name (varchar 50)
 - Description (varchar 200)
-- Person (Many to Many)
+- Public ("boolean")
+- Person (Many to Many) (Deprecated)
 
 Item
 
