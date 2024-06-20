@@ -9,7 +9,9 @@ def GetPlayersFromDatabase():
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     cur = con.cursor()
     
-    res = cur.execute("SELECT name FROM person")
+    data = cur.execute("SELECT name FROM person")
+
+    res = data.fetchall()
     
     #Close the connection so it doesn't dangle
     con.close()

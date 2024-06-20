@@ -4,6 +4,7 @@ from flask import Flask
 
 # This import is importing all of the Flask Configurations deffined in config.py
 from config import *
+from database_interactions import *
 
 app = Flask(__name__)
 
@@ -12,7 +13,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_geek():
-    return '<h1>Hello from Vault 36<h1>'
+    res = GetPlayersFromDatabase()
+
+    names = []
+
+    for name in res: 
+        names.append(name[0])
+
+    return names
 
 @app.route('/login/<name>', methods=['GET', 'POST'])
 def login_user(name):

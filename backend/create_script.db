@@ -6,32 +6,32 @@ DROP TABLE IF EXISTS person_quest;
 DROP TABLE IF EXISTS person_item;
 
 CREATE TABLE person ( 
-	persionid INTEGER PRIMARY KEY, 
+	persionid INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name TEXT, 
 	hp INTEGER
 ); 
 
 CREATE TABLE limb( 
-	limbid 		INTEGER PRIMARY KEY, 
+	limbid 		INTEGER PRIMARY KEY AUTOINCREMENT, 
 	status 		INTEGER, 
 	name		TEXT, 
 	limbowner 	INTEGER, 
 	FOREIGN KEY (limbowner) REFERENCES person(personid)
 );
 
-CREATE TABLE quest ( I	
-	questid		INTEGER PRIMARY KEY, 
+CREATE TABLE quest (
+	questid		INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name 		TEXT, 
 	description	TEXT
 );
 
 CREATE TABLE item (
-	itemid		INTEGER PRIMARY KEY,
+	itemid		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name		TEXT
 );
 
 CREATE TABLE person_quest( 
-	personquestid	INTEGER PRIMARY KEY, 
+	personquestid	INTEGER PRIMARY KEY AUTOINCREMENT, 
 	questassignee	INTEGER, 
 	assignedquest	INTEGER, 
 	FOREIGN KEY (questassignee) REFERENCES person(personid), 
@@ -39,7 +39,7 @@ CREATE TABLE person_quest(
 );
 
 CREATE TABLE person_item(
-	personitemid 	INTEGER PRIMARY KEY,
+	personitemid 	INTEGER PRIMARY KEY AUTOINCREMENT,
 	quantity	INTEGER,
 	itemowner 	INTEGER,
 	owneditem	INTEGER,
