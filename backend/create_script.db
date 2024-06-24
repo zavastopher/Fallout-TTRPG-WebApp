@@ -20,6 +20,7 @@ CREATE TABLE quest (
 	questid		INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name 		TEXT, 
 	description	TEXT,
+	status		TEXT CHECK (status IN ('incomplete','success','failure')) DEFAULT 'incomplete',
 	UNIQUE(name)
 );
 

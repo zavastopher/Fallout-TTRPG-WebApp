@@ -72,7 +72,6 @@ def AddGetItemsRoute():
             data = request.get_json()
             items = data["items"]
             itemtuples = [(name,) for name in items ]
-            app.logger.debug(f"item {itemtuples}")
         except:
             return "Missing items", 400
 
@@ -98,18 +97,15 @@ def UpdateDeleteItemsRoute(itemid):
 
         res = UpdateItemInDatabase(itemid, newname) 
 
-        # app.logger.debug(str(numUpdated))
-
         return res
     # Delete an item
     elif request.method == 'DELETE':
-        res = GetItemsInDatabase()
-        app.logger.debug("test log")
+        res = DeleteItemFromDatabase(itemid)
 
         return res
 
 ### Route for adding, removing or viewing items in regards to a specific player
-@app.route('/players/item/<int:playerid>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/players/item/<int:playerid>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def PlayerItemRoute(playerid):
     # Add Item to Player
     if request.method == 'POST':
@@ -118,19 +114,24 @@ def PlayerItemRoute(playerid):
         itemid = data["itemid"]
         quanity = data["quantity"]
 
-        ## Check player exists
-        ## Check item exists
-        itemExists = CheckItemInPlayerInventoryInDatabase(playerid, itemid)
-
-        if itemExists:
-            return f"Item already exists in player {playerid}'s inventory!"
-        else:
+        try:
             ## Create record in player_items
             res = AddItemToPlayerInDatabase(playerid, itemid, quanity)
+        except:
+            return f"Item already exists in player {playerid}'s inventory!", 400
 
-        return {
-            "result": res
-        }
+        return res
+    
+    # Update Item quantity for Player
+    elif request.method == 'PUT':
+        data = request.get_json()
+
+        itemid = data["itemid"]
+        quanity = data["quantity"]
+
+        res = UpdateItemForPlayerDatabase(playerid, itemid, quanity)
+        
+        return res
     
     # Delete Item from Player
     elif request.method == 'DELETE':
@@ -138,13 +139,13 @@ def PlayerItemRoute(playerid):
 
         itemid = data["itemid"]
 
-        itemExists = CheckItemInPlayerInventoryInDatabase(playerid, itemid)
-
-        if itemExists:
-           ## Remove item from player's inventory
-           res = AddItemToPlayerInDatabase(playerid, itemid, quanity)
+        try:
+            ## Remove item from player's inventory
+            res = RemoveItemFromPlayerInDatabase(playerid, itemid)
+        except:
+            return f"Item doesn't exist in player {playerid}'s inventory!", 400
         else:
-            return f"Item doesn't exist in player {playerid}'s inventory!"
+            return res
 
     # Get Player Inventory
     else:
@@ -152,39 +153,111 @@ def PlayerItemRoute(playerid):
 
         return res
 
-
-
-    
-
-
-
+## -------------------------------------------------------------
 ## API calls for quest interactions
-@app.route('/quests')
-def GetAllQuests():
-    return {
-            "Quest 1"    : "Quest 1 is a quest that does things",
-            "Quest 2"    : "Quest 2 is a quest",
-            "Quest 3"    : "Quest 3 is a quest"
-    }
+## -------------------------------------------------------------
 
-@app.route('/quests/<playerid>')
-def GetQuestsByPlayer(playerid):
-    return {
-            "playerid"  : playerid,
-            "Quest 1"   : "A quest where things happen"
-    }
+## API calls for adding and getting quests
+@app.route('/quests', methods=['GET', 'POST'])
+def AddGetQuestRoute():
+    # Create quest
+    if request.method == 'POST':
+        data = request.get_json()
+        quests = data["quests"]
+        questtuples = [tuple(quest.values()) for quest in quests ]
 
-@app.route('/quest/create')
-def CreateQuest_post(quest):
-    return quest
+        app.logger.debug(questtuples)
 
-@app.route('/quest/assign/')
-def AssignQuest_put(quest):
-    return quest
+        res = AddQuestToDatabase(questtuples)
 
-@app.route('/quest/update')
-def UpdateQuestStatus_put(quest):
-    return quest
+        return res
+
+    # Get all quests available 
+    else:
+        return GetQuestsInDatabase()
+    
+## API calls for updating and deleting
+@app.route('/quests/<int:questid>', methods=['PUT', 'DELETE'])
+def UpdateDeleteQuestRoute(questid):
+    # Update quest status
+    if request.method == 'PUT':
+        data = request.get_json()
+        quests = data
+
+        res = UpdateQuestInDatabase(questid, quests)
+
+        return res
+
+    # Delete quest
+    else:
+        res = DeleteQuestFromDatabase(questid)
+        return res
+
+## Assign, Unassign, and View quests assigned to a player
+@app.route('/players/quests/<int:playerid>', methods=['GET', 'POST', 'DELETE'])
+def PlayerQuestRoute(playerid):
+    if request.method == 'POST':
+        data = request.get_json()
+        questid = data["questid"]
+
+        res = AssignQuestToPlayerInDatabase(playerid, questid)
+
+        return res
+    elif request.method == 'DELETE':
+        data = request.get_json()
+        questid = data["questid"]
+
+        res = UnassignQuestToPlayerInDatabase(playerid, questid)
+
+        return res
+    else:
+        return GetQuestsByPlayerFromDatabase(playerid)
+        
+
+## -------------------------------------------------------------
+## Limb Routes
+## -------------------------------------------------------------
+
+def ConvertLimbs(all):
+    playerlimbs = {}
+
+    for limb in all:
+        if limb["person"] not in playerlimbs:
+            playerlimbs[limb["person"]] = {}
+
+        playerlimbs[limb["person"]][limb["limbname"]] = {}
+        playerlimbs[limb["person"]][limb["limbname"]]["status"] = limb["status"]
+        playerlimbs[limb["person"]][limb["limbname"]]["limbtype"] = limb["limbid"]
+
+    return playerlimbs
+
+
+@app.route('/limbs')
+def GetAllLimbs():
+    res =  GetAllPlayerLimbDatabaseConnections()
+
+    playerlimbs = ConvertLimbs(res)
+
+    return playerlimbs
+
+@app.route('/players/limbs/<int:playerid>', methods=['GET', 'PUT'])
+def GetLimbsByPlayer(playerid):
+    # Update limb for a player
+    if request.method == 'PUT':
+        data = request.get_json()
+        limbtype = data["limbtype"]
+        status = data["status"]
+        res = UpdatePlayerLimbsInDatabase(playerid, limbtype, status)
+
+        return res
+
+    # Get limbs of a player
+    else:
+        res =  GetPlayerLimbsFromDatabase(playerid)
+
+        playerlimbs = ConvertLimbs(res)
+
+        return playerlimbs
 
 if __name__ == "__main__":
     app.run(debug=True, host=HOST, port=3001)

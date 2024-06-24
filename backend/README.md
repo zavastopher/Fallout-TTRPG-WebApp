@@ -43,7 +43,7 @@ Inventory: [{...}]
 #### Quest Status enum
 
 <code> {
-InProgress,
+Incomplete,
 Success,
 Failure
 }
@@ -77,7 +77,127 @@ Failure
 }
 ```
 
-TBA
+#### Player Inventory Addition Request
+
+```
+{
+  "itemid": 1,
+  "quantity": 1
+}
+```
+
+#### Player Inventory Update Request
+
+```
+{
+  "itemid": 1,
+  "quantity": 1
+}
+```
+
+#### Player Inventory Delete Request
+
+```
+{
+  "itemid": 1
+}
+```
+
+#### Quest Addition Request
+
+```
+{
+  "quests": [
+    {
+      "name" : "quest one",
+      "description" : "description"
+    },
+    {
+      "name" : "quest two",
+      "description" : "description"
+    }
+  ]
+}
+```
+
+#### Quest Update Request
+
+```
+{
+  "name": "new title",
+  "description": "new description",
+  "status": "success",
+}
+```
+
+#### Limbs Update Request
+
+```
+{
+  "limbtype": 1,
+  "status": 0
+}
+```
+
+#### Limbs From Database
+
+```
+[
+  {
+    "limbname": "head",
+    "limbtype": 1,
+    "person": "player1",
+    "status": 0
+  },
+  {
+    "LimbName": "torso",
+    "limbtype": 2,
+    "PersonName": "player1",
+    "status": 1
+  },
+  {
+    "LimbName": "head",
+    "limbtype": 1,
+    "PersonName": "player2",
+    "status": 1
+  },
+  {
+    "LimbName": "torso",
+    "limbtype": 2,
+    "PersonName": "player2",
+    "status": 0
+  },
+]
+```
+
+#### Limbs Response
+
+```
+{
+  "player1": {
+    "head": {
+      "limbtype": 1,
+      "status": 0
+    },
+    "torso: {
+      "limbtype": 2,
+      "status": 1
+    },
+    ...
+  },
+  "player2": {
+    "head": {
+      "limbtype": 1,
+      "status": 1
+    },
+    "torso: {
+      "limbtype": 2,
+      "status": 0
+    },
+    ...
+  }
+}
+```
 
 ## Database
 
