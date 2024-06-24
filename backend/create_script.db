@@ -6,28 +6,27 @@ DROP TABLE IF EXISTS person_quest;
 DROP TABLE IF EXISTS person_item;
 
 CREATE TABLE person ( 
-	persionid INTEGER PRIMARY KEY AUTOINCREMENT, 
+	personid INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name TEXT, 
 	hp INTEGER
 ); 
 
-CREATE TABLE limb( 
+CREATE TABLE limb(
 	limbid 		INTEGER PRIMARY KEY AUTOINCREMENT, 
-	status 		INTEGER, 
-	name		TEXT, 
-	limbowner 	INTEGER, 
-	FOREIGN KEY (limbowner) REFERENCES person(personid)
+	name		TEXT
 );
 
 CREATE TABLE quest (
 	questid		INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name 		TEXT, 
-	description	TEXT
+	description	TEXT,
+	UNIQUE(name)
 );
 
 CREATE TABLE item (
 	itemid		INTEGER PRIMARY KEY AUTOINCREMENT,
-	name		TEXT
+	name		TEXT,
+	UNIQUE(name)
 );
 
 CREATE TABLE person_quest( 
@@ -39,10 +38,49 @@ CREATE TABLE person_quest(
 );
 
 CREATE TABLE person_item(
-	personitemid 	INTEGER PRIMARY KEY AUTOINCREMENT,
 	quantity	INTEGER,
 	itemowner 	INTEGER,
 	owneditem	INTEGER,
+  	PRIMARY KEY (itemowner, owneditem),
 	FOREIGN KEY (itemowner) REFERENCES person(personid),
-	FOREIGN KEY (owneditem) REFERENCES item(itemid)
+	CONSTRAINT fk_items
+		FOREIGN KEY (owneditem) 
+		REFERENCES item(itemid)
+		ON DELETE CASCADE
+
 );
+
+CREATE TABLE person_limb( 
+	personlimbid	INTEGER PRIMARY KEY AUTOINCREMENT,
+	status 			INTEGER DEFAULT 1, 
+	limbowner 		INTEGER, 
+	limbtype		INTEGER,
+	FOREIGN KEY (limbowner) REFERENCES person(personid)
+	FOREIGN KEY (limbtype) REFERENCES limb(limbid)
+);
+
+/*
+	Creates all available people at once
+*/
+INSERT INTO person (name,hp) VALUES ('test', 85);
+INSERT INTO person (name,hp) VALUES ('other', 55);
+INSERT INTO person (name,hp) VALUES ('cam', 90);
+INSERT INTO person (name,hp) VALUES ('up', 90);
+
+/*
+	Creates all available types of limbs
+*/
+INSERT INTO limb (name) VALUES ('head');
+INSERT INTO limb (name) VALUES ('leftarm');
+INSERT INTO limb (name) VALUES ('rightarm');
+INSERT INTO limb (name) VALUES ('torso');
+INSERT INTO limb (name) VALUES ('leftleg');
+INSERT INTO limb (name) VALUES ('rightleg');
+
+/* 
+	Creates a new version of the limb for each existing person
+*/
+INSERT INTO person_limb (limbowner,limbtype)
+SELECT  person.personid AS limbowner,
+        limb.limbid AS limbtype
+FROM person CROSS JOIN limb;

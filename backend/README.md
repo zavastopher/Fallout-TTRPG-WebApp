@@ -1,52 +1,83 @@
 ## Rest API
 
-| Function name                           | Relative Url         | Description | Input                        | Output                |
-| --------------------------------------- | -------------------- | ----------- | ---------------------------- | --------------------- |
-| PlayerLogin(string name)                | GET /login/{name}    | For players | String name of player        | Player in json format |
-| GetAllPlayers()                         | GET /players         | For DM      | N/A                          | Array of players      |
-| UpdateHP(int currentHP)                 | PUT /players/hp      |             | New hp of player             | Success/Failure       |
-| AddItemToPlayer(Item item, int id)      | PUT /players/item    |             | Item to add and Player id    | Success/Failure       |
-| RemoveItemfromPlayer(Item item, int id) | DELETE /players/item |             | Item to remove and Player id | Success/Failure       |
+| Function name                      | Relative Url                    | Description | Input                           | Output                |
+| ---------------------------------- | ------------------------------- | ----------- | ------------------------------- | --------------------- |
+| PlayerLogin(string name)           | GET /login/{name}               | For players | String name of player           | Player in json format |
+| GetAllPlayers()                    | GET /players                    | For DM      | N/A                             | Array of players      |
+| UpdateHP(int playerid)             | PUT /players/hp/{playerid}      |             | New hp of player                | Success/Failure       |
+| GetInventoryByPlayer(int playerid) | GET /players/item/{playerid}    |             | Int id of player                | Array of items        |
+| AddItemToPlayer(int playerid)      | POST /players/item/{playerid}   |             | Item id to add and Player id    | Success/Failure       |
+| RemoveItemfromPlayer(int playerid) | DELETE /players/item/{playerid} |             | Item id to remove and Player id | Success/Failure       |
 
-| Function name                | Relative Url    | Description | Input            | Output         |
-| ---------------------------- | --------------- | ----------- | ---------------- | -------------- |
-| GetAllItems()                | GET /items      |             | N/A              | Array of items |
-| GetInventoryByPlayer(int id) | GET /items/{id} |             | Int id of player | Array of items |
+| Function name | Relative Url  | Description | Input | Output                 |
+| ------------- | ------------- | ----------- | ----- | ---------------------- |
+| GetAllItems() | GET /items    |             | N/A   | Array of items         |
+| AddItem()     | POST /items   |             | N/A   | Array of items         |
+| UpdateItem()  | PUT /items    |             | N/A   | Updated record of item |
+| DeleteItem () | DELETE /items |             | N/A   | Array of items         |
 
-| Function name                                         | Relative Url       | Description | Input            | Output          |
-| ----------------------------------------------------- | ------------------ | ----------- | ---------------- | --------------- |
-| GetAllQuests()                                        | GET /quests        |             | N/A              | Array of quests |
-| CreateQuest(Quest quest)                              | POST /quests       |             |                  |                 |
-| ToggleQuestVisibility(int questId)                    | PATCH /quests      |             |                  |                 |
-| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests        |             |                  |                 |
+| Function name                                         | Relative Url  | Description | Input | Output          |
+| ----------------------------------------------------- | ------------- | ----------- | ----- | --------------- |
+| GetAllQuests()                                        | GET /quests   |             | N/A   | Array of quests |
+| CreateQuest(Quest quest)                              | POST /quests  |             |       |                 |
+| ToggleQuestVisibility(int questId)                    | PATCH /quests |             |       |                 |
+| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests   |             |       |                 |
 
-| Function name                      | Relative Url    | Description | Input                               | Output         |
-| ---------------------------------- | --------------- | ----------- | ----------------------------------- | -------------- |
-| GetLimbsByPlayer(int id)           | GET /limbs      |             | Player id, -1 if player request     | Array of limbs |
-| UpdateLimb(int id)                 | PATCH /limbs    |             | limb id, player token               | N/A            |
+| Function name            | Relative Url | Description | Input                           | Output         |
+| ------------------------ | ------------ | ----------- | ------------------------------- | -------------- |
+| GetLimbsByPlayer(int id) | GET /limbs   |             | Player id, -1 if player request | Array of limbs |
+| UpdateLimb(int id)       | PATCH /limbs |             | limb id, player token           | N/A            |
 
 ## Data Formats
 
 #### Person
+
 <code>{
-  id: 1,
-  name: Camille,
-  Limbs: [{...}],
-  Inventory:  [{...}]
+id: 1,
+name: Camille,
+Limbs: [{...}],
+Inventory: [{...}]
 }
 </code>
 
-#### Quest Status enum 
+#### Quest Status enum
+
 <code> {
-  InProgress,
-  Success,
-  Failure
+InProgress,
+Success,
+Failure
 }
 </code>
+
+#### Player HP Update
+
+```
+{
+  "hp": 1
+}
+```
+
+#### Item Addition Request
+
+```
+{
+  items: [
+    "One",
+    "Two",
+    "Three"
+  ]
+}
+```
+
+#### Item Update Request
+
+```
+{
+  "newname": "New Name"
+}
+```
 
 TBA
-
-</code>
 
 ## Database
 
