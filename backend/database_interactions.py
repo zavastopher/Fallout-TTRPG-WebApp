@@ -12,6 +12,7 @@ def GetPlayersFromDatabase():
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
     
     data = cur.execute("SELECT * FROM person")
 
@@ -26,12 +27,18 @@ def UpdatePlayerHPInDatabase(id, hp):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
-    cur.execute("UPDATE person SET hp=? WHERE personid=?;", (hp, id))
-    data = cur.execute("SELECT * FROM person WHERE personid=?;", (id))
-    res = data.fetchall()
+    data = cur.execute("SELECT * FROM person WHERE personid=?;", (id,))
+    personToUpdate = data.fetchone()
 
-    con.commit()
+    if personToUpdate:
+        cur.execute("UPDATE person SET hp=? WHERE personid=?;", (hp, id))
+        data = cur.execute("SELECT * FROM person WHERE personid=?;", (id,))
+        res = data.fetchone()
+        con.commit()
+    else:
+        res = False
 
     con.close()
 
@@ -55,6 +62,7 @@ def AddItemToPlayerInDatabase(playerid, itemid, quantity):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     cur.execute("INSERT INTO person_item (quantity,itemowner,owneditem) VALUES (?,?,?);", (quantity, playerid, itemid))
     data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
@@ -69,17 +77,19 @@ def UpdateItemForPlayerDatabase(playerid, itemid, quantity):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
-    cur.execute("UPDATE person_item SET quantity = ? WHERE itemowner = ? AND owneditem = ?;", (quantity, playerid, itemid))
-    num = cur.rowcount >= 1
     data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
-    #res = data.fetchall()
-    res = {
-        "success": num,
-        "result": data.fetchone()
-    }
+    inventoryToUpdate = data.fetchone()
 
-    con.commit()
+    if inventoryToUpdate:
+        cur.execute("UPDATE person_item SET quantity = ? WHERE itemowner = ? AND owneditem = ?;", (quantity, playerid, itemid))
+        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
+        res = data.fetchone()
+        con.commit()
+    else:
+        res = False
+
     con.close()
 
     return res
@@ -88,6 +98,7 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     cur.execute("DELETE FROM person_item WHERE itemowner=? AND owneditem=?;", (playerid, itemid))
     data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
@@ -102,6 +113,7 @@ def GetPlayerInventoryFromDatabase(id):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (id,))
     res = data.fetchall()
@@ -129,6 +141,7 @@ def AddItemToDatabase(itemtuples):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     cur.executemany("INSERT OR IGNORE INTO item (name) VALUES (?);", itemtuples)
     data = cur.execute("SELECT * FROM item;")
@@ -141,18 +154,23 @@ def AddItemToDatabase(itemtuples):
 
 def UpdateItemInDatabase(id, newname):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
     cur = con.cursor()
-
-    cur.execute("UPDATE item SET name=? WHERE itemid=?;", (newname, id))
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM item WHERE itemid=?;", (id,))
-    
-    res = {
-        "success": cur.rowcount >= 1,
-        "result": data.fetchone()
-    }
 
-    con.commit()
+    itemToUpdate = data.fetchone()
+
+    if itemToUpdate:
+        cur.execute("UPDATE item SET name=? WHERE itemid=?;", (newname, id))
+        data = cur.execute("SELECT * FROM item WHERE itemid=?;", (id,))
+        res = data.fetchone()
+        con.commit()
+    else:
+        res = False
+
+    
     con.close()
 
     return res
@@ -162,6 +180,7 @@ def GetItemsInDatabase():
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM item;")
     res = data.fetchall()
@@ -174,6 +193,7 @@ def DeleteItemFromDatabase(itemid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM item WHERE itemid=?", (itemid,))
     deleted = {
@@ -197,6 +217,7 @@ def AddQuestToDatabase(questtuples):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     cur.executemany("INSERT OR IGNORE INTO quest (name, description) VALUES (?, ?);", questtuples)
     data = cur.execute("SELECT * FROM quest;")
@@ -211,6 +232,7 @@ def GetQuestsInDatabase():
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM quest;")
     res = data.fetchall()
@@ -221,20 +243,21 @@ def GetQuestsInDatabase():
 
 def UpdateQuestInDatabase(id, newquest):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
     cur = con.cursor()
-
-    cur.execute("UPDATE quest SET name=?, description=?, status=? WHERE questid=?;", (newquest["name"], newquest["description"], newquest["status"], id))
-
-    num = cur.rowcount >= 1
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM quest WHERE questid=?;", (id,))
-    
-    res = {
-        "success": num,
-        "result": data.fetchone()
-    }
 
-    con.commit()
+    questToUpdate = data.fetchone()
+
+    if questToUpdate:
+        cur.execute("UPDATE quest SET name=?, description=?, status=? WHERE questid=?;", (newquest["name"], newquest["description"], newquest["status"], id))
+        data = cur.execute("SELECT * FROM quest WHERE questid=?;", (id,))
+        res = data.fetchone()
+        con.commit()
+    else: 
+        res = False
     con.close()
 
     return res
@@ -243,6 +266,7 @@ def DeleteQuestFromDatabase(questid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM quest WHERE questid=?", (questid,))
     deleted = {
@@ -264,6 +288,7 @@ def AssignQuestToPlayerInDatabase(playerid, questid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     cur.execute("INSERT OR IGNORE INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
     data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
@@ -277,6 +302,7 @@ def GetQuestsByPlayerFromDatabase(playerid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT quest.* FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest WHERE questassignee=?;", (playerid,))
     res = data.fetchall()
@@ -289,6 +315,7 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT * FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
     deleted = {
@@ -313,6 +340,7 @@ def GetAllPlayerLimbDatabaseConnections():
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT person.name as person, limb.name as limbname, limb.limbid, person_limb.status FROM person INNER JOIN person_limb ON person.personid = person_limb.limbowner INNER JOIN limb ON person_limb.limbtype = limb.limbid;")
     res = data.fetchall()
@@ -325,6 +353,7 @@ def GetPlayerLimbsFromDatabase(playerid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT person.name as person, limb.name as limbname, limb.limbid, person_limb.status FROM person INNER JOIN person_limb ON person.personid = person_limb.limbowner INNER JOIN limb ON person_limb.limbtype = limb.limbid WHERE person_limb.limbowner=?;", (playerid,))
     res = data.fetchall()
@@ -335,20 +364,22 @@ def GetPlayerLimbsFromDatabase(playerid):
 
 def UpdatePlayerLimbsInDatabase(playerid, limbtype, status):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
     cur = con.cursor()
-
-    cur.execute("UPDATE person_limb SET status=? WHERE limbowner=? AND limbtype=?;", (status, playerid, limbtype))
-
-    num = cur.rowcount >= 1
+    cur.execute("PRAGMA foreign_keys = ON;")
 
     data = cur.execute("SELECT person.name, limb.name AS limbname, person_limb.status FROM person INNER JOIN person_limb ON person.personid = person_limb.limbowner INNER JOIN limb ON person_limb.limbtype = limb.limbid WHERE person_limb.limbowner=? AND person_limb.limbtype=?;", (playerid, limbtype))
     
-    res = {
-        "success": num,
-        "result": data.fetchone()
-    }
+    playerLimbToUpdate = data.fetchone()
 
-    con.commit()
+    if playerLimbToUpdate:
+        cur.execute("UPDATE person_limb SET status=? WHERE limbowner=? AND limbtype=?;", (status, playerid, limbtype))
+        data = cur.execute("SELECT person.name, limb.name AS limbname, person_limb.status FROM person INNER JOIN person_limb ON person.personid = person_limb.limbowner INNER JOIN limb ON person_limb.limbtype = limb.limbid WHERE person_limb.limbowner=? AND person_limb.limbtype=?;", (playerid, limbtype))
+        res = data.fetchone()
+        con.commit()
+    else: 
+        res = False
+        
     con.close()
 
     return res

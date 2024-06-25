@@ -1,13 +1,14 @@
 ## Rest API
 
-| Function name                      | Relative Url                    | Description | Input                           | Output                |
-| ---------------------------------- | ------------------------------- | ----------- | ------------------------------- | --------------------- |
-| PlayerLogin(string name)           | GET /login/{name}               | For players | String name of player           | Player in json format |
-| GetAllPlayers()                    | GET /players                    | For DM      | N/A                             | Array of players      |
-| UpdateHP(int playerid)             | PUT /players/hp/{playerid}      |             | New hp of player                | Success/Failure       |
-| GetInventoryByPlayer(int playerid) | GET /players/item/{playerid}    |             | Int id of player                | Array of items        |
-| AddItemToPlayer(int playerid)      | POST /players/item/{playerid}   |             | Item id to add and Player id    | Success/Failure       |
-| RemoveItemfromPlayer(int playerid) | DELETE /players/item/{playerid} |             | Item id to remove and Player id | Success/Failure       |
+| Function name                             | Relative Url                    | Description | Input (Request)                               | Output (Response)                                                  |
+| ----------------------------------------- | ------------------------------- | ----------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| PlayerLogin(string name)                  | GET /login/{name}               | For players | String name of player                         | Player in json format                                              |
+| GetPlayers()                              | GET /players                    | For DM      | N/A                                           | [Array of players objects](#player-response)                       |
+| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request) | [Updated player information w/ new hp](#player-hp-update-response) |
+| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                           | Array of items                                                     |
+| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | Item id to add and Player id                  | Success/Failure                                                    |
+| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | Item id to add and Player id                  | Success/Failure                                                    |
+| RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | Item id to remove and Player id               | Success/Failure                                                    |
 
 | Function name | Relative Url  | Description | Input | Output                 |
 | ------------- | ------------- | ----------- | ----- | ---------------------- |
@@ -30,7 +31,7 @@
 
 ## Data Formats
 
-#### Person
+#### Person Format
 
 <code>{
 id: 1,
@@ -40,7 +41,7 @@ Inventory: [{...}]
 }
 </code>
 
-#### Quest Status enum
+#### Quest Status Enum
 
 <code> {
 Incomplete,
@@ -49,11 +50,49 @@ Failure
 }
 </code>
 
-#### Player HP Update
+Used in database creation
+
+#### Player Response
+
+```
+[
+  {
+        "hp": 100,
+        "name": "person1",
+        "personid": 1
+    },
+    {
+        "hp": 90,
+        "name": "person2",
+        "personid": 2
+    },
+    ...
+]
+```
+
+#### Player HP Update Request
 
 ```
 {
-  "hp": 1
+  "hp": 70
+}
+```
+
+#### Player HP Update Response
+
+```
+{
+    "person": {
+        "hp": 70,
+        "name": "person1",
+        "personid": 1
+    }
+}
+```
+
+```
+{
+    "person": null
 }
 ```
 
@@ -61,12 +100,31 @@ Failure
 
 ```
 {
-  items: [
+  "items": [
     "One",
     "Two",
     "Three"
   ]
 }
+```
+
+#### Item Addition Response
+
+```
+[
+    {
+        "itemid": 1,
+        "name": "One"
+    },
+    {
+        "itemid": 2,
+        "name": "Two"
+    },
+    {
+        "itemid": 3,
+        "name": "Three"
+    }
+]
 ```
 
 #### Item Update Request
@@ -86,6 +144,18 @@ Failure
 }
 ```
 
+#### Player Inventory Addition Response
+
+```
+[
+    {
+        "itemid": 1,
+        "name": "One one one",
+        "quantity": 3
+    }
+]
+```
+
 #### Player Inventory Update Request
 
 ```
@@ -100,6 +170,14 @@ Failure
 ```
 {
   "itemid": 1
+}
+```
+
+#### Player Inventory Get Response
+
+```
+{
+
 }
 ```
 

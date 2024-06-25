@@ -40,24 +40,21 @@ def login_user(name):
     }
 
 ### Returns all available players, including their hp
-@app.route('/players')
+@app.route('/players', methods=['GET'])
 def GetPlayers():
     res = GetPlayersFromDatabase()
 
     return res
 
 ### Updates the hp of the player with the given player id
-@app.route('/players/hp/<playerid>')
+@app.route('/players/hp/<int:playerid>', methods=['PUT'])
 def UpdateHP(playerid):
     data = request.get_json()
     hp = data["hp"]
 
     res = UpdatePlayerHPInDatabase(playerid, hp)
 
-    return {
-            "playerid" : playerid,
-            "result" : res
-    }
+    return res
 
 ## -------------------------------------------------------------
 ## Routes used for item management
@@ -95,7 +92,10 @@ def UpdateDeleteItemsRoute(itemid):
         data = request.get_json()
         newname = data["newname"]
 
-        res = UpdateItemInDatabase(itemid, newname) 
+        res = UpdateItemInDatabase(itemid, newname)
+
+        if not res:
+            return  f"Item with id {id} does not exist", 404
 
         return res
     # Delete an item
@@ -118,11 +118,11 @@ def PlayerItemRoute(playerid):
             ## Create record in player_items
             res = AddItemToPlayerInDatabase(playerid, itemid, quanity)
         except:
-            return f"Item already exists in player {playerid}'s inventory!", 400
+            return f"Can't add item to player {playerid}'s inventory! Maybe item is already in inventory or player doesn't exist.", 400
 
         return res
     
-    # Update Item quantity for Player
+    # Update Item Quantity for Player
     elif request.method == 'PUT':
         data = request.get_json()
 
@@ -131,9 +131,12 @@ def PlayerItemRoute(playerid):
 
         res = UpdateItemForPlayerDatabase(playerid, itemid, quanity)
         
+        if not res:
+            return f"Cannot add item {itemid} to player {playerid}'s inventory. Is the item in the players inventory?", 400
+
         return res
     
-    # Delete Item from Player
+    # Remove Item from Player
     elif request.method == 'DELETE':
         data = request.get_json()
 
@@ -147,7 +150,7 @@ def PlayerItemRoute(playerid):
         else:
             return res
 
-    # Get Player Inventory
+    # Get Inventory By Player
     else:
         res = GetPlayerInventoryFromDatabase(playerid)
 
@@ -185,6 +188,9 @@ def UpdateDeleteQuestRoute(questid):
         quests = data
 
         res = UpdateQuestInDatabase(questid, quests)
+
+        if not res:
+            return f"Error updating quest {questid}. Does it exist?", 400
 
         return res
 
@@ -248,6 +254,9 @@ def GetLimbsByPlayer(playerid):
         limbtype = data["limbtype"]
         status = data["status"]
         res = UpdatePlayerLimbsInDatabase(playerid, limbtype, status)
+
+        if not res:
+            return f"Could not update player {playerid}'s limb (id {limbtype}). Does player exist?", 400
 
         return res
 
