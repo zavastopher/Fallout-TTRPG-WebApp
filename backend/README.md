@@ -1,3 +1,10 @@
+# TOC
+
+- [Rest API](#rest-api)
+- [Data Formats](#data-formats)
+- [Database](#database)
+- [Testing](#testing)
+
 ## Rest API
 
 | Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output (Response)                                                                                                                   |
@@ -52,7 +59,9 @@ Failure
 
 Used in database creation
 
-#### Player Response [(Back to Top)](#rest-api)
+#### Player Response
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -70,7 +79,9 @@ Used in database creation
 ]
 ```
 
-#### Player HP Update Request [(Back to Top)](#rest-api)
+#### Player HP Update Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -78,7 +89,9 @@ Used in database creation
 }
 ```
 
-#### Player HP Update Response [(Back to Top)](#rest-api)
+#### Player HP Update Response
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -88,7 +101,9 @@ Used in database creation
 }
 ```
 
-#### Item Addition Request [(Back to Top)](#rest-api)
+#### Item Addition Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -100,7 +115,9 @@ Used in database creation
 }
 ```
 
-#### Item Addition Response [(Back to Top)](#rest-api)
+#### Item Addition Response
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -119,7 +136,9 @@ Used in database creation
 ]
 ```
 
-#### Item Update Request [(Back to Top)](#rest-api)
+#### Item Update Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -127,7 +146,9 @@ Used in database creation
 }
 ```
 
-#### Item Update Response [(Back to Top)](#rest-api)
+#### Item Update Response
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -136,7 +157,9 @@ Used in database creation
 }
 ```
 
-#### Player Inventory Get Response [(Back to Top)](#rest-api)
+#### Player Inventory Get Response
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -153,7 +176,9 @@ Used in database creation
 ]
 ```
 
-#### Player Inventory Addition Request [(Back to Top)](#rest-api)
+#### Player Inventory Addition Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -162,7 +187,9 @@ Used in database creation
 }
 ```
 
-#### Player Inventory Addition Response [(Back to Top)](#rest-api)
+#### Player Inventory Addition Response
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -187,7 +214,9 @@ Used in database creation
 
 Returns entire new inventory
 
-#### Player Inventory Update Request [(Back to Top)](#rest-api)
+#### Player Inventory Update Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -196,7 +225,9 @@ Returns entire new inventory
 }
 ```
 
-#### Player Inventory Update Response [(Back to Top)](#rest-api)
+#### Player Inventory Update Response
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -206,7 +237,9 @@ Returns entire new inventory
 }
 ```
 
-#### Player Inventory Delete Request [(Back to Top)](#rest-api)
+#### Player Inventory Delete Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -214,7 +247,9 @@ Returns entire new inventory
 }
 ```
 
-#### Player Inventory Delete Response [(Back to Top)](#rest-api)
+#### Player Inventory Delete Response
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -231,7 +266,9 @@ Returns entire new inventory
 ]
 ```
 
-#### Quest Addition Request [(Back to Top)](#rest-api)
+#### Quest Addition Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -248,7 +285,9 @@ Returns entire new inventory
 }
 ```
 
-#### Quest Update Request [(Back to Top)](#rest-api)
+#### Quest Update Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -258,7 +297,9 @@ Returns entire new inventory
 }
 ```
 
-#### Limbs Update Request [(Back to Top)](#rest-api)
+#### Limbs Update Request
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -267,7 +308,9 @@ Returns entire new inventory
 }
 ```
 
-#### Limbs From Database [(Back to Top)](#rest-api)
+#### Limbs From Database
+
+[(Back to Top)](#rest-api)
 
 ```
 [
@@ -298,7 +341,9 @@ Returns entire new inventory
 ]
 ```
 
-#### Limbs Response [(Back to Top)](#rest-api)
+#### Limbs Response
+
+[(Back to Top)](#rest-api)
 
 ```
 {
@@ -327,7 +372,9 @@ Returns entire new inventory
 }
 ```
 
-## Database [(Back to Top)](#rest-api)
+## Database
+
+[(Back to Top)](#toc)
 
 Person
 
@@ -371,3 +418,7 @@ Person_Item
 - id (int primary key)
 - person_id (int)
 - item_id (int)
+
+## Testing
+
+[(Back to Top)](#toc)

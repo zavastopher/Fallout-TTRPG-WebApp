@@ -9,7 +9,8 @@ DROP TABLE IF EXISTS person_item;
 CREATE TABLE person ( 
 	personid INTEGER PRIMARY KEY AUTOINCREMENT, 
 	name TEXT, 
-	hp INTEGER
+	hp INTEGER,
+	admin INTEGER CHECK (admin IN (0, 1)) DEFAULT 0
 ); 
 
 CREATE TABLE limb(
@@ -66,7 +67,7 @@ CREATE TABLE person_limb(
 */
 INSERT INTO person (name,hp) VALUES ('test', 85);
 INSERT INTO person (name,hp) VALUES ('other', 55);
-INSERT INTO person (name,hp) VALUES ('cam', 90);
+INSERT INTO person (name,hp,admin) VALUES ('cam', 90, 1);
 INSERT INTO person (name,hp) VALUES ('up', 90);
 
 /*
