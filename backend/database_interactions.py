@@ -4,6 +4,36 @@ def dict_factory(cursor, row):
     fields = [column[0] for column in cursor.description]
     return {key: value for key, value in zip(fields, row)}
 
+def GetPlayerFromDatabaseByName(name):
+    con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
+
+    data = cur.execute("SELECT * FROM person WHERE name=?", (name,))
+
+    res = data.fetchone()
+    
+    #Close the connection so it doesn't dangle
+    con.close()
+
+    return res
+
+def GetPlayerFromDatabaseById(id):
+    con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
+
+    data = cur.execute("SELECT * FROM person WHERE personid=?", (id,))
+
+    res = data.fetchone()
+    
+    #Close the connection so it doesn't dangle
+    con.close()
+
+    return res
+
 #Function for retrieving the players from the database. The location
 #Should be updated or set to an environment variable should the location
 #Of the database file change. 
@@ -43,20 +73,6 @@ def UpdatePlayerHPInDatabase(id, hp):
     con.close()
 
     return res
-
-### todo - Deprecate
-def CheckItemInPlayerInventoryInDatabase(playerid, itemid):
-    con = sqlite3.connect("/db/data/vault-36-db.sqlite")
-    cur = con.cursor()
-
-    data = cur.execute("SELECT * FROM person_item WHERE itemowner=? AND owneditem=?;", (playerid, itemid))
-    res = data.fetchone()
-
-    con.commit()
-    con.close()
-
-    return res
-
 
 def AddItemToPlayerInDatabase(playerid, itemid, quantity):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
@@ -123,19 +139,6 @@ def GetPlayerInventoryFromDatabase(id):
     return res
 
 ## Item Interactions
-
-#### todo = Deprecate
-def CheckItemExistsInDatabase(id):
-    con = sqlite3.connect("/db/data/vault-36-db.sqlite")
-    cur = con.cursor()
-
-    data = cur.execute("SELECT * FROM item WHERE itemid=?;", (id,))
-    res = data.fetchone()
-
-    con.close()
-
-    return res
-
 
 def AddItemToDatabase(itemtuples):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
@@ -379,7 +382,7 @@ def UpdatePlayerLimbsInDatabase(playerid, limbtype, status):
         con.commit()
     else: 
         res = False
-        
+
     con.close()
 
     return res

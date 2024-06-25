@@ -1,14 +1,14 @@
 ## Rest API
 
-| Function name                             | Relative Url                    | Description | Input (Request)                               | Output (Response)                                                  |
-| ----------------------------------------- | ------------------------------- | ----------- | --------------------------------------------- | ------------------------------------------------------------------ |
-| PlayerLogin(string name)                  | GET /login/{name}               | For players | String name of player                         | Player in json format                                              |
-| GetPlayers()                              | GET /players                    | For DM      | N/A                                           | [Array of players objects](#player-response)                       |
-| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request) | [Updated player information w/ new hp](#player-hp-update-response) |
-| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                           | Array of items                                                     |
-| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | Item id to add and Player id                  | Success/Failure                                                    |
-| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | Item id to add and Player id                  | Success/Failure                                                    |
-| RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | Item id to remove and Player id               | Success/Failure                                                    |
+| Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output (Response)                                                                                                                   |
+| ----------------------------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| PlayerLogin(string name)                  | GET /login/{name}               | For players | String name of player                                             | Player in json format                                                                                                               |
+| GetPlayers()                              | GET /players                    | For DM      | N/A                                                               | [Array of players objects](#player-response)                                                                                        |
+| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request)                     | [Updated player information w/ new hp](#player-hp-update-response)                                                                  |
+| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                |
+| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         |
+| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be |
+| RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           |
 
 | Function name | Relative Url  | Description | Input | Output                 |
 | ------------- | ------------- | ----------- | ----- | ---------------------- |
@@ -52,7 +52,7 @@ Failure
 
 Used in database creation
 
-#### Player Response
+#### Player Response [(Back to Top)](#rest-api)
 
 ```
 [
@@ -70,7 +70,7 @@ Used in database creation
 ]
 ```
 
-#### Player HP Update Request
+#### Player HP Update Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -78,25 +78,17 @@ Used in database creation
 }
 ```
 
-#### Player HP Update Response
+#### Player HP Update Response [(Back to Top)](#rest-api)
 
 ```
 {
-    "person": {
-        "hp": 70,
-        "name": "person1",
-        "personid": 1
-    }
+  "hp": 70,
+  "name": "person1",
+  "personid": 1
 }
 ```
 
-```
-{
-    "person": null
-}
-```
-
-#### Item Addition Request
+#### Item Addition Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -108,7 +100,7 @@ Used in database creation
 }
 ```
 
-#### Item Addition Response
+#### Item Addition Response [(Back to Top)](#rest-api)
 
 ```
 [
@@ -127,7 +119,7 @@ Used in database creation
 ]
 ```
 
-#### Item Update Request
+#### Item Update Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -135,28 +127,33 @@ Used in database creation
 }
 ```
 
-#### Player Inventory Addition Request
+#### Item Update Response [(Back to Top)](#rest-api)
 
 ```
 {
-  "itemid": 1,
-  "quantity": 1
+    "itemid": 1,
+    "name": "New Name"
 }
 ```
 
-#### Player Inventory Addition Response
+#### Player Inventory Get Response [(Back to Top)](#rest-api)
 
 ```
 [
     {
-        "itemid": 1,
-        "name": "One one one",
+        "itemid": 2,
+        "name": "Item 2",
+        "quantity": 2
+    },
+    {
+        "itemid": 3,
+        "name": "Item 3",
         "quantity": 3
     }
 ]
 ```
 
-#### Player Inventory Update Request
+#### Player Inventory Addition Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -165,7 +162,51 @@ Used in database creation
 }
 ```
 
-#### Player Inventory Delete Request
+#### Player Inventory Addition Response [(Back to Top)](#rest-api)
+
+```
+[
+
+    {
+        "itemid": 1,
+        "name": "Item 1",
+        "quantity": 1
+    },
+    {
+        "itemid": 2,
+        "name": "Item 2",
+        "quantity": 2
+    },
+    {
+        "itemid": 3,
+        "name": "Item 3",
+        "quantity": 3
+    }
+]
+```
+
+Returns entire new inventory
+
+#### Player Inventory Update Request [(Back to Top)](#rest-api)
+
+```
+{
+  "itemid": 1,
+  "quantity": 10
+}
+```
+
+#### Player Inventory Update Response [(Back to Top)](#rest-api)
+
+```
+{
+    "itemid": 1,
+    "name": "Item 1",
+    "quantity": 10
+}
+```
+
+#### Player Inventory Delete Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -173,15 +214,24 @@ Used in database creation
 }
 ```
 
-#### Player Inventory Get Response
+#### Player Inventory Delete Response [(Back to Top)](#rest-api)
 
 ```
-{
-
-}
+[
+    {
+        "itemid": 2,
+        "name": "Item 2",
+        "quantity": 2
+    },
+    {
+        "itemid": 3,
+        "name": "Item 3",
+        "quantity": 3
+    }
+]
 ```
 
-#### Quest Addition Request
+#### Quest Addition Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -198,7 +248,7 @@ Used in database creation
 }
 ```
 
-#### Quest Update Request
+#### Quest Update Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -208,7 +258,7 @@ Used in database creation
 }
 ```
 
-#### Limbs Update Request
+#### Limbs Update Request [(Back to Top)](#rest-api)
 
 ```
 {
@@ -217,7 +267,7 @@ Used in database creation
 }
 ```
 
-#### Limbs From Database
+#### Limbs From Database [(Back to Top)](#rest-api)
 
 ```
 [
@@ -248,7 +298,7 @@ Used in database creation
 ]
 ```
 
-#### Limbs Response
+#### Limbs Response [(Back to Top)](#rest-api)
 
 ```
 {
@@ -277,14 +327,14 @@ Used in database creation
 }
 ```
 
-## Database
+## Database [(Back to Top)](#rest-api)
 
 Person
 
 - id (int, primary key)
 - Name (varchar 40)
 - HP (int)
-- Limbs (Limb: One to Many)
+- Limbs (Limb: Many to Many)
 - Quests (Quest: Many to Many) (Deprecated)
 - Inventory (Item: Many to Many)
 

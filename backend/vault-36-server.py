@@ -1,9 +1,7 @@
 from flask import Flask
 from flask import request
-# from flask_jwt import JWT, jwt_required, current_identity
-# from werkzeug.security import safe_str_cmp
 
-# This import is importing all of the Flask Configurations deffined in config.py
+# This import is importing all of the Flask Configurations defined in config.py
 from config import *
 from database_interactions import *
 
@@ -27,6 +25,12 @@ def hello_geek():
 
 
     return names
+
+### Test route for getting player by name
+@app.route('/<name>')
+def GetPlayerThing(name):
+    res = GetPlayerFromDatabaseByName(name)
+    return res
 
 ## -------------------------------------------------------------
 ## Routes used for updating players
@@ -53,6 +57,9 @@ def UpdateHP(playerid):
     hp = data["hp"]
 
     res = UpdatePlayerHPInDatabase(playerid, hp)
+
+    if not res:
+        return f"Can't update player {playerid}'s health.", 400
 
     return res
 
