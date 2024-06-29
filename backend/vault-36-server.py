@@ -1,5 +1,9 @@
 from functools import wraps
 
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+
 from flask import Flask
 from flask import request
 from flask import jsonify
@@ -10,6 +14,8 @@ from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended import get_jwt
+from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import unset_jwt_cookies
 
 # This import is importing all of the Flask Configurations defined in config.py
 from config import *
@@ -18,13 +24,19 @@ from database_interactions import *
 app = Flask(__name__)
 
 app.config["JWT_SECRET_KEY"] = "im-a-tough-tootin-baby"
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_COOKIE_SECURE"] = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+
+
 jwt = JWTManager(app)
 
 class Player:
-    def __init__(self, id, name, hp) -> None:
+    def __init__(self, id, name, hp, isadmin) -> None:
         self.id = id
         self.name = name
         self.hp = hp
+        self.isadmin = isadmin
 
 @jwt.user_identity_loader
 def user_identity_lookup(player):
@@ -35,10 +47,26 @@ def user_identity_lookup(player):
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     playerDB = GetPlayerFromDatabaseById(identity)
-    player = Player(playerDB["personid"], playerDB["name"], playerDB["hp"])
+    player = Player(playerDB["personid"], playerDB["name"], playerDB["hp"], playerDB["admin"])
 
     app.logger.debug(f"loader: {identity}, {player}")
     return player
+
+# Using an `after_request` callback, we refresh any token that is within 30
+# minutes of expiring. Change the timedeltas to match the needs of your application.
+@app.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original response
+        return response
 
 def admin_required():
     def wrapper(fn):
@@ -85,7 +113,6 @@ def LockedThing():
 ## Routes used for updating players
 ## -------------------------------------------------------------
 
-
 ### Responsible for logging players in by name and setting a session token
 @app.route('/login', methods=['POST'])
 def login_user():
@@ -96,18 +123,23 @@ def login_user():
     if not res:
         return "Player doesn't exist!", 401
     
-    player = Player(res["personid"], res["name"], res["hp"])
+    player = Player(res["personid"], res["name"], res["hp"], res["admin"])
 
     role = {
         "is_admin": res["admin"]
     }
 
     token = create_access_token(identity=player, additional_claims=role)
+    
+    response = jsonify({"msg": f"Login Success! Hi, {player.name}!"})
+    set_access_cookies(response, token)
 
-    return {
-            "player" : player.name,
-            "token": token
-    }
+    return response
+
+@app.route('/self', methods=['GET'])
+@jwt_required
+def GetSelf():
+    return current_user
 
 ### Returns all available players, including their hp
 @app.route('/players', methods=['GET'])
@@ -119,7 +151,7 @@ def GetPlayers():
 
 ### Updates the hp of the player with the given player id
 @app.route('/players/hp/<int:playerid>', methods=['PUT'])
-@jwt_required
+@jwt_required()
 def UpdateHP(playerid):
     data = request.get_json()
     hp = data["hp"]
@@ -137,7 +169,7 @@ def UpdateHP(playerid):
 
 ### Route for adding items and getting all items
 @app.route('/items', methods=['GET', 'POST'])
-@jwt_required
+@jwt_required()
 def AddGetItemsRoute():
     # Create new items
     if request.method == 'POST':
@@ -162,7 +194,7 @@ def AddGetItemsRoute():
     
 ### Route for updating items and deleting items
 @app.route('/items/<int:itemid>', methods=['PUT', 'DELETE'])
-@jwt_required
+@jwt_required()
 def UpdateDeleteItemsRoute(itemid):
     # Update the name of an item
     if request.method == 'PUT':
@@ -184,7 +216,7 @@ def UpdateDeleteItemsRoute(itemid):
 ### Route for adding, removing or viewing items in regards to a specific player
 ### Used by both players and admin
 @app.route('/players/item/<int:playerid>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-@jwt_required
+@jwt_required()
 def PlayerItemRoute(playerid):
     # Add Item to Player
     if request.method == 'POST':
@@ -241,7 +273,7 @@ def PlayerItemRoute(playerid):
 
 ## API calls for adding and getting quests
 @app.route('/quests', methods=['GET', 'POST'])
-@admin_required
+@admin_required()
 def AddGetQuestRoute():
     # Create quest
     if request.method == 'POST':
@@ -261,7 +293,7 @@ def AddGetQuestRoute():
     
 ## API calls for updating and deleting
 @app.route('/quests/<int:questid>', methods=['PUT', 'DELETE'])
-@admin_required
+@admin_required()
 def UpdateDeleteQuestRoute(questid):
     # Update quest status
     if request.method == 'PUT':
@@ -282,7 +314,7 @@ def UpdateDeleteQuestRoute(questid):
 
 ## Assign, Unassign assigned to a player
 @app.route('/players/quests/<int:playerid>', methods=['POST', 'DELETE'])
-@admin_required
+@admin_required()
 def PlayerQuestRoute(playerid):
     if request.method == 'POST':
         data = request.get_json()
@@ -301,8 +333,8 @@ def PlayerQuestRoute(playerid):
 
 ## Players can get their associated quest
 @app.route('/players/quests', methods=['GET'])
-@jwt_required
-def PlayerQuestRoute():
+@jwt_required()
+def GetPlayerQuestRoute():
     playerid = current_user.id
     return GetQuestsByPlayerFromDatabase(playerid)
         
@@ -326,7 +358,7 @@ def ConvertLimbs(all):
 
 
 @app.route('/limbs')
-@admin_required
+@admin_required()
 def GetAllLimbs():
     res =  GetAllPlayerLimbDatabaseConnections()
 
@@ -335,7 +367,7 @@ def GetAllLimbs():
     return playerlimbs
 
 @app.route('/players/limbs', methods=['GET', 'PUT'])
-@jwt_required
+@jwt_required()
 def GetLimbsByPlayer():
     playerid = current_user.id
 
