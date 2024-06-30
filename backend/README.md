@@ -9,7 +9,7 @@
 
 | Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output (Response)                                                                                                                   |
 | ----------------------------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| PlayerLogin(string name)                  | GET /login/{name}               | For players | String name of player                                             | Success/Failure                                                                                                                     |
+| PlayerLogin(string name)                  | GET /login                      | For players | String name of player                                             | Success/Failure                                                                                                                     |
 | GetSelf()                                 | GET /players                    | For DM      | N/A                                                               | [Players object](#self-response)                                                                                                    |
 | GetPlayers()                              | GET /players                    | For DM      | N/A                                                               | [Array of players objects](#player-get-response)                                                                                    |
 | UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request)                     | [Updated player information w/ new hp](#player-hp-update-response)                                                                  |
@@ -39,26 +39,13 @@
 
 ## Data Formats
 
-#### Person Format
+#### Login Request
 
-<code>{
-id: 1,
-name: Camille,
-Limbs: [{...}],
-Inventory: [{...}]
+```
+{
+  "playername" : "name"
 }
-</code>
-
-#### Quest Status Enum
-
-<code> {
-Incomplete,
-Success,
-Failure
-}
-</code>
-
-Used in database creation
+```
 
 #### Self Response
 
