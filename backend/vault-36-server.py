@@ -150,9 +150,14 @@ def login_user():
 @app.route("/self", methods=["GET"])
 @jwt_required()
 def GetSelf():
-    app.logger.debug(current_user)
+    user = current_user
 
-    return jsonify(current_user)
+    return {
+        "id": user.id,
+        "name": user.name,
+        "hp": user.hp,
+        "isadmin": user.isadmin
+    }
 
 
 ### Returns all available players, including their hp
