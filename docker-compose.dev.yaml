@@ -24,7 +24,7 @@ services:
     volumes:
       - "./frontend:/usr/src/app"
       - "/usr/src/app/node_modules"
-  
+
   nginx:
     build:
       context: ./proxy/
@@ -37,4 +37,4 @@ services:
       - backend
 
 volumes:
-   sqlite_data:
+  sqlite_data:
