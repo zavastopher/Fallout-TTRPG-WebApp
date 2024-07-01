@@ -24,3 +24,4 @@ frontend/pip-boy-36/yarn-error.log*
 backend/.venv/*
 backend/__pycache__/config.cpython-312.pyc
 backend/__pycache__/database_interactions.cpython-312.pyc
+backend/__pycache__/config.cpython-312.pyc
