@@ -1,8 +1,5 @@
 FROM python:alpine
 
-ENV CHOKIDAR_USEPOLLING=true
-ENV WATCHPACK_POLLING=true
-
 ## Create the Database
 
 RUN apk --no-cache add sqlite
