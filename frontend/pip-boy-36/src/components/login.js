@@ -49,7 +49,7 @@ function Login({ setToken }) {
     <div>
       <form onSubmit={handleSubmit}>
         <input type="text" value={name} onChange={handleChange}></input>
-        <input type="submit" value="Submitt"></input>
+        <input type="submit" value="Submit"></input>
       </form>
     </div>
   );

@@ -1,5 +1,24 @@
-FROM python:3.10-slim
+FROM python:alpine
 
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+
+## Create the Database
+
+RUN apk --no-cache add sqlite
+# Create a directory to store the database
+WORKDIR /db
+# Copy our SQLite database file into the container
+COPY ./vault-36-db.sqlite /db/data/
+COPY ./create_script.db /db/
+# Expose the port if needed
+Expose 3306
+# Command to run when the container starts
+USER root
+RUN cat ./create_script.db | sqlite3 ./data/vault-36-db.sqlite
+
+
+## Create the server
 WORKDIR /usr/src/app
 
 COPY ./requirements.txt .
@@ -8,4 +27,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 EXPOSE 3001
-CMD python server.py run
+CMD python vault-36-server.py run

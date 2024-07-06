@@ -20,13 +20,15 @@ from flask_jwt_extended import unset_jwt_cookies
 
 from flask_cors import CORS
 
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, send, emit
 
 # This import is importing all of the Flask Configurations defined in config.py
 from config import *
 from database_interactions import *
 
 app = Flask(__name__)
+
+socketio = SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*")
 
 CORS(app) # This will enable CORS for all routes
 
@@ -286,7 +288,7 @@ def PlayerItemRoute(playerid):
 
         return res
 
-    # Remove Item from Player
+    # Remove Item from Player 
     elif request.method == "DELETE":
         data = request.get_json()
 
@@ -441,6 +443,30 @@ def GetLimbsByPlayer():
         return playerlimbs
 
 
+## Socket functions
+
+@socketio.on('message')
+def handle_message(message):
+    send("Your message was cool")
+
+@socketio.on('json')
+def handle_json(json):
+    send({"that": "was cool"}, json=True)
+
+@socketio.on('my event')
+def handle_custom_event(json):
+    send('received json: ' + str(json))
+    # send('received json: ')
+
+@socketio.on('connect')
+def test_connect(auth):
+    emit('my response', {'data': 'Connected'})
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=3001)
-    #socketio.run(app, debug=True, host=HOST, port=3001)
+    # app.run(debug=True, host=HOST, port=3001)
+    socketio.run(app, debug=True, host=HOST, port=3001, allow_unsafe_werkzeug=True)
