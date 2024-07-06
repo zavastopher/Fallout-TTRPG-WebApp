@@ -17,11 +17,19 @@ from flask_jwt_extended import get_jwt
 from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import unset_jwt_cookies
 
+
+from flask_cors import CORS
+
+from flask_socketio import SocketIO, emit
+
 # This import is importing all of the Flask Configurations defined in config.py
 from config import *
 from database_interactions import *
 
 app = Flask(__name__)
+
+CORS(app) # This will enable CORS for all routes
+
 
 app.config["JWT_SECRET_KEY"] = "im-a-tough-tootin-baby"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
@@ -31,6 +39,7 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 jwt = JWTManager(app)
 
+#socketio = SocketIO(app, cors_allowed_origins="*")
 
 class Player:
     def __init__(self, id, name, hp, isadmin) -> None:
@@ -107,7 +116,7 @@ def hello_geek():
     names = []
 
     for name in res:
-        names.append(name[0])
+        names.append(name["name"])
 
     return names
 
@@ -434,3 +443,4 @@ def GetLimbsByPlayer():
 
 if __name__ == "__main__":
     app.run(debug=True, host=HOST, port=3001)
+    #socketio.run(app, debug=True, host=HOST, port=3001)

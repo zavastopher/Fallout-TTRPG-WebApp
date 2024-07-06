@@ -5,6 +5,9 @@ import Inventory from "./inventory";
 import Quests from "./quests";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import axios from "axios";
+
+const baseURL = "http://localhost:4001";
 
 let socket;
 
@@ -19,6 +22,8 @@ function Main() {
     leftLeg: false,
     rightLeg: false,
   });
+
+  const [error, setError] = useState(null);
 
   function updateLimb(limbs, status) {}
 
@@ -38,7 +43,29 @@ function Main() {
     return () => {
       socket.disconnect();
     };
+  }, [limbsHurt]);
+
+  useEffect(() => {
+    // invalid url will trigger an 404 error
+    console.log(`${baseURL}`);
+
+    axios
+      .get(`${baseURL}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        console.log("test");
+        console.log("test thing");
+      })
+      .catch((error) => {
+        setError(error);
+        console.log(error);
+      });
   }, []);
+
   return (
     <BrowserRouter>
       <Routes>

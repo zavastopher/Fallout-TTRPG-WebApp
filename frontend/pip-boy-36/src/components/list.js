@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 import ListItem from "./listItem";
 
@@ -24,13 +24,16 @@ function List({ items, selected, setSelected }) {
     }
   }
 
-  const handleListKeyDown = (event) => {
-    if (event.key === "ArrowUp") {
-      select(selected - 1);
-    } else if (event.key === "ArrowDown") {
-      select(selected + 1);
-    }
-  };
+  const handleListKeyDown = useCallback(
+    (event) => {
+      if (event.key === "ArrowUp") {
+        select(selected - 1);
+      } else if (event.key === "ArrowDown") {
+        select(selected + 1);
+      }
+    },
+    [select, selected]
+  );
 
   const handleListClick = (itemId) => {
     select(itemId);
@@ -63,7 +66,7 @@ function List({ items, selected, setSelected }) {
   }, []);
 
   return (
-    <ul id="list" className="list">
+    <ul id="list" className="list test">
       {items.map((item) => (
         <ListItem
           item={item}

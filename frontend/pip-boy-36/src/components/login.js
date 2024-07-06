@@ -41,13 +41,15 @@ function Login({ setToken }) {
     if (name.toLowerCase() === "camille") {
       setToken("set");
     }
+
+    console.log("Oh boy");
   }
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <input type="text" value={name} onChange={handleChange}></input>
-        <input type="submit" value="Submit"></input>
+        <input type="submit" value="Submitt"></input>
       </form>
     </div>
   );

@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import ListItem from "./listItem";
 import Title from "./title";
-import $ from "jquery";
 import Description from "./description";
 import List from "./list";
+import { useState } from "react";
 
 function Inventory() {
   const [selected, setSelected] = useState(0);
