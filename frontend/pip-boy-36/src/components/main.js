@@ -29,7 +29,15 @@ function Main() {
 
   useEffect(() => {
     // create websocket/connect
-    socket = io();
+    socket = io("localhost:4001");
+
+    socket.on("connect", function () {
+      socket.emit("my event", { data: "I'm connected!" });
+    });
+
+    socket.on("message", () => {
+      console.log("connected!");
+    });
 
     socket.on("hp", (hp) => {
       setHP(hp);
