@@ -2,26 +2,32 @@ import { useState } from "react";
 import Navbar from "./navbar";
 import axios from "axios";
 
+var baseURL = "http://localhost";
+
 function Login({ setToken }) {
   const [name, setName] = useState("");
 
+  const [errorMsg, setErrorMessage] = useState("");
+
   function logMeIn(event) {
-    axios({
-      method: "POST",
-      url: "/token",
-      data: {
-        name: name,
-      },
-    })
+    axios
+      .post(`${baseURL}/api/login`, {
+        playername: name,
+      })
       .then((response) => {
+        console.log(response.data);
         setToken(response.data.access_token);
+        setErrorMessage("");
       })
       .catch((error) => {
         if (error.response) {
           console.log(error.response);
           console.log(error.response.status);
           console.log(error.response.headers);
+        } else {
+          console.log("Didn't get a response");
         }
+        setErrorMessage("Unable to Login");
       });
 
     setName("");
@@ -38,9 +44,7 @@ function Login({ setToken }) {
     event.preventDefault();
     console.log(`Submit name:  ${name}`);
 
-    if (name.toLowerCase() === "camille") {
-      setToken("set");
-    }
+    logMeIn(event);
 
     console.log("Oh boy");
   }
@@ -51,6 +55,7 @@ function Login({ setToken }) {
         <input type="text" value={name} onChange={handleChange}></input>
         <input type="submit" value="Submit"></input>
       </form>
+      <p>{errorMsg}</p>
     </div>
   );
 }
