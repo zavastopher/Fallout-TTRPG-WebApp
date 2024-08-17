@@ -3,19 +3,81 @@ import "./App.scss";
 import Main from "./components/main";
 import useToken from "./components/useToken";
 import Login from "./components/login";
+import { useState } from "react";
+
+/**
+ * Login stuff should be here!
+ * @returns
+ */
 
 function App() {
-  const { token, removeToken, setToken } = useToken();
+  //const { token, removeToken, setToken } = useToken();
+  const [self, setSelf] = useState(null);
+
+  function logMeIn(event) {
+    axios
+      .post(`${baseURL}/login`, {
+        playername: name,
+      })
+      .then((response) => {
+        console.log(response.data);
+        //setToken(response.data.access_token);
+        setErrorMessage("");
+
+        getSelf();
+      })
+      .catch((error) => {
+        if (error.response) {
+          //console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else {
+          console.log("Didn't get a response");
+        }
+        setErrorMessage("Unable to Login");
+      });
+
+    setName("");
+
+    event.preventDefault();
+  }
+
+  function logMeOut() {
+    axios
+      .post(`${baseURL}/logout`, {})
+      .then((response) => {
+        console.log(response.data);
+        setSelf({});
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function getSelf() {
+    axios
+      .get(`${baseURL}/self`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setSelf(response.data);
+      })
+      .catch(() => {});
+  }
 
   return (
     <div className="App crt crt-scanlines">
       <div id="scan"></div>
-      <header className="App-header" token={removeToken}>
-        {!token && token !== "" && token !== undefined ? (
-          <Login setToken={setToken} />
+      <header className="App-header">
+        {!self && self !== "" && self !== undefined ? (
+          <Login logMeIn={logMeIn} />
         ) : (
           <>
-            <Main removeToken={removeToken}></Main>
+            <Main self={self} logMeOut={logMeOut}></Main>
           </>
         )}
       </header>

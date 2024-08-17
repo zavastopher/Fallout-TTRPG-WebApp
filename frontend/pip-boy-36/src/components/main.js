@@ -11,9 +11,8 @@ const baseURL = "http://localhost:4001";
 
 let socket;
 
-function Main({ removeToken }) {
-  const [hp, setHP] = useState(90);
-
+function Main({ self, logMeOut }) {
+  const [error, setError] = useState(null);
   const [limbsHurt, setLimbsHurt] = useState({
     head: true,
     torso: false,
@@ -22,8 +21,6 @@ function Main({ removeToken }) {
     leftLeg: false,
     rightLeg: false,
   });
-
-  const [error, setError] = useState(null);
 
   function updateLimb(limbs, status) {}
 
@@ -53,34 +50,13 @@ function Main({ removeToken }) {
     };
   }, [limbsHurt]);
 
-  useEffect(() => {
-    // invalid url will trigger an 404 error
-    console.log(`${baseURL}`);
-
-    axios
-      .get(`${baseURL}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        console.log("test");
-        console.log("test thing");
-      })
-      .catch((error) => {
-        setError(error);
-        console.log(error);
-      });
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navbar removeToken={removeToken} />}>
-          <Route index element={<Stats hp={hp} limbsHurt={limbsHurt} />} />
+        <Route path="/" element={<Navbar self={self} logMeOut={logMeOut} />}>
+          <Route index element={<Stats hp={self.hp} limbsHurt={limbsHurt} />} />
           <Route path="inventory" element={<Inventory />} />
-          <Route path="quests" element={<Quests />} />
+          <Route path="questss" element={<Quests />} />
         </Route>
       </Routes>
     </BrowserRouter>

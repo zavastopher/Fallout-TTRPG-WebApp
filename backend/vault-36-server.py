@@ -18,7 +18,7 @@ from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import unset_jwt_cookies
 
 
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 from flask_socketio import SocketIO, send, emit
 
@@ -30,8 +30,9 @@ app = Flask(__name__)
 
 socketio = SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*")
 
-CORS(app) # This will enable CORS for all routes
+cors = CORS(app, supports_credentials=True) # This will enable CORS for all routes
 
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config["JWT_SECRET_KEY"] = "im-a-tough-tootin-baby"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
@@ -138,6 +139,7 @@ def LockedThing():
 
 ### Responsible for logging players in by name and setting a session token
 @app.route("/login", methods=["POST"])
+@cross_origin()
 def login_user():
     playername = request.json.get("playername", None)
 
@@ -153,6 +155,7 @@ def login_user():
     token = create_access_token(identity=player, additional_claims=role)
 
     response = jsonify({"msg": f"Login Success! Hi, {player.name}!"})
+
     set_access_cookies(response, token)
 
     return response

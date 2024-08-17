@@ -1,26 +1,14 @@
 import { Outlet, Link } from "react-router-dom";
 import axios from "axios";
 
-var baseURL = "http://localhost";
+var baseURL = "http://localhost/api";
 
-const Navbar = ({ removeToken }) => {
-  const logout = () => {
-    axios
-      .post(`${baseURL}/api/logout`, {})
-      .then((response) => {
-        console.log(response.data);
-        removeToken();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
+const Navbar = ({ self, logMeOut }) => {
   return (
     <>
       <div className="pipboy-screen">
         <div className="header-container">
-          <button type="button" className="logout" onClick={logout}>
+          <button type="button" className="logout" onClick={logMeOut}>
             <span>
               {"[ "}Logout{" ]"}
             </span>
