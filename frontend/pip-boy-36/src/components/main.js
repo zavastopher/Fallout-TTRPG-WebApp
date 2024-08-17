@@ -11,7 +11,7 @@ const baseURL = "http://localhost:4001";
 
 let socket;
 
-function Main() {
+function Main({ removeToken }) {
   const [hp, setHP] = useState(90);
 
   const [limbsHurt, setLimbsHurt] = useState({
@@ -77,7 +77,7 @@ function Main() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navbar />}>
+        <Route path="/" element={<Navbar removeToken={removeToken} />}>
           <Route index element={<Stats hp={hp} limbsHurt={limbsHurt} />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="quests" element={<Quests />} />

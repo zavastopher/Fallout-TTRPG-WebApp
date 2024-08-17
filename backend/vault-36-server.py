@@ -157,6 +157,11 @@ def login_user():
 
     return response
 
+@app.route("/logout", methods=["POST"])
+def logout_user():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
 
 @app.route("/self", methods=["GET"])
 @jwt_required()

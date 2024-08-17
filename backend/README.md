@@ -7,35 +7,36 @@
 
 ## Rest API
 
-| Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output (Response)                                                                                                                   |
-| ----------------------------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| PlayerLogin(string name)                  | GET /login                      | For players | String name of player                                             | Success/Failure                                                                                                                     |
-| GetSelf()                                 | GET /players                    | For DM      | N/A                                                               | [Players object](#self-response)                                                                                                    |
-| GetPlayers()                              | GET /players                    | For DM      | N/A                                                               | [Array of players objects](#player-get-response)                                                                                    |
-| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request)                     | [Updated player information w/ new hp](#player-hp-update-response)                                                                  |
-| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                |
-| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         |
-| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be |
-| RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           |
+| Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output(Response)                                                                                                                    | Completed |
+| ----------------------------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| PlayerLogin(string name)                  | POST /login                     | For players | String name of player                                             | Success/Failure                                                                                                                     | Yes       |
+| Logout()                                  | POST /logout                    |             | N/A                                                               | Success/Failure                                                                                                                     | Yes       |
+| GetSelf()                                 | GET /self                       | For DM      | N/A                                                               | [Players object](#self-response)                                                                                                    | Yes       |
+| GetPlayers()                              | GET /players                    | For DM      | N/A                                                               | [Array of players objects](#player-get-response)                                                                                    | No        |
+| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request)                     | [Updated player information w/ new hp](#player-hp-update-response)                                                                  | No        |
+| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | No        |
+| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         | No        |
+| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | No        |
+| RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | No        |
 
-| Function name | Relative Url  | Description | Input (Request)                                         | Output (Response)                               |
-| ------------- | ------------- | ----------- | ------------------------------------------------------- | ----------------------------------------------- |
-| GetAllItems() | GET /items    |             | N/A                                                     | [Array of items](#item-get-response)            |
-| AddItem()     | POST /items   |             | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       |
-| UpdateItem()  | PUT /items    |             | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) |
-| DeleteItem () | DELETE /items |             | N/A                                                     | [Array of items](#item-delete-response)         |
+| Function name | Relative Url  | Description | Input (Request)                                         | Output (Response)                               | Completed |
+| ------------- | ------------- | ----------- | ------------------------------------------------------- | ----------------------------------------------- | --------- |
+| GetAllItems() | GET /items    |             | N/A                                                     | [Array of items](#item-get-response)            | No        |
+| AddItem()     | POST /items   |             | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | No        |
+| UpdateItem()  | PUT /items    |             | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No        |
+| DeleteItem () | DELETE /items |             | N/A                                                     | [Array of items](#item-delete-response)         | No        |
 
-| Function name                                         | Relative Url  | Description | Input (Request) | Output (Response) |
-| ----------------------------------------------------- | ------------- | ----------- | --------------- | ----------------- |
-| GetAllQuests()                                        | GET /quests   |             | N/A             | Array of quests   |
-| CreateQuest(Quest quest)                              | POST /quests  |             |                 |                   |
-| ToggleQuestVisibility(int questId)                    | PATCH /quests |             |                 |                   |
-| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests   |             |                 |                   |
+| Function name                                         | Relative Url  | Description | Input (Request) | Output (Response) | Completed |
+| ----------------------------------------------------- | ------------- | ----------- | --------------- | ----------------- | --------- |
+| GetAllQuests()                                        | GET /quests   |             | N/A             | Array of quests   | No        |
+| CreateQuest(Quest quest)                              | POST /quests  |             |                 |                   | No        |
+| ToggleQuestVisibility(int questId)                    | PATCH /quests |             |                 |                   | No        |
+| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests   |             |                 |                   | No        |
 
-| Function name            | Relative Url | Description | Input (Request)                 | Output (Response) |
-| ------------------------ | ------------ | ----------- | ------------------------------- | ----------------- |
-| GetLimbsByPlayer(int id) | GET /limbs   |             | Player id, -1 if player request | Array of limbs    |
-| UpdateLimb(int id)       | PATCH /limbs |             | limb id, player token           | N/A               |
+| Function name            | Relative Url | Description | Input (Request)                 | Output (Response) | Completed |
+| ------------------------ | ------------ | ----------- | ------------------------------- | ----------------- | --------- |
+| GetLimbsByPlayer(int id) | GET /limbs   |             | Player id, -1 if player request | Array of limbs    | No        |
+| UpdateLimb(int id)       | PATCH /limbs |             | limb id, player token           | N/A               | No        |
 
 ## Data Formats
 

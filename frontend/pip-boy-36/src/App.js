@@ -15,7 +15,7 @@ function App() {
           <Login setToken={setToken} />
         ) : (
           <>
-            <Main></Main>
+            <Main removeToken={removeToken}></Main>
           </>
         )}
       </header>

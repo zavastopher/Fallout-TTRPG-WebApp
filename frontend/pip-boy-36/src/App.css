@@ -281,7 +281,8 @@
   }
 }
 
-.crt::after {
+.crt::after,
+button::after {
   content: " ";
   display: block;
   position: absolute;
@@ -295,7 +296,8 @@
   pointer-events: none;
   animation: flicker 0.15s infinite;
 }
-.crt::before {
+.crt::before,
+button::before {
   content: " ";
   display: block;
   position: absolute;
@@ -314,6 +316,7 @@
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
 }
-.crt {
+.crt,
+button {
   animation: textShadow 1.6s infinite;
 }

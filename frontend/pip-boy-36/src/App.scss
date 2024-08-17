@@ -4,6 +4,12 @@ $endRect: 130%;
 $fontGreen: #09a209;
 $lineGreen: #1c9512;
 
+$screenWidth: 893px;
+
+//-----------------------------------------------------------
+// General Styles
+//-----------------------------------------------------------
+
 a {
   color: $fontGreen;
   text-decoration: none;
@@ -11,6 +17,20 @@ a {
 
 ul {
   list-style: none;
+}
+
+button {
+  background: transparent;
+  color: $fontGreen;
+  font-size: 20px;
+  border: transparent;
+  padding: 0px;
+  z-index: 1000;
+}
+
+button:hover {
+  background-color: rgba(16, 134, 26, 0.336);
+  cursor: pointer;
 }
 
 nav {
@@ -59,28 +79,31 @@ nav > ul {
   }
 }
 
-#pipIcon {
-  mask-size: 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  width: 450px;
-  height: 457px;
-  background-color: $lineGreen;
-  background-color: rgb(59, 189, 22);
-  filter: blur(400px);
+//-----------------------------------------------------------
+// Header Styles
+//-----------------------------------------------------------
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 25px;
+  box-sizing: border-box;
 }
+
+.header-title {
+  color: $fontGreen;
+}
+
+//-----------------------------------------------------------
+// Navbar Styles
+//-----------------------------------------------------------
 
 .outlet {
   height: 550px;
-  //width: 94%;
-  width: 893px;
-  padding-top: 28px;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
+.pipboy-screen {
+  width: $screenWidth;
 }
 
 .title {
@@ -101,8 +124,6 @@ nav > ul {
 
 .navbar-container {
   height: 40px;
-  //width: 94%;
-  width: 893px;
   border: solid 4px;
   border-image: linear-gradient(to top, $lineGreen, transparent) 1;
   position: relative;
@@ -115,15 +136,23 @@ nav > ul {
 }
 
 .navbar li {
-  background-image: linear-gradient(to bottom, rgb(12, 36, 15), rgb(12, 26, 9));
+  background-image: linear-gradient(to bottom, rgb(9, 30, 12), rgb(11, 21, 9));
   padding: 5px;
   margin-bottom: -5px;
 }
+
+//-----------------------------------------------------------
+// Stat Styles
+//-----------------------------------------------------------
 
 .stats-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.stats {
+  position: relative;
 }
 
 .pipboy {
@@ -148,9 +177,9 @@ nav > ul {
   height: 450px;
 }
 
-.stats {
-  position: relative;
-}
+//-----------------------------------------------------------
+// Scroll List Styles
+//-----------------------------------------------------------
 
 .list {
   height: 400px;
@@ -186,4 +215,25 @@ nav > ul {
 
 .description p {
   font-size: 20px;
+}
+
+//-----------------------------------------------------------
+// Deprecated Styles
+//-----------------------------------------------------------
+
+#pipIcon {
+  mask-size: 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  width: 450px;
+  height: 457px;
+  background-color: $lineGreen;
+  background-color: rgb(59, 189, 22);
+  filter: blur(400px);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
 }
