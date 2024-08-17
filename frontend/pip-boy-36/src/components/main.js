@@ -5,14 +5,10 @@ import Inventory from "./inventory";
 import Quests from "./quests";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import axios from "axios";
-
-const baseURL = "http://localhost:4001";
 
 let socket;
 
 function Main({ self, logMeOut }) {
-  const [error, setError] = useState(null);
   const [limbsHurt, setLimbsHurt] = useState({
     head: true,
     torso: false,

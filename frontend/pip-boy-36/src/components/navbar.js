@@ -1,7 +1,4 @@
 import { Outlet, Link } from "react-router-dom";
-import axios from "axios";
-
-var baseURL = "http://localhost/api";
 
 const Navbar = ({ self, logMeOut }) => {
   return (
@@ -13,7 +10,7 @@ const Navbar = ({ self, logMeOut }) => {
               {"[ "}Logout{" ]"}
             </span>
           </button>
-          <div className="header-title">Name</div>
+          <div className="header-title">{self.name}</div>
         </div>
         <div className="outlet">
           <Outlet />

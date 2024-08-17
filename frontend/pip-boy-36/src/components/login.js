@@ -10,17 +10,21 @@ function Login({ logMeIn }) {
   const [errorMsg, setErrorMessage] = useState("");
 
   function handleChange(event) {
-    console.log("change!!");
+    //console.log("change!!");
     setName(event.target.value);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    console.log(`Submit name:  ${name}`);
+    //console.log(`Submit name:  ${name}`);
 
-    logMeIn(event);
-
-    console.log("Oh boy");
+    if (await logMeIn(event, name)) {
+      setName("");
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Unable to Login");
+    }
+    //console.log("Oh boy");
   }
 
   return (

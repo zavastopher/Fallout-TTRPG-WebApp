@@ -4,6 +4,9 @@ import Main from "./components/main";
 import useToken from "./components/useToken";
 import Login from "./components/login";
 import { useState } from "react";
+import axios from "axios";
+
+const baseURL = "http://localhost/api";
 
 /**
  * Login stuff should be here!
@@ -14,32 +17,31 @@ function App() {
   //const { token, removeToken, setToken } = useToken();
   const [self, setSelf] = useState(null);
 
-  function logMeIn(event) {
-    axios
-      .post(`${baseURL}/login`, {
-        playername: name,
-      })
-      .then((response) => {
-        console.log(response.data);
-        //setToken(response.data.access_token);
-        setErrorMessage("");
-
-        getSelf();
-      })
-      .catch((error) => {
-        if (error.response) {
-          //console.log(error.response);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else {
-          console.log("Didn't get a response");
-        }
-        setErrorMessage("Unable to Login");
-      });
-
-    setName("");
-
+  async function logMeIn(event, name) {
     event.preventDefault();
+
+    try {
+      return await axios
+        .post(`${baseURL}/login`, {
+          playername: name,
+        })
+        .then((response) => {
+          console.log(response.data);
+          getSelf();
+        });
+    } catch (error) {
+      if (error.response) {
+        //console.log(error.response);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else {
+        console.log("Didn't get a response");
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
   function logMeOut() {
@@ -47,7 +49,7 @@ function App() {
       .post(`${baseURL}/logout`, {})
       .then((response) => {
         console.log(response.data);
-        setSelf({});
+        setSelf(null);
       })
       .catch((error) => {
         console.log(error);
