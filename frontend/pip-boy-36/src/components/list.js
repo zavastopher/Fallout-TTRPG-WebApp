@@ -67,17 +67,21 @@ function List({ items, selected, setSelected }) {
 
   return (
     <ul id="list" className="list test">
-      {items.map((item) => (
-        <ListItem
-          item={item}
-          itemIndex={items.indexOf(item)}
-          clickEvent={() => handleListClick(items.indexOf(item))}
-          key={item.id}
-          currentItem={selected}
-        >
-          {" "}
-        </ListItem>
-      ))}
+      {items !== null && items.length > 0 ? (
+        items.map((item) => (
+          <ListItem
+            item={item}
+            itemIndex={items.indexOf(item)}
+            clickEvent={() => handleListClick(items.indexOf(item))}
+            key={item.id}
+            currentItem={selected}
+          >
+            {" "}
+          </ListItem>
+        ))
+      ) : (
+        <div>No Items</div>
+      )}
     </ul>
   );
 }

@@ -1,10 +1,21 @@
 import Title from "./title";
 import Description from "./description";
 import List from "./list";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const baseURL = "http://localhost/api";
 
 function Inventory() {
   const [selected, setSelected] = useState(0);
+  const location = useLocation();
+  const { self } = location.state;
+  const [inventory, setInventory] = useState(null);
+
+  useEffect(() => {
+    axios.get(`${baseURL}/players/quests`, {}).then((response) => {
+      setInventory(response.data);
+    });
+  }, []);
 
   const inventoryItems = [
     {
@@ -81,15 +92,12 @@ function Inventory() {
       <Title title={"INVENTORY"}></Title>
       <div id="inventory" className="list-container">
         <List
-          items={inventoryItems}
+          items={inventory}
           selected={selected}
           setSelected={setSelected}
         ></List>
         <div className="inventory-description description">
-          <Description
-            items={inventoryItems}
-            currentItem={selected}
-          ></Description>
+          <Description items={inventory} currentItem={selected}></Description>
         </div>
       </div>
     </div>

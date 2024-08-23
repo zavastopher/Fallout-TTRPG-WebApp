@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Title from "./title";
 import Description from "./description";
 import List from "./list";
 
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+
+const baseURL = "http://localhost/api";
+
 function Quests() {
   const [selected, setSelected] = useState(0);
+  const location = useLocation();
+  const { self } = location.state;
+  const [quests, setQuests] = useState(null);
+
+  useEffect(() => {
+    axios.get(`${baseURL}/players/quests`, {}).then((response) => {
+      setQuests(response.data);
+    });
+  }, []);
+
   const questItems = [
     {
       id: 1,
@@ -69,12 +84,12 @@ function Quests() {
       <Title title={"QUESTS"}></Title>
       <div id="quests" className="list-container">
         <List
-          items={questItems}
+          items={quests}
           selected={selected}
           setSelected={setSelected}
         ></List>
         <div className="quest-description description">
-          <Description items={questItems} currentItem={selected}></Description>
+          <Description items={quests} currentItem={selected}></Description>
         </div>
       </div>
     </div>
