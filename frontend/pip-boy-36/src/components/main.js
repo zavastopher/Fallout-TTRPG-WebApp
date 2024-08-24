@@ -1,28 +1,34 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./navbar";
 import Stats from "./stats";
 import Inventory from "./inventory";
 import Quests from "./quests";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import axios from "axios";
 
 let socket;
 
 function Main({ self, refreshSelf, logMeOut }) {
-  const limbsHurt = useState({
-    head: false,
-    torso: false,
-    leftArm: false,
-    rightArm: false,
-    leftLeg: false,
-    rightLeg: false,
-  });
-
+  const [limbsHurt, setLimbsHurt] = useState(null);
+  
   //function updateLimb(limbs, status) {}
 
   useEffect(() => {
     // Get Limbs
-
+    if (self) {
+      axios.get(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {}).then((response) => {
+        console.log(response.data);
+        console.log(response.data[self.name]);
+  
+        var hurtLimbs = response.data[self.name];
+        setLimbsHurt(hurtLimbs);
+        console.log("pause");
+      });
+    }
+  }, [])
+  
+  useEffect(() => {
     // create websocket/connect
     socket = io("localhost:4001");
 
