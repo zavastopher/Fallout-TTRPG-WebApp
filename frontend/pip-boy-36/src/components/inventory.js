@@ -3,19 +3,25 @@ import Description from "./description";
 import List from "./list";
 import { useEffect, useState } from "react";
 
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+
 const baseURL = "http://localhost/api";
 
 function Inventory() {
-  const [selected, setSelected] = useState(0);
   const location = useLocation();
   const { self } = location.state;
+  const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
 
   useEffect(() => {
-    axios.get(`${baseURL}/players/quests`, {}).then((response) => {
-      setInventory(response.data);
-    });
-  }, []);
+    console.log(location.state);
+    if (self) {
+      axios.get(`${baseURL}/players/item/${self.id}`, {}).then((response) => {
+        setInventory(response.data);
+      });
+    }
+  }, [self]);
 
   const inventoryItems = [
     {

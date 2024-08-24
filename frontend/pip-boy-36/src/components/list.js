@@ -80,7 +80,7 @@ function List({ items, selected, setSelected }) {
           </ListItem>
         ))
       ) : (
-        <div>No Items</div>
+        <div></div>
       )}
     </ul>
   );

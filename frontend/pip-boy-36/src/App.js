@@ -40,8 +40,6 @@ function App() {
 
       return false;
     }
-
-    return true;
   }
 
   function logMeOut() {

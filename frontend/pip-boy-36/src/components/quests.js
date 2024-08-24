@@ -12,10 +12,12 @@ const baseURL = "http://localhost/api";
 function Quests() {
   const [selected, setSelected] = useState(0);
   const location = useLocation();
-  const { self } = location.state;
+  //const { self } = location.state;
   const [quests, setQuests] = useState(null);
 
   useEffect(() => {
+    console.log(location.state);
+
     axios.get(`${baseURL}/players/quests`, {}).then((response) => {
       setQuests(response.data);
     });

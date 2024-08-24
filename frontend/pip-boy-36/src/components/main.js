@@ -52,7 +52,7 @@ function Main({ self, logMeOut }) {
         <Route path="/" element={<Navbar self={self} logMeOut={logMeOut} />}>
           <Route index element={<Stats hp={self.hp} limbsHurt={limbsHurt} />} />
           <Route path="inventory" element={<Inventory />} />
-          <Route path="questss" element={<Quests />} />
+          <Route path="quests" element={<Quests />} />
         </Route>
       </Routes>
     </BrowserRouter>

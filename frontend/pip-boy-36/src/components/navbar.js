@@ -22,10 +22,14 @@ const Navbar = ({ self, logMeOut }) => {
                 <Link to="/">Stats</Link>
               </li>
               <li>
-                <Link to="/inventory">Inventory</Link>
+                <Link to="/inventory" state={{ self: self }}>
+                  Inventory
+                </Link>
               </li>
               <li>
-                <Link to="/quests">Quests</Link>
+                <Link to="/quests" state={{ self: self }}>
+                  Quests
+                </Link>
               </li>
             </ul>
           </nav>

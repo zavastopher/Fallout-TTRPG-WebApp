@@ -1,5 +1,5 @@
 function Description({ items, currentItem }) {
-  return !items && items.length > 0 ? (
+  return items !== null && items.length > 0 ? (
     <div>
       <h3>{items[currentItem].name}</h3>
       <p>{items[currentItem].description}</p>
@@ -9,7 +9,7 @@ function Description({ items, currentItem }) {
       </p>
     </div>
   ) : (
-    <div>No description.</div>
+    <div>No Items</div>
   );
 }
 

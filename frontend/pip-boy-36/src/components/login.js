@@ -18,10 +18,11 @@ function Login({ logMeIn }) {
     event.preventDefault();
     //console.log(`Submit name:  ${name}`);
 
-    if (await logMeIn(event, name)) {
+    try {
+      await logMeIn(event, name);
       setName("");
       setErrorMessage("");
-    } else {
+    } catch (error) {
       setErrorMessage("Unable to Login");
     }
     //console.log("Oh boy");
