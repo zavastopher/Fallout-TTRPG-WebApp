@@ -24,7 +24,7 @@ function List({ items, selected, setSelected }) {
         list.scrollTop(scrollTop + elHeight);
       }
     },
-    [items.length, setSelected]
+    [items, setSelected]
   );
 
   const handleListKeyDown = useCallback(
@@ -70,7 +70,7 @@ function List({ items, selected, setSelected }) {
 
   return (
     <ul id="list" className="list test">
-      {items !== null && items.length > 0 ? (
+      {items !== null && items !== undefined &&  items.length > 0 ? (
         items.map((item) => (
           <ListItem
             item={item}
