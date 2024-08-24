@@ -7,8 +7,6 @@ import List from "./list";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-const baseURL = "http://localhost/api";
-
 function Quests() {
   const [selected, setSelected] = useState(0);
   const location = useLocation();
@@ -18,9 +16,11 @@ function Quests() {
   useEffect(() => {
     console.log(location.state);
 
-    axios.get(`${baseURL}/players/quests`, {}).then((response) => {
-      setQuests(response.data);
-    });
+    axios
+      .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
+      .then((response) => {
+        setQuests(response.data);
+      });
   }, []);
 
   const questItems = [

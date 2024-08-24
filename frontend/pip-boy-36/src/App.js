@@ -1,12 +1,9 @@
 import "./App.css";
 import "./App.scss";
 import Main from "./components/main";
-import useToken from "./components/useToken";
 import Login from "./components/login";
 import { useState } from "react";
 import axios from "axios";
-
-const baseURL = "http://localhost/api";
 
 /**
  * Login stuff should be here!
@@ -22,7 +19,7 @@ function App() {
 
     try {
       return await axios
-        .post(`${baseURL}/login`, {
+        .post(`${process.env.REACT_APP_BASEURL}/login`, {
           playername: name,
         })
         .then((response) => {
@@ -44,7 +41,7 @@ function App() {
 
   function logMeOut() {
     axios
-      .post(`${baseURL}/logout`, {})
+      .post(`${process.env.REACT_APP_BASEURL}/logout`, {})
       .then((response) => {
         console.log(response.data);
         setSelf(null);
@@ -56,7 +53,7 @@ function App() {
 
   function getSelf() {
     axios
-      .get(`${baseURL}/self`, {
+      .get(`${process.env.REACT_APP_BASEURL}/self`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -77,7 +74,7 @@ function App() {
           <Login logMeIn={logMeIn} />
         ) : (
           <>
-            <Main self={self} logMeOut={logMeOut}></Main>
+            <Main self={self} refreshSelf={getSelf} logMeOut={logMeOut}></Main>
           </>
         )}
       </header>

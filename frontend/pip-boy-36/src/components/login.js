@@ -1,8 +1,4 @@
 import { useState } from "react";
-import Navbar from "./navbar";
-import axios from "axios";
-
-var baseURL = "http://localhost/api";
 
 function Login({ logMeIn }) {
   const [name, setName] = useState("");
@@ -10,13 +6,11 @@ function Login({ logMeIn }) {
   const [errorMsg, setErrorMessage] = useState("");
 
   function handleChange(event) {
-    //console.log("change!!");
     setName(event.target.value);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    //console.log(`Submit name:  ${name}`);
 
     try {
       await logMeIn(event, name);
@@ -25,7 +19,6 @@ function Login({ logMeIn }) {
     } catch (error) {
       setErrorMessage("Unable to Login");
     }
-    //console.log("Oh boy");
   }
 
   return (

@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 
 let socket;
 
-function Main({ self, logMeOut }) {
+function Main({ self, refreshSelf, logMeOut }) {
   const [limbsHurt, setLimbsHurt] = useState({
     head: true,
     torso: false,
@@ -33,7 +33,8 @@ function Main({ self, logMeOut }) {
     });
 
     socket.on("hp", (hp) => {
-      setHP(hp);
+      //setHP(hp); get self
+      refreshSelf();
     });
 
     socket.on("limb", (limb, status) => {

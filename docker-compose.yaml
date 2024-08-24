@@ -27,6 +27,8 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+    env_file:
+      - ./frontend/.env
 
   nginx:
     build:

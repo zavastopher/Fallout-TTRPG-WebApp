@@ -4,25 +4,28 @@ import { useCallback, useEffect } from "react";
 import ListItem from "./listItem";
 
 function List({ items, selected, setSelected }) {
-  function select(itemIndex) {
-    if (itemIndex < 0 || itemIndex >= items.length) return;
+  const select = useCallback(
+    (itemIndex) => {
+      if (itemIndex < 0 || itemIndex >= items.length) return;
 
-    setSelected(itemIndex);
+      setSelected(itemIndex);
 
-    var element = $(`#item${itemIndex}`);
-    var list = $(".list");
+      var element = $(`#item${itemIndex}`);
+      var list = $(".list");
 
-    var elHeight = element.outerHeight();
-    var scrollTop = list.scrollTop();
-    var viewport = scrollTop + list.height();
-    var elOffset = elHeight * itemIndex;
+      var elHeight = element.outerHeight();
+      var scrollTop = list.scrollTop();
+      var viewport = scrollTop + list.height();
+      var elOffset = elHeight * itemIndex;
 
-    if (elOffset < scrollTop) {
-      list.scrollTop(elOffset);
-    } else if (elOffset + elHeight > viewport) {
-      list.scrollTop(scrollTop + elHeight);
-    }
-  }
+      if (elOffset < scrollTop) {
+        list.scrollTop(elOffset);
+      } else if (elOffset + elHeight > viewport) {
+        list.scrollTop(scrollTop + elHeight);
+      }
+    },
+    [items.length, setSelected]
+  );
 
   const handleListKeyDown = useCallback(
     (event) => {
