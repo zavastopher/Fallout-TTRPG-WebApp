@@ -5,6 +5,7 @@ $fontGreen: #09a209;
 $lineGreen: #1c9512;
 
 $screenWidth: 893px;
+$contextButtonWidth: 50px;
 
 //-----------------------------------------------------------
 // General Styles
@@ -80,6 +81,32 @@ nav > ul {
 }
 
 //-----------------------------------------------------------
+// Context Styles
+//-----------------------------------------------------------
+
+.context-toggle-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: $contextButtonWidth;
+  height: $contextButtonWidth;
+}
+
+.context-menu {
+  width: 30vw;
+  height: 50vh;
+  background: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  right: $contextButtonWidth;
+}
+
+.context-open .context-menu {
+}
+
+//-----------------------------------------------------------
 // Header Styles
 //-----------------------------------------------------------
 
@@ -107,6 +134,7 @@ nav > ul {
 //-----------------------------------------------------------
 
 .outlet {
+  position: relative;
   height: 550px;
 }
 

@@ -2,7 +2,7 @@ import "./App.css";
 import "./App.scss";
 import Main from "./components/main";
 import Login from "./components/login";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 /**
@@ -13,6 +13,11 @@ import axios from "axios";
 function App() {
   //const { token, removeToken, setToken } = useToken();
   const [self, setSelf] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getSelf();
+  }, []);
 
   async function logMeIn(event, name) {
     event.preventDefault();
@@ -52,6 +57,8 @@ function App() {
   }
 
   function getSelf() {
+    setLoading(true);
+    var selfHolder = null;
     axios
       .get(`${process.env.REACT_APP_BASEURL}/self`, {
         headers: {
@@ -60,17 +67,25 @@ function App() {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data);
-        setSelf(response.data);
+        console.log("logged in");
+        selfHolder = response.data;
       })
-      .catch(() => {});
+      .catch(() => {
+        console.log("You are not logged in!");
+      })
+      .finally(() => {
+        setLoading(false);
+        setSelf(selfHolder);
+      });
   }
 
   return (
     <div className="App crt crt-scanlines">
       <div id="scan"></div>
       <header className="App-header">
-        {!self && self !== "" && self !== undefined ? (
+        {loading ? (
+          <div className="loading"> Loading</div>
+        ) : !self && self !== "" && self !== undefined ? (
           <Login logMeIn={logMeIn} />
         ) : (
           <>

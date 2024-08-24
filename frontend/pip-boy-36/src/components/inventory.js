@@ -5,20 +5,29 @@ import { useEffect, useState } from "react";
 
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import ContextMenu from "./contextMenu";
 
 function Inventory() {
   const location = useLocation();
-  const { self } = location.state;
+  //const [self, setSelf] = useState(null);
+  //if (location.state) {
+  //  const { self } = location.state;
+  //}
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
 
   useEffect(() => {
-    if (self) {
-      axios.get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {}).then((response) => {
-        setInventory(response.data);
-      });
+    if (location.state && location.state.self) {
+      axios
+        .get(
+          `${process.env.REACT_APP_BASEURL}/players/item/${location.state.self.id}`,
+          {}
+        )
+        .then((response) => {
+          setInventory(response.data);
+        });
     }
-  }, [self]);
+  }, []);
 
   //const inventoryItems = [
   //  {
@@ -107,6 +116,7 @@ function Inventory() {
           ></Description>
         </div>
       </div>
+      <ContextMenu></ContextMenu>
     </div>
   );
 }
