@@ -9,8 +9,8 @@ import { io } from "socket.io-client";
 let socket;
 
 function Main({ self, refreshSelf, logMeOut }) {
-  const [limbsHurt, setLimbsHurt] = useState({
-    head: true,
+  const limbsHurt = useState({
+    head: false,
     torso: false,
     leftArm: false,
     rightArm: false,
@@ -18,9 +18,11 @@ function Main({ self, refreshSelf, logMeOut }) {
     rightLeg: false,
   });
 
-  function updateLimb(limbs, status) {}
+  //function updateLimb(limbs, status) {}
 
   useEffect(() => {
+    // Get Limbs
+
     // create websocket/connect
     socket = io("localhost:4001");
 
@@ -33,7 +35,6 @@ function Main({ self, refreshSelf, logMeOut }) {
     });
 
     socket.on("hp", (hp) => {
-      //setHP(hp); get self
       refreshSelf();
     });
 
@@ -45,7 +46,7 @@ function Main({ self, refreshSelf, logMeOut }) {
     return () => {
       socket.disconnect();
     };
-  }, [limbsHurt]);
+  }, [limbsHurt, refreshSelf]);
 
   return (
     <BrowserRouter>

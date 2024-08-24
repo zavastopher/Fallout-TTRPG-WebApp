@@ -1,9 +1,5 @@
-import { useEffect } from "react";
 import Limb from "./limb";
 import Title from "./title";
-import axios from "axios";
-
-//import { useState } from "react";
 
 function Stats({ hp, limbsHurt }) {
   const Face = "./pipboy/fullFace.png";

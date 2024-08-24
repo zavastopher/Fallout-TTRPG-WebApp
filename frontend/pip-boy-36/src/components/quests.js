@@ -4,18 +4,13 @@ import Title from "./title";
 import Description from "./description";
 import List from "./list";
 
-import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 function Quests() {
   const [selected, setSelected] = useState(0);
-  const location = useLocation();
-  //const { self } = location.state;
   const [quests, setQuests] = useState(null);
 
   useEffect(() => {
-    console.log(location.state);
-
     axios
       .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
       .then((response) => {
@@ -23,63 +18,63 @@ function Quests() {
       });
   }, []);
 
-  const questItems = [
-    {
-      id: 1,
-      name: "Quest 1",
-      description: "this is a thing",
-    },
-    {
-      id: 2,
-      name: "Quest 2",
-      description: "this is a second thing",
-    },
-    {
-      id: 3,
-      name: "Quest 3",
-      description: "this is a third thing",
-    },
-    {
-      id: 4,
-      name: "Quest 4",
-      description: "this is a fourth thing",
-    },
-    {
-      id: 5,
-      name: "Quest 5",
-      description: "this is a fifth thing",
-    },
-    {
-      id: 6,
-      name: "Quest 6",
-      description: "this is a sixth thing",
-    },
-    {
-      id: 7,
-      name: "Quest 7",
-      description: "this is a seventh thing",
-    },
-    {
-      id: 8,
-      name: "Quest 8",
-      description: "this is a eighth thing",
-    },
-    {
-      id: 9,
-      name: "Quest 9",
-      description: "this is a ninth thing",
-    },
-    {
-      id: 10,
-      name: "Quest 10",
-      description: "this is a tenth thing",
-    },
-    {
-      id: 11,
-      name: "Quest 11",
-      description: "this is a eleventh thing",
-    },
-  ];
+  //const questItems = [
+  //  {
+  //    id: 1,
+  //    name: "Quest 1",
+  //    description: "this is a thing",
+  //  },
+  //  {
+  //    id: 2,
+  //    name: "Quest 2",
+  //    description: "this is a second thing",
+  //  },
+  //  {
+  //    id: 3,
+  //    name: "Quest 3",
+  //    description: "this is a third thing",
+  //  },
+  //  {
+  //    id: 4,
+  //    name: "Quest 4",
+  //    description: "this is a fourth thing",
+  //  },
+  //  {
+  //    id: 5,
+  //    name: "Quest 5",
+  //    description: "this is a fifth thing",
+  //  },
+  //  {
+  //    id: 6,
+  //    name: "Quest 6",
+  //    description: "this is a sixth thing",
+  //  },
+  //  {
+  //    id: 7,
+  //    name: "Quest 7",
+  //    description: "this is a seventh thing",
+  //  },
+  //  {
+  //    id: 8,
+  //    name: "Quest 8",
+  //    description: "this is a eighth thing",
+  //  },
+  //  {
+  //    id: 9,
+  //    name: "Quest 9",
+  //    description: "this is a ninth thing",
+  //  },
+  //  {
+  //    id: 10,
+  //    name: "Quest 10",
+  //    description: "this is a tenth thing",
+  //  },
+  //  {
+  //    id: 11,
+  //    name: "Quest 11",
+  //    description: "this is a eleventh thing",
+  //  },
+  //];
 
   return (
     <div>
