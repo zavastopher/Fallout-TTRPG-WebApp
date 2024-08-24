@@ -56,7 +56,7 @@ CREATE TABLE person_item(
 
 CREATE TABLE person_limb( 
 	personlimbid	INTEGER PRIMARY KEY AUTOINCREMENT,
-	status 			INTEGER DEFAULT 1, 
+	status 			INTEGER DEFAULT 0, 
 	limbowner 		INTEGER, 
 	limbtype		INTEGER,
 	FOREIGN KEY (limbowner) REFERENCES person(personid)

@@ -27,6 +27,7 @@ button {
   border: transparent;
   padding: 0px;
   z-index: 1000;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 button:hover {
@@ -127,6 +128,10 @@ nav > ul {
 
 .login-container {
   z-index: 1000;
+}
+
+.logout span {
+  white-space: preserve-spaces;
 }
 
 //-----------------------------------------------------------

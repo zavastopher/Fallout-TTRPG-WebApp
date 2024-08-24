@@ -7,7 +7,7 @@ const Navbar = ({ self, logMeOut }) => {
         <div className="header-container">
           <button type="button" className="logout" onClick={logMeOut}>
             <span>
-              {"[ "}Logout{" ]"}
+              {"[   "}Logout{"   ]"}
             </span>
           </button>
           <div className="header-title">{self.name}</div>
