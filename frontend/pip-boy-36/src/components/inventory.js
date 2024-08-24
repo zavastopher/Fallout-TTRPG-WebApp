@@ -103,7 +103,11 @@ function Inventory() {
           setSelected={setSelected}
         ></List>
         <div className="inventory-description description">
-          <Description items={inventory} currentItem={selected}></Description>
+          <Description
+            items={inventory}
+            currentItem={selected}
+            currentList="Inventory"
+          ></Description>
         </div>
       </div>
     </div>

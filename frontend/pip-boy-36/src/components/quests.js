@@ -91,7 +91,11 @@ function Quests() {
           setSelected={setSelected}
         ></List>
         <div className="quest-description description">
-          <Description items={quests} currentItem={selected}></Description>
+          <Description
+            items={quests}
+            currentItem={selected}
+            currentList="Quest"
+          ></Description>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-function Description({ items, currentItem }) {
+function Description({ items, currentItem, currentList }) {
   return items !== null && items.length > 0 ? (
     <div>
       <h3>{items[currentItem].name}</h3>
@@ -9,7 +9,7 @@ function Description({ items, currentItem }) {
       </p>
     </div>
   ) : (
-    <div>No Items</div>
+    <div>{`No ${currentList} Items`}</div>
   );
 }
 

@@ -7,36 +7,57 @@
 
 ## Rest API
 
-| Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output(Response)                                                                                                                    | Completed |
+### Player Endpoints
+
+| Function name           | Relative Url               | Description | Input (Request)                               | Output(Response)                                                   | Completed |
+| ----------------------- | -------------------------- | ----------- | --------------------------------------------- | ------------------------------------------------------------------ | --------- |
+| login_user(string name) | POST /login                | For players | String name of player                         | Success/Failure                                                    | Yes       |
+| logout_user()           | POST /logout               |             | N/A                                           | Success/Failure                                                    | Yes       |
+| GetSelf()               | GET /self                  |             | N/A                                           | [Players object](#self-response)                                   | Yes       |
+| GetPlayers()            | GET /players               | For DM      | N/A                                           | [Array of players objects](#player-get-response)                   | No        |
+| UpdateHP(int playerid)  | PUT /players/hp/{playerid} |             | [New hp of player](#player-hp-update-request) | [Updated player information w/ new hp](#player-hp-update-response) | No        |
+
+### Inventory Stock Endpoints
+
+| Function name | Relative Url           | Description | Input (Request)                                         | Output (Response)                               | Completed |
+| ------------- | ---------------------- | ----------- | ------------------------------------------------------- | ----------------------------------------------- | --------- |
+| GetAllItems() | GET /items             |             | N/A                                                     | [Array of items](#item-get-response)            | No        |
+| AddItem()     | POST /items            |             | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | No        |
+| UpdateItem()  | PUT /items/{itemid}    |             | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No        |
+| DeleteItem () | DELETE /items/{itemid} |             | N/A                                                     | [Array of items](#item-delete-response)         | No        |
+
+### Player Inventory Endpoints
+
+| Function name                             | Relative Url                    | Description | Input (Request)                                                   | Output (Response)                                                                                                                   | Completed |
 | ----------------------------------------- | ------------------------------- | ----------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| PlayerLogin(string name)                  | POST /login                     | For players | String name of player                                             | Success/Failure                                                                                                                     | Yes       |
-| Logout()                                  | POST /logout                    |             | N/A                                                               | Success/Failure                                                                                                                     | Yes       |
-| GetSelf()                                 | GET /self                       | For DM      | N/A                                                               | [Players object](#self-response)                                                                                                    | Yes       |
-| GetPlayers()                              | GET /players                    | For DM      | N/A                                                               | [Array of players objects](#player-get-response)                                                                                    | No        |
-| UpdateHP(int playerid)                    | PUT /players/hp/{playerid}      |             | [New hp of player](#player-hp-update-request)                     | [Updated player information w/ new hp](#player-hp-update-response)                                                                  | No        |
 | GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}    |             | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | No        |
 | AddItemToPlayer(int playerid)             | POST /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         | No        |
 | UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}    |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | No        |
 | RemoveItemfromPlayer(int playerid)        | DELETE /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | No        |
 
-| Function name | Relative Url  | Description | Input (Request)                                         | Output (Response)                               | Completed |
-| ------------- | ------------- | ----------- | ------------------------------------------------------- | ----------------------------------------------- | --------- |
-| GetAllItems() | GET /items    |             | N/A                                                     | [Array of items](#item-get-response)            | No        |
-| AddItem()     | POST /items   |             | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | No        |
-| UpdateItem()  | PUT /items    |             | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No        |
-| DeleteItem () | DELETE /items |             | N/A                                                     | [Array of items](#item-delete-response)         | No        |
+### Quest Endpoints
 
-| Function name                                         | Relative Url  | Description | Input (Request) | Output (Response) | Completed |
-| ----------------------------------------------------- | ------------- | ----------- | --------------- | ----------------- | --------- |
-| GetAllQuests()                                        | GET /quests   |             | N/A             | Array of quests   | No        |
-| CreateQuest(Quest quest)                              | POST /quests  |             |                 |                   | No        |
-| ToggleQuestVisibility(int questId)                    | PATCH /quests |             |                 |                   | No        |
-| UpdateQuestStatus(int questId, enum completionStatus) | PUT /quests   |             |                 |                   | No        |
+| Function name                  | Relative Url             | Description | Input (Request)                                      | Output (Response)                                                      | Completed |
+| ------------------------------ | ------------------------ | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
+| GetAllQuests()                 | GET /quests              |             | N/A                                                  | [Array of quests](#quest-get-response)                                 | No        |
+| CreateQuest()                  | POST /quests             |             | [A list of new quest items](#quest-addition-request) | [Updated array of all quests](#quest-addition-response)                | No        |
+| UpdateQuestStatus(int questId) | PUT /quests/{questid}    |             | [Quest information to update](#quest-update-request) | [Quest's updated information](#quest-update-response)                  | No        |
+| RemoveQuest(int questId)       | DELETE /quests/{questid} |             |                                                      | [Updated list of quests and the deleted quest](#quest-delete-response) | No        |
 
-| Function name            | Relative Url | Description | Input (Request)                 | Output (Response) | Completed |
-| ------------------------ | ------------ | ----------- | ------------------------------- | ----------------- | --------- |
-| GetLimbsByPlayer(int id) | GET /limbs   |             | Player id, -1 if player request | Array of limbs    | No        |
-| UpdateLimb(int id)       | PATCH /limbs |             | limb id, player token           | N/A               | No        |
+### Player Quest Endpoints
+
+| Function name                       | Relative Url                     | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed |
+| ----------------------------------- | -------------------------------- | ----------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------- |
+| AssignQuestToPlayers(int questid)   | PATCH /players/quests/{questid}  |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No        |
+| UnassignQuestToPlayers(int questid) | DELETE /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No        |
+
+### Player Limb Endpoints
+
+| Function name                  | Relative Url                  | Description | Input (Request)                                 | Output (Response)                                                        | Completed |
+| ------------------------------ | ----------------------------- | ----------- | ----------------------------------------------- | ------------------------------------------------------------------------ | --------- |
+| GetAllLimbs()                  | GET /limbs                    |             | N/A                                             | [Object of all limbs assigned to each available player](#limbs-response) | No        |
+| GetLimbsByPlayer(int playerid) | GET /players/limbs/{playerid} |             |                                                 | [Array of limbs](#limbs-player-response)                                 | No        |
+| UpdateLimb(int playerid)       | PUT /players/limbs/{playerid} |             | [limb id and new status](#limbs-update-request) | [Updated limb record](#limbs-update-response)                            | No        |
 
 ## Data Formats
 
@@ -103,11 +124,14 @@
 
 #### Item Get Response
 
+[(Back to Top)](#rest-api)
+
 ```
 [
   {
     "itemid": 1,
-    "name": "One"
+    "name": "One",
+    "description": "One Description"
   },
 ]
 ```
@@ -119,8 +143,8 @@
 ```
 {
   "items": [
-    "Two",
-    "Three"
+    ["Two", "Two Description"],
+    ["Three", "Three Description"]
   ]
 }
 ```
@@ -133,15 +157,18 @@
 [
     {
         "itemid": 1,
-        "name": "One"
+        "name": "One",
+        "description": "One Description",
     },
     {
         "itemid": 2,
-        "name": "Two"
+        "name": "Two",
+        "description": "Two Description",
     },
     {
         "itemid": 3,
-        "name": "Three"
+        "name": "Three",
+        "description": "Three Description",
     }
 ]
 ```
@@ -152,7 +179,9 @@
 
 ```
 {
-  "newname": "New Name"
+  "name": "New Name",
+  "description": "New One Description",
+
 }
 ```
 
@@ -163,21 +192,26 @@
 ```
 {
     "itemid": 1,
-    "name": "New Name"
+    "name": "New Name",
+    "description": "New One Description",
 }
 ```
 
 #### Item Delete Response
 
+[(Back to Top)](#rest-api)
+
 ```
 [
     {
         "itemid": 1,
-        "name": "One"
+        "name": "New Name",
+        "description": "New One Description",
     },
     {
         "itemid": 3,
-        "name": "Three"
+        "name": "Three",
+        "description": "Three Description",
     }
 ]
 ```
@@ -191,11 +225,13 @@
     {
         "itemid": 2,
         "name": "Item 2",
+        "description": "Item 2",
         "quantity": 2
     },
     {
         "itemid": 3,
         "name": "Item 3",
+        "description": "Item 3",
         "quantity": 3
     }
 ]
@@ -222,16 +258,19 @@
     {
         "itemid": 1,
         "name": "Item 1",
+        "description": "Item 1",
         "quantity": 1
     },
     {
         "itemid": 2,
         "name": "Item 2",
+        "description": "Item 2",
         "quantity": 2
     },
     {
         "itemid": 3,
         "name": "Item 3",
+        "description": "Item 3",
         "quantity": 3
     }
 ]
@@ -258,6 +297,7 @@ Returns entire new inventory
 {
     "itemid": 1,
     "name": "Item 1",
+    "description": "Item 1",
     "quantity": 10
 }
 ```
@@ -281,13 +321,30 @@ Returns entire new inventory
     {
         "itemid": 2,
         "name": "Item 2",
+        "description": "Item 2",
         "quantity": 2
     },
     {
         "itemid": 3,
         "name": "Item 3",
+        "description": "Item 3",
         "quantity": 3
     }
+]
+```
+
+#### Quest Get Response
+
+[(Back to Top)](#rest-api)
+
+```
+[
+  {
+    "questid": 1,
+    "name": "quest one",
+    "description": "One description",
+    "status": "incomplete"
+  }
 ]
 ```
 
@@ -299,15 +356,42 @@ Returns entire new inventory
 {
   "quests": [
     {
-      "name" : "quest one",
-      "description" : "description"
+      "name" : "quest two",
+      "description" : "Two description"
     },
     {
-      "name" : "quest two",
-      "description" : "description"
+      "name" : "quest three",
+      "description" : "Three description"
     }
   ]
 }
+```
+
+#### Quest Addition Response
+
+[(Back to Top)](#rest-api)
+
+```
+[
+  {
+    "questid": 1,
+    "name": "quest one",
+    "description": "One description",
+    "status": "incomplete"
+  },
+  {
+    "questid": 2,
+    "name": "quest two",
+    "description": "Two description",
+    "status": "incomplete"
+  },
+  {
+    "questid": 3,
+    "name": "quest three",
+    "description": "Three description",
+    "status": "incomplete"
+  },
+]
 ```
 
 #### Quest Update Request
@@ -322,15 +406,102 @@ Returns entire new inventory
 }
 ```
 
-#### Limbs Update Request
+#### Quest Update Response
 
 [(Back to Top)](#rest-api)
 
 ```
+
 {
-  "limbtype": 1,
-  "status": 0
+  "questid": 1,
+  "name": "new title",
+  "description": "new description",
+  "status": "success"
 }
+```
+
+#### Quest Delete Response
+
+[(Back to Top)](#rest-api)
+
+```
+[
+  {
+    "questid": 1,
+    "name": "quest one",
+    "description": "One description",
+    "status": "incomplete"
+  },
+  {
+    "questid": 3,
+    "name": "quest three",
+    "description": "Three description",
+    "status": "incomplete"
+  },
+]
+{
+  "deleted": {
+    "questid": 2,
+    "name": "quest two",
+    "description": "Two description",
+    "status": "incomplete"
+  },
+}
+
+```
+
+#### Player Quest Assign Request
+
+[(Back to Top)](#rest-api)
+
+```
+[1, 2, 3]
+```
+
+#### Player Quest Assign Response
+
+[(Back to Top)](#rest-api)
+
+```
+[
+  {
+    "assignee": "person1",
+    "quest": "quest one"
+  },
+  {
+    "assignee": "person2",
+    "quest": "quest one"
+  },
+  {
+    "assignee": "person3",
+    "quest": "quest one"
+  },
+]
+```
+
+#### Player Quest Unassign Request
+
+[(Back to Top)](#rest-api)
+
+```
+[2]
+```
+
+#### Player Quest Unassign Response
+
+[(Back to Top)](#rest-api)
+
+```
+[
+  {
+    "assignee": "person1",
+    "quest": "quest one"
+  },
+  {
+    "assignee": "person3",
+    "quest": "quest one"
+  },
+]
 ```
 
 #### Limbs From Database
@@ -394,6 +565,47 @@ Returns entire new inventory
     },
     ...
   }
+}
+```
+
+#### Limbs Player Response
+
+[(Back to Top)](#rest-api)
+
+```
+"player1": {
+  "head": {
+    "limbtype": 1,
+    "status": 0
+  },
+  "torso: {
+    "limbtype": 2,
+    "status": 1
+  },
+  ...
+}
+```
+
+#### Limbs Update Request
+
+[(Back to Top)](#rest-api)
+
+```
+{
+  "limbtype": 1,
+  "status": 1
+}
+```
+
+#### Limbs Update Response
+
+[(Back to Top)](#rest-api)
+
+```
+{
+  "name": "player1",
+  "limbname": 1,
+  "status": 1
 }
 ```
 

@@ -146,7 +146,7 @@ def AddItemToDatabase(itemtuples):
     cur = con.cursor()
     cur.execute("PRAGMA foreign_keys = ON;")
 
-    cur.executemany("INSERT OR IGNORE INTO item (name) VALUES (?);", itemtuples)
+    cur.executemany("INSERT OR IGNORE INTO item (name, description) VALUES (?);", itemtuples)
     data = cur.execute("SELECT * FROM item;")
     res = data.fetchall()
 
@@ -155,7 +155,7 @@ def AddItemToDatabase(itemtuples):
 
     return res
 
-def UpdateItemInDatabase(id, newname):
+def UpdateItemInDatabase(id, newname, newdescription):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -166,7 +166,7 @@ def UpdateItemInDatabase(id, newname):
     itemToUpdate = data.fetchone()
 
     if itemToUpdate:
-        cur.execute("UPDATE item SET name=? WHERE itemid=?;", (newname, id))
+        cur.execute("UPDATE item SET name=?, description=? WHERE itemid=?;", (newname, newdescription, id))
         data = cur.execute("SELECT * FROM item WHERE itemid=?;", (id,))
         res = data.fetchone()
         con.commit()

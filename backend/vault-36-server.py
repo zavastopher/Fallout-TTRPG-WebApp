@@ -217,7 +217,7 @@ def AddGetItemsRoute():
         try:
             data = request.get_json()
             items = data["items"]
-            itemtuples = [(name,) for name in items]
+            itemtuples = [(name, description) for name, description in items]
         except:
             return "Missing items", 400
 
@@ -241,9 +241,10 @@ def UpdateDeleteItemsRoute(itemid):
     # Update the name of an item
     if request.method == "PUT":
         data = request.get_json()
-        newname = data["newname"]
+        newname = data["name"]
+        newdescription = data["description"]
 
-        res = UpdateItemInDatabase(itemid, newname)
+        res = UpdateItemInDatabase(itemid, newname, newdescription)
 
         if not res:
             return f"Item with id {id} does not exist", 404
@@ -350,9 +351,9 @@ def UpdateDeleteQuestRoute(questid):
     # Update quest status
     if request.method == "PUT":
         data = request.get_json()
-        quests = data
+        quest = data
 
-        res = UpdateQuestInDatabase(questid, quests)
+        res = UpdateQuestInDatabase(questid, quest)
 
         if not res:
             return f"Error updating quest {questid}. Does it exist?", 400
@@ -366,21 +367,25 @@ def UpdateDeleteQuestRoute(questid):
 
 
 ## Assign, Unassign assigned to a player
-@app.route("/players/quests/<int:playerid>", methods=["POST", "DELETE"])
+@app.route("/players/quests/<int:questid>", methods=["PATCH", "DELETE"])
 @admin_required()
-def PlayerQuestRoute(playerid):
-    if request.method == "POST":
+def PlayerQuestRoute(questid):
+    if request.method == "PATCH":
         data = request.get_json()
-        questid = data["questid"]
+        #questid = data["questid"]
+        playerids = data["playerids"]
 
-        res = AssignQuestToPlayerInDatabase(playerid, questid)
+        for playerid in playerids:
+            res = AssignQuestToPlayerInDatabase(playerid, questid)
 
         return res
     elif request.method == "DELETE":
         data = request.get_json()
-        questid = data["questid"]
+        #questid = data["questid"]
+        playerids = data["playerids"]
 
-        res = UnassignQuestToPlayerInDatabase(playerid, questid)
+        for playerid in playerids:
+            res = UnassignQuestToPlayerInDatabase(playerid, questid)
 
         return res
 
@@ -422,10 +427,11 @@ def GetAllLimbs():
     return playerlimbs
 
 
-@app.route("/players/limbs", methods=["GET", "PUT"])
+@app.route("/players/limbs/<int:playerid>", methods=["GET", "PUT"])
 @jwt_required()
-def GetLimbsByPlayer():
-    playerid = current_user.id
+def PlayerLimbsRoute(playerid):
+    #if playerid == -1 :
+    #    playerid = current_user.id
 
     # Update limb for a player
     if request.method == "PUT":

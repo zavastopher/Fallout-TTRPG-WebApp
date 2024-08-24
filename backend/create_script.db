@@ -29,6 +29,7 @@ CREATE TABLE quest (
 CREATE TABLE item (
 	itemid		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name		TEXT,
+	description	TEXT,
 	UNIQUE(name)
 );
 
@@ -87,3 +88,11 @@ INSERT INTO person_limb (limbowner,limbtype)
 SELECT  person.personid AS limbowner,
         limb.limbid AS limbtype
 FROM person CROSS JOIN limb;
+
+INSERT INTO quest (name, description) VALUES ('quest one', "I am quest description one");
+INSERT INTO quest (name, description) VALUES ('quest two', "I am quest description two");
+INSERT INTO quest (name, description) VALUES ('quest three', "I am  questdescription three");
+
+INSERT INTO item (name, description) VALUES ('item one', "I am item description one");
+INSERT INTO item (name, description) VALUES ('item two', "I am item description two");
+INSERT INTO item (name, description) VALUES ('item three', "I am item description three");
