@@ -11,7 +11,7 @@
 
 | Function name           | Relative Url               | Description | Input (Request)                               | Output(Response)                                                   | Completed |
 | ----------------------- | -------------------------- | ----------- | --------------------------------------------- | ------------------------------------------------------------------ | --------- |
-| login_user(string name) | POST /login                | For players | String name of player                         | Success/Failure                                                    | Yes       |
+| login_user(string name) | POST /login                | For players | [ String name of player ](#login-request)                         | Success/Failure                                                    | Yes       |
 | logout_user()           | POST /logout               |             | N/A                                           | Success/Failure                                                    | Yes       |
 | GetSelf()               | GET /self                  |             | N/A                                           | [Players object](#self-response)                                   | Yes       |
 | GetPlayers()            | GET /players               | For DM      | N/A                                           | [Array of players objects](#player-get-response)                   | No        |

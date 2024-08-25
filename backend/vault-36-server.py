@@ -217,14 +217,16 @@ def AddGetItemsRoute():
         try:
             data = request.get_json()
             items = data["items"]
-            itemtuples = [(name, description) for name, description in items]
+            itemtuples = [tuple(item.values()) for item in items]
+            app.logger.debug(itemtuples)
         except:
             return "Missing items", 400
 
         try:
+            app.logger.debug(itemtuples)
             res = AddItemToDatabase(itemtuples)
-        except:
-            return "Already Exists", 400
+        except Exception as e:
+            return str(e), 400
         else:
             return res
     # Get all Items

@@ -146,7 +146,7 @@ def AddItemToDatabase(itemtuples):
     cur = con.cursor()
     cur.execute("PRAGMA foreign_keys = ON;")
 
-    cur.executemany("INSERT OR IGNORE INTO item (name, description) VALUES (?);", itemtuples)
+    cur.executemany("INSERT OR IGNORE INTO item (name, description) VALUES (?, ?);", itemtuples)
     data = cur.execute("SELECT * FROM item;")
     res = data.fetchall()
 
