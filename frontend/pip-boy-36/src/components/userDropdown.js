@@ -25,18 +25,18 @@ function UserDropdown({ self, setCurrentUser }) {
   //    setOptions(options);
   //  }, [playerList]);
 
-  //  useEffect(() => {
-  if (self.isadmin) {
-    // Add axios call
-    axios
-      .get(`${process.env.REACT_APP_BASEURL}/players`, {})
-      .then((response) => {
-        setPlayerList([...response.data]);
-        console.log("got players");
-      })
-      .catch((error) => {});
-  }
-  //  }, [self]);
+  useEffect(() => {
+    if (self.isadmin) {
+      // Add axios call
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/players`, {})
+        .then((response) => {
+          setPlayerList([...response.data]);
+          console.log("got players");
+        })
+        .catch((error) => {});
+    }
+  }, [self]);
 
   return (
     <div className="dropdown-container">
