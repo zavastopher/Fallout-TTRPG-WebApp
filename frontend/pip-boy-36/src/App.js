@@ -13,6 +13,7 @@ import axios from "axios";
 function App() {
   //const { token, removeToken, setToken } = useToken();
   const [self, setSelf] = useState(null);
+  //const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,6 +77,10 @@ function App() {
       .finally(() => {
         setLoading(false);
         setSelf(selfHolder);
+
+        //if (!self.isadmin) {
+        //  currentUser = self;
+        //}
       });
   }
 

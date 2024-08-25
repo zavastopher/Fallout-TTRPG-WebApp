@@ -12,12 +12,30 @@ function Stats({ hp, limbsHurt }) {
         <span>{hp} / 100</span>
       </div>
       <div className="limbs stats-container">
-        <Limb limb="head" limbHurt={limbsHurt.head.status}></Limb>
-        <Limb limb="torso" limbHurt={limbsHurt.torso.status}></Limb>
-        <Limb limb="leftArm" limbHurt={limbsHurt.leftarm.status}></Limb>
-        <Limb limb="rightArm" limbHurt={limbsHurt.rightarm.status}></Limb>
-        <Limb limb="leftLeg" limbHurt={limbsHurt.leftleg.status}></Limb>
-        <Limb limb="rightLeg" limbHurt={limbsHurt.rightleg.status}></Limb>
+        <Limb
+          limb="head"
+          limbHurt={limbsHurt ? limbsHurt.head.status : 0}
+        ></Limb>
+        <Limb
+          limb="torso"
+          limbHurt={limbsHurt ? limbsHurt.torso.status : 0}
+        ></Limb>
+        <Limb
+          limb="leftArm"
+          limbHurt={limbsHurt ? limbsHurt.leftarm.status : 0}
+        ></Limb>
+        <Limb
+          limb="rightArm"
+          limbHurt={limbsHurt ? limbsHurt.rightarm.status : 0}
+        ></Limb>
+        <Limb
+          limb="leftLeg"
+          limbHurt={limbsHurt ? limbsHurt.leftleg.status : 0}
+        ></Limb>
+        <Limb
+          limb="rightLeg"
+          limbHurt={limbsHurt ? limbsHurt.rightleg.status : 0}
+        ></Limb>
 
         <div className="face limb">
           <img src={Face} alt="Face" />

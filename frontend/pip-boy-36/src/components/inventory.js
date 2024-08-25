@@ -7,27 +7,38 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import ContextMenu from "./contextMenu";
 
-function Inventory() {
+function Inventory({ self, currentUser }) {
   const location = useLocation();
-  //const [self, setSelf] = useState(null);
-  //if (location.state) {
-  //  const { self } = location.state;
-  //}
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
 
   useEffect(() => {
-    if (location.state && location.state.self) {
+    if (currentUser && currentUser !== undefined) {
+      // If a player is selected in the dropdown
       axios
         .get(
-          `${process.env.REACT_APP_BASEURL}/players/item/${location.state.self.id}`,
+          `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
           {}
         )
         .then((response) => {
           setInventory(response.data);
         });
+    } else if (self.isadmin) {
+      // If no player is selected and the logged in user is the admin
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/items`, {})
+        .then((response) => {
+          setInventory(response.data);
+        });
+    } else {
+      // Regular player
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
+        .then((response) => {
+          setInventory(response.data);
+        });
     }
-  }, []);
+  }, [currentUser, self]);
 
   //const inventoryItems = [
   //  {
@@ -116,7 +127,29 @@ function Inventory() {
           ></Description>
         </div>
       </div>
-      <ContextMenu></ContextMenu>
+      <ContextMenu>
+        <div className="context-form">
+          <span>Add Item to Database</span>
+          <div className="fields">
+            <label>
+              Name
+              <input name="itemname" id="itemname" type="text"></input>
+            </label>
+          </div>
+
+          <div className="fields">
+            <label>
+              Description
+              <textarea
+                name="itemdescription"
+                id="itemdescription"
+                cols="22"
+                rows="5"
+              ></textarea>
+            </label>
+          </div>
+        </div>
+      </ContextMenu>
     </div>
   );
 }

@@ -47,9 +47,8 @@ function List({ items, selected, setSelected }) {
       "keydown",
       function (e) {
         if (
-          ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(
-            e.code
-          ) > -1
+          ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) >
+          -1
         ) {
           e.preventDefault();
         }
@@ -70,7 +69,7 @@ function List({ items, selected, setSelected }) {
 
   return (
     <ul id="list" className="list test">
-      {items !== null && items !== undefined &&  items.length > 0 ? (
+      {items !== null && items !== undefined && items.length > 0 ? (
         items.map((item) => (
           <ListItem
             item={item}

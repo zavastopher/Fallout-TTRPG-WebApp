@@ -26,8 +26,9 @@ button {
   font-size: 20px;
   border: transparent;
   padding: 0px;
-  z-index: 1000;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  //z-index: 1000;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 button:hover {
@@ -70,6 +71,7 @@ nav > ul {
     to(rgba(0, 0, 0, 0.1))
   );
   z-index: 100;
+  pointer-events: none;
 }
 
 @keyframes scan-screen {
@@ -85,26 +87,87 @@ nav > ul {
 // Context Styles
 //-----------------------------------------------------------
 
+.context-menu-container {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+}
+
 .context-toggle-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  align-self: end;
+  justify-self: baseline;
+
+  //position: absolute;
+  //right: 0;
+  //bottom: 0;
+
   width: $contextButtonWidth;
   height: $contextButtonWidth;
+
+  border: 1px solid $fontGreen;
+
+  &:hover {
+    background-color: #09a209;
+  }
 }
 
 .context-menu {
   width: 30vw;
-  height: 50vh;
+  height: 30vh;
   background: rgba(0, 0, 0, 0.5);
-  bottom: 0;
-  right: $contextButtonWidth;
+  overflow: hidden;
+  position: relative;
+  margin-right: 30px;
+  padding: 10px;
 }
 
-.context-open .context-menu {
+.context-submit {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.context-form {
+  text-align: left;
+  font-size: 16px;
+  color: $fontGreen;
+
+  span {
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 20px;
+  }
+
+  textarea,
+  input[type="text"] {
+    background: transparent;
+    border: unset;
+    color: $fontGreen;
+    caret-color: $fontGreen;
+
+    &:focus-visible,
+    &:focus {
+      outline: none;
+    }
+  }
+
+  input[type="text"] {
+    border-bottom: 1px solid $fontGreen;
+  }
+
+  textarea {
+    border: 1px solid $fontGreen;
+  }
+}
+
+.fields {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 //-----------------------------------------------------------
@@ -127,7 +190,7 @@ nav > ul {
 //-----------------------------------------------------------
 
 .login-container {
-  z-index: 1000;
+  //z-index: 1000;
 }
 
 .logout span {
@@ -227,7 +290,7 @@ nav > ul {
   width: 45%;
   overflow: scroll;
   position: relative;
-  z-index: 101;
+  //z-index: 101;
 }
 
 .list-item {
