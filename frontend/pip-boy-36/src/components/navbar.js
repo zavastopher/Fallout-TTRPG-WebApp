@@ -1,6 +1,12 @@
 import { Outlet, Link } from "react-router-dom";
+import UserDropdown from "./userDropdown";
 
-const Navbar = ({ self, logMeOut }) => {
+function Navbar({ self, currentUser, setCurrentUser, logMeOut }) {
+  //const [name, setName] = useState("");
+
+  console.log(`user: ${currentUser}`);
+  const name = !self.isadmin || !currentUser ? self.name : currentUser.name;
+
   return (
     <>
       <div className="pipboy-screen">
@@ -10,7 +16,12 @@ const Navbar = ({ self, logMeOut }) => {
               {"[   "}Logout{"   ]"}
             </span>
           </button>
-          <div className="header-title">{self.name}</div>
+
+          <UserDropdown
+            self={self}
+            setCurrentUser={setCurrentUser}
+          ></UserDropdown>
+          <div className="header-title">{name}</div>
         </div>
         <div className="outlet">
           <Outlet />
@@ -22,14 +33,10 @@ const Navbar = ({ self, logMeOut }) => {
                 <Link to="/">Stats</Link>
               </li>
               <li>
-                <Link to="/inventory" state={{ self: self }}>
-                  Inventory
-                </Link>
+                <Link to="/inventory">Inventory</Link>
               </li>
               <li>
-                <Link to="/quests" state={{ self: self }}>
-                  Quests
-                </Link>
+                <Link to="/quests">Quests</Link>
               </li>
             </ul>
           </nav>
@@ -37,6 +44,6 @@ const Navbar = ({ self, logMeOut }) => {
       </div>
     </>
   );
-};
+}
 
 export default Navbar;

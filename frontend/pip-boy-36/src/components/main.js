@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./navbar";
 import Stats from "./stats";
 import Inventory from "./inventory";
@@ -11,23 +11,29 @@ let socket;
 
 function Main({ self, refreshSelf, logMeOut }) {
   const [limbsHurt, setLimbsHurt] = useState(null);
-  
+  const [currentUser, setCurrentUser] = useState(null);
+
   //function updateLimb(limbs, status) {}
 
   useEffect(() => {
     // Get Limbs
     if (self) {
-      axios.get(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {}).then((response) => {
-        console.log(response.data);
-        console.log(response.data[self.name]);
-  
-        var hurtLimbs = response.data[self.name];
-        setLimbsHurt(hurtLimbs);
-        console.log("pause");
-      });
+      if (self.isadmin) {
+      } else {
+        axios
+          .get(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {})
+          .then((response) => {
+            console.log(response.data);
+            console.log(response.data[self.name]);
+
+            var hurtLimbs = response.data[self.name];
+            setLimbsHurt(hurtLimbs);
+            console.log("pause");
+          });
+      }
     }
-  }, [])
-  
+  }, [self]);
+
   useEffect(() => {
     // create websocket/connect
     socket = io("localhost:4001");
@@ -57,9 +63,30 @@ function Main({ self, refreshSelf, logMeOut }) {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navbar self={self} logMeOut={logMeOut} />}>
-          <Route index element={<Stats hp={self.hp} limbsHurt={limbsHurt} />} />
-          <Route path="inventory" element={<Inventory />} />
+        <Route
+          path="/"
+          element={
+            <Navbar
+              self={self}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+              logMeOut={logMeOut}
+            />
+          }
+        >
+          <Route
+            index
+            element={
+              <Stats
+                hp={currentUser ? currentUser.hp : self.hp}
+                limbsHurt={limbsHurt}
+              />
+            }
+          />
+          <Route
+            path="inventory"
+            element={<Inventory self={self} currentUser={currentUser} />}
+          />
           <Route path="quests" element={<Quests />} />
         </Route>
       </Routes>
