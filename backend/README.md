@@ -455,7 +455,10 @@ Returns entire new inventory
 [(Back to Top)](#rest-api)
 
 ```
-[1, 2, 3]
+{
+  "playersids" : [1, 2, 3]
+}
+
 ```
 
 #### Player Quest Assign Response
@@ -484,7 +487,9 @@ Returns entire new inventory
 [(Back to Top)](#rest-api)
 
 ```
-[2]
+{
+  "playerids" : [2] 
+}
 ```
 
 #### Player Quest Unassign Response
