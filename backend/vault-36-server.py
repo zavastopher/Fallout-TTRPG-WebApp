@@ -38,6 +38,7 @@ app.config["JWT_SECRET_KEY"] = "im-a-tough-tootin-baby"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_SECURE"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False 
 
 
 jwt = JWTManager(app)
@@ -270,11 +271,13 @@ def PlayerItemRoute(playerid):
 
         itemid = data["itemid"]
         quanity = data["quantity"]
+        app.logger.debug(f"{playerid} {itemid} {quanity}")
 
         try:
             ## Create record in player_items
             res = AddItemToPlayerInDatabase(playerid, itemid, quanity)
-        except:
+        except Exception as e:
+            app.logger.debug(e)
             return (
                 f"Can't add item to player {playerid}'s inventory! Maybe item is already in inventory or player doesn't exist.",
                 400,
