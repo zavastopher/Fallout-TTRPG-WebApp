@@ -25,3 +25,4 @@ backend/.venv/*
 backend/__pycache__/config.cpython-312.pyc
 backend/__pycache__/database_interactions.cpython-312.pyc
 backend/__pycache__/config.cpython-312.pyc
+backend/create_script.db

@@ -1,10 +1,18 @@
 import { Outlet, Link } from "react-router-dom";
 import UserDropdown from "./userDropdown";
 
-function Navbar({ self, currentUser, setCurrentUser, logMeOut }) {
+function Navbar({
+  self,
+  currentUser,
+  setCurrentUser,
+  logMeOut,
+  playerList,
+  setPlayerList,
+  resetInputs,
+}) {
   //const [name, setName] = useState("");
 
-  console.log(`user: ${currentUser}`);
+  //console.log(`user: ${currentUser}`);
   const name = !self.isadmin || !currentUser ? self.name : currentUser.name;
 
   return (
@@ -20,6 +28,9 @@ function Navbar({ self, currentUser, setCurrentUser, logMeOut }) {
           <UserDropdown
             self={self}
             setCurrentUser={setCurrentUser}
+            playerList={playerList}
+            setPlayerList={setPlayerList}
+            resetInputs={resetInputs}
           ></UserDropdown>
           <div className="header-title">{name}</div>
         </div>

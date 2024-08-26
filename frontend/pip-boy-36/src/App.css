@@ -282,7 +282,8 @@
 }
 
 .crt::after,
-button::after {
+button::after,
+input[type="submit"]::after {
   content: " ";
   display: block;
   position: absolute;
@@ -297,7 +298,8 @@ button::after {
   animation: flicker 0.15s infinite;
 }
 .crt::before,
-button::before {
+button::before,
+input[type="submit"]::before {
   content: " ";
   display: block;
   position: absolute;
@@ -317,6 +319,7 @@ button::before {
   pointer-events: none;
 }
 .crt,
-button {
+button,
+input[type="submit"] {
   animation: textShadow 1.6s infinite;
 }

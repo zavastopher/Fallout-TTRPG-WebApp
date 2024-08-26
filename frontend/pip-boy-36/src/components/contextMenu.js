@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import gsap, { Power2 } from "gsap";
 import { useGSAP } from "@gsap/react";
-
 gsap.registerPlugin(useGSAP);
 
-function ContextMenu(props, submitFunciton) {
+function ContextMenu(props) {
   var SELECTOR_SCREEN_ELEMENT = ".context-menu";
 
   const [menuVisibility, setMenuVisibility] = useState(true);
@@ -26,14 +25,32 @@ function ContextMenu(props, submitFunciton) {
       timeline.current = gsap
         .timeline({ paused: true })
         .to(".context-menu", {
-          duration: 0.2,
-          width: "30vw",
-          height: "2px",
+          duration: 0.1,
+          width: "400px",
+          height: "100%",
+          minHeight: "100%",
+          //minHeight: "275px",
+          padding: "10px",
           backgroundColor: "#ffffff",
+          color: "inherit",
+          overflow: "visible",
           ease: Power2.easeOut,
         })
         .to(".context-menu", {
           duration: 0.2,
+          minHeight: "0px",
+          height: "0",
+          overflow: "hidden",
+        })
+        .to(".context-menu", {
+          duration: 0.2,
+          padding: "0",
+          color: "white",
+          ease: Power2.easeOut,
+        })
+        .to(".context-menu", {
+          duration: 0.5,
+          delay: 0.2,
           width: "0",
           height: "0",
           backgroundColor: "#ffffff",
@@ -41,37 +58,6 @@ function ContextMenu(props, submitFunciton) {
     },
     { scope: container }
   ); // <-- scope is for selector text (optional)
-
-  //  useEffect(() => {
-  //    let ctx = gsap.context(() => {
-  //      // normal selector text, automatically scoped to appRef
-  //      gsap.from(".box", {
-  //        duration: 2,
-  //        width: 0,
-  //        ease: "power3.inOut",
-  //      });
-  //    }, container);
-
-  //    return () => ctx.revert();
-  //  }, []);
-
-  //  useGSAP(() => {
-  //timeline = gsap.timeline({ paused: true });
-  //timeline
-  //  .to(SELECTOR_SCREEN_ELEMENT, {
-  //    duration: 0.2,
-  //    width: "100vw",
-  //    height: "2px",
-  //    backgroundColor: "#ffffff",
-  //    ease: Power2.easeOut,
-  //  })
-  //  .to(SELECTOR_SCREEN_ELEMENT, {
-  //    duration: 0.2,
-  //    width: "0",
-  //    height: "0",
-  //    backgroundColor: "#ffffff",
-  //  });
-  //  });
 
   const { contextSafe } = useGSAP({ scope: container });
 
@@ -96,10 +82,13 @@ function ContextMenu(props, submitFunciton) {
         menuVisibility ? "context-open" : "context-closed"
       }`}
     >
-      <div className="context-menu">
+      <form className="context-menu" onSubmit={props.submitFunction}>
         {props.children}
-        <button className="context-submit">Submit</button>
-      </div>
+        {/*<input className="context-submit" value="Submit" type="submit" />*/}
+        <button type="submit" className="context-submit">
+          Submit
+        </button>
+      </form>
       <div className="context-toggle-button" onClick={toggleSwitcherTV}>
         <span>+</span>
       </div>

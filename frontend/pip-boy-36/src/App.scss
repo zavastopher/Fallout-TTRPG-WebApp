@@ -20,7 +20,8 @@ ul {
   list-style: none;
 }
 
-button {
+button,
+input[type="submit"] {
   background: transparent;
   color: $fontGreen;
   font-size: 20px;
@@ -31,7 +32,8 @@ button {
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
-button:hover {
+button:hover,
+input[type="submit"]:hover {
   background-color: rgba(16, 134, 26, 0.336);
   cursor: pointer;
 }
@@ -92,6 +94,8 @@ nav > ul {
   right: 0;
   bottom: 0;
   display: flex;
+
+  color: $fontGreen;
 }
 
 .context-toggle-button {
@@ -112,17 +116,29 @@ nav > ul {
 
   &:hover {
     background-color: #09a209;
+    color: white;
   }
 }
 
 .context-menu {
-  width: 30vw;
-  height: 30vh;
+  width: 400px;
+  //height: 37vh;
   background: rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+  //overflow: hidden;
   position: relative;
   margin-right: 30px;
   padding: 10px;
+  padding-bottom: 30px;
+
+  .react-tabs__tab-list {
+    border-bottom: 1px solid $lineGreen;
+  }
+
+  .react-tabs__tab--selected {
+    background: rgba(0, 128, 0, 0.4);
+    border-color: rgba(0, 128, 0, 0.5);
+    color: rgba(256, 256, 256, 0.6);
+  }
 }
 
 .context-submit {
@@ -134,7 +150,6 @@ nav > ul {
 .context-form {
   text-align: left;
   font-size: 16px;
-  color: $fontGreen;
 
   span {
     display: inline-block;
@@ -168,8 +183,24 @@ nav > ul {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+
+  label {
+    margin-right: 5px;
+  }
+
+  #quantity {
+    width: inherit;
+  }
 }
 
+.field-column {
+  //width: 45%;
+  align-items: center;
+}
+
+//.player-dropdown {
+//  margin-bottom: 20px;
+//}
 //-----------------------------------------------------------
 // Header Styles
 //-----------------------------------------------------------

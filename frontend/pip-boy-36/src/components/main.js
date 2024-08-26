@@ -12,6 +12,12 @@ let socket;
 function Main({ self, refreshSelf, logMeOut }) {
   const [limbsHurt, setLimbsHurt] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [playerList, setPlayerList] = useState([]);
+  const [inputs, setInputs] = useState({});
+
+  function resetInputs() {
+    setInputs({});
+  }
 
   //function updateLimb(limbs, status) {}
 
@@ -71,6 +77,9 @@ function Main({ self, refreshSelf, logMeOut }) {
               currentUser={currentUser}
               setCurrentUser={setCurrentUser}
               logMeOut={logMeOut}
+              playerList={playerList}
+              setPlayerList={setPlayerList}
+              resetInputs={resetInputs}
             />
           }
         >
@@ -85,7 +94,16 @@ function Main({ self, refreshSelf, logMeOut }) {
           />
           <Route
             path="inventory"
-            element={<Inventory self={self} currentUser={currentUser} />}
+            element={
+              <Inventory
+                self={self}
+                currentUser={currentUser}
+                playerList={playerList}
+                inputs={inputs}
+                setInputs={setInputs}
+                resetInputs={resetInputs}
+              />
+            }
           />
           <Route path="quests" element={<Quests />} />
         </Route>

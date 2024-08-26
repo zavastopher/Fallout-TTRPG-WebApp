@@ -6,109 +6,156 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import ContextMenu from "./contextMenu";
+import Select from "react-select";
 
-function Inventory({ self, currentUser }) {
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+
+function Inventory({
+  self,
+  currentUser,
+  playerList,
+  inputs,
+  setInputs,
+  resetInputs,
+}) {
   const location = useLocation();
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
+  const [itemOptions, setItemOptions] = useState([]);
+
+  const blackTransColor = "rgba(0, 0, 0, .75)";
+  const greenTransColor = "rgba(0, 128, 0, .75)";
+
+  const dropdownFontSize = "16px";
+
+  const playerOptions = [
+    { value: null, label: "none" },
+    ...playerList.map((player) => ({
+      value: player.personid,
+      label: player.name,
+    })),
+  ];
+
+  const customTheme = (theme) => ({
+    ...theme,
+    fontSize: "16px",
+    colors: {
+      ...theme.colors,
+      primary25: greenTransColor, // change Background color of options on hover
+      primary: greenTransColor, // change the Background color of the selected option
+      neutral0: blackTransColor,
+      neutral5: "black",
+      neutral10: "black",
+      neutral20: "black",
+      neutral30: greenTransColor, // Border Hover Color
+      neutral40: "green", // Arrow Hover Color
+      neutral50: "green", // Select text
+      neutral60: greenTransColor, //
+      neutral70: greenTransColor, //
+      neutral80: greenTransColor, //
+      neutral90: greenTransColor, //
+    },
+  });
+
+  const colorStyles = {
+    control: (provided) => ({
+      ...provided,
+      fontSize: dropdownFontSize,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      color: state.isSelected ? "rgb(192, 247, 168)" : "white",
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: dropdownFontSize,
+      position: "absolute",
+      //bottom: "0px",
+      right: "0",
+      overflow: "visible",
+    }),
+    menuList: (base) => ({
+      ...base,
+      position: "absolute",
+      bottom: "46px",
+      backgroundColor: blackTransColor,
+      width: "inherit",
+      //overflow: "visible",
+    }),
+  };
+
+  const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setInputs((values) => ({ ...values, [name]: value }));
+  };
 
   useEffect(() => {
-    if (currentUser && currentUser !== undefined) {
-      // If a player is selected in the dropdown
-      axios
-        .get(
-          `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
-          {}
-        )
-        .then((response) => {
-          setInventory(response.data);
-        });
-    } else if (self.isadmin) {
-      // If no player is selected and the logged in user is the admin
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/items`, {})
-        .then((response) => {
-          setInventory(response.data);
-        });
-    } else {
-      // Regular player
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
-        .then((response) => {
-          setInventory(response.data);
-        });
-    }
+    resetInputs();
+  }, []);
+
+  useEffect(() => {
+    //var inventory;
+
+    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
+      //inventory = response.data;
+      console.log(response.data);
+      setItemOptions(
+        response.data.map((item) => ({
+          value: item,
+          label: item.name,
+        }))
+      );
+
+      if (currentUser && currentUser !== undefined) {
+        // If a player is selected in the dropdown
+        axios
+          .get(
+            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.personid}`,
+            {}
+          )
+          .then((response) => {
+            setInventory(response.data);
+          });
+      } else if (self.isadmin) {
+        // If no player is selected and the logged in user is the admin
+        setInventory(response.data);
+      } else {
+        // Regular player
+        axios
+          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
+          .then((response) => {
+            setInventory(response.data);
+          });
+      }
+    });
   }, [currentUser, self]);
 
-  //const inventoryItems = [
-  //  {
-  //    id: 1,
-  //    name: "item 1",
-  //    description: "this is a thing",
-  //    quantity: 1,
-  //  },
-  //  {
-  //    id: 2,
-  //    name: "item 2",
-  //    description: "this is a second thing",
-  //    quantity: 2,
-  //  },
-  //  {
-  //    id: 3,
-  //    name: "item 3",
-  //    description: "this is a third thing",
-  //    quantity: 3,
-  //  },
-  //  {
-  //    id: 4,
-  //    name: "item 4",
-  //    description: "this is a fourth thing",
-  //    quantity: 4,
-  //  },
-  //  {
-  //    id: 5,
-  //    name: "item 5",
-  //    description: "this is a fifth thing",
-  //    quantity: 5,
-  //  },
-  //  {
-  //    id: 6,
-  //    name: "item 6",
-  //    description: "this is a sixth thing",
-  //    selected: false,
-  //    quantity: 6,
-  //  },
-  //  {
-  //    id: 7,
-  //    name: "item 7",
-  //    description: "this is a seventh thing",
-  //    quantity: 7,
-  //  },
-  //  {
-  //    id: 8,
-  //    name: "item 8",
-  //    description: "this is a eighth thing",
-  //    quantity: 8,
-  //  },
-  //  {
-  //    id: 9,
-  //    name: "item 9",
-  //    description: "this is a ninth thing",
-  //    quantity: 9,
-  //  },
-  //  {
-  //    id: 10,
-  //    name: "item 10",
-  //    description: "this is a tenth thing",
-  //    quantity: 10,
-  //  },
-  //  {
-  //    id: 11,
-  //    name: "item 11",
-  //    description: "this is a eleventh thing",
-  //    quantity: 11,
-  //  },
-  //];
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (currentUser || !self.isadmin) {
+      addToPlayer(event);
+    } else {
+      addToDatabase(event);
+    }
+  };
+
+  function addToPlayer(event) {
+    console.log(inputs);
+
+    if (inputs.item && inputs.quantity) {
+      console.log("add!");
+    }
+  }
+
+  function addToDatabase(event) {
+    console.log(inputs);
+    if (inputs.name && inputs.description && inputs.quantity) {
+      console.log("add!");
+    }
+  }
 
   return (
     <div>
@@ -127,27 +174,122 @@ function Inventory({ self, currentUser }) {
           ></Description>
         </div>
       </div>
-      <ContextMenu>
+      <ContextMenu submitFunction={handleSubmit}>
         <div className="context-form">
-          <span>Add Item to Database</span>
-          <div className="fields">
-            <label>
-              Name
-              <input name="itemname" id="itemname" type="text"></input>
-            </label>
-          </div>
+          {self.isadmin ? (
+            <div>
+              {currentUser ? (
+                <div>
+                  <span>Add Item to {currentUser.name}</span>
 
-          <div className="fields">
-            <label>
-              Description
-              <textarea
-                name="itemdescription"
-                id="itemdescription"
-                cols="22"
-                rows="5"
-              ></textarea>
-            </label>
-          </div>
+                  <div className="fields">
+                    <label htmlFor="item">Item</label>
+                    <Select
+                      id="item"
+                      options={itemOptions}
+                      styles={colorStyles}
+                      theme={customTheme}
+                      onChange={(choice) =>
+                        setInputs((values) => ({ ...values, ["item"]: choice }))
+                      }
+                    />
+                  </div>
+                  <div className="fields">
+                    <label htmlFor="quantity">Qty</label>
+                    <input
+                      name="quantity"
+                      id="quantity"
+                      type="text"
+                      value={inputs.quantity || ""}
+                      onChange={handleChange}
+                    ></input>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <span>Add Item to Database</span>
+
+                  <div className="fields">
+                    <label htmlFor="name">Name</label>
+                    <input
+                      name="name"
+                      id="name"
+                      type="text"
+                      value={inputs.name || ""}
+                      onChange={handleChange}
+                    ></input>
+                  </div>
+
+                  <div className="fields">
+                    <label htmlFor="description">Description</label>
+                    <textarea
+                      name="description"
+                      id="description"
+                      cols="22"
+                      rows="5"
+                      value={inputs.description || ""}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                  <div className="player-dropdown">
+                    <div className="fields field-column">
+                      <label>Players</label>
+                      <Select
+                        options={playerOptions}
+                        styles={colorStyles}
+                        theme={customTheme}
+                        defaultValue={null}
+                        isMulti
+                        onChange={(choice) =>
+                          setInputs((values) => ({
+                            ...values,
+                            ["players"]: choice,
+                          }))
+                        }
+                      ></Select>
+                    </div>
+                    <div className="fields field-column">
+                      <label htmlFor="quantity">Qty</label>
+                      <input
+                        name="quantity"
+                        id="quantity"
+                        type="text"
+                        value={inputs.quantity || ""}
+                        onChange={handleChange}
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <span>Add Item to My Inventory</span>
+              <div className="fields">
+                <label htmlFor="item">Item</label>
+                <Select
+                  id="item"
+                  options={itemOptions}
+                  styles={colorStyles}
+                  theme={customTheme}
+                  onChange={(choice) =>
+                    setInputs((values) => ({ ...values, ["item"]: choice }))
+                  }
+                />
+              </div>
+
+              <div className="fields field-column">
+                <label htmlFor="quantity">Qty</label>
+                <input
+                  name="quantity"
+                  id="quantity"
+                  type="text"
+                  value={inputs.quantity || ""}
+                  onChange={handleChange}
+                ></input>
+              </div>
+            </div>
+          )}
         </div>
       </ContextMenu>
     </div>

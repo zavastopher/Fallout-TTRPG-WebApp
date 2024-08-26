@@ -1,10 +1,15 @@
 PRAGMA foreign_keys = ON;
-DROP TABLE IF EXISTS person;
-DROP TABLE IF EXISTS limb;
-DROP TABLE IF EXISTS quest;
-DROP TABLE IF EXISTS item;
+
 DROP TABLE IF EXISTS person_quest;
 DROP TABLE IF EXISTS person_item;
+DROP TABLE IF EXISTS person_limb;
+
+DROP TABLE IF EXISTS limb;
+
+DROP TABLE IF EXISTS quest;
+DROP TABLE IF EXISTS item;
+
+DROP TABLE IF EXISTS person;
 
 CREATE TABLE person ( 
 	personid INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -38,7 +43,10 @@ CREATE TABLE person_quest(
 	questassignee	INTEGER, 
 	assignedquest	INTEGER, 
 	FOREIGN KEY (questassignee) REFERENCES person(personid), 
-	FOREIGN KEY (assignedquest) REFERENCES quest(questid)
+	CONSTRAINT fk_quests
+		FOREIGN KEY (assignedquest) 
+		REFERENCES quest(questid)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE person_item(
@@ -59,8 +67,11 @@ CREATE TABLE person_limb(
 	status 			INTEGER DEFAULT 0, 
 	limbowner 		INTEGER, 
 	limbtype		INTEGER,
-	FOREIGN KEY (limbowner) REFERENCES person(personid)
 	FOREIGN KEY (limbtype) REFERENCES limb(limbid)
+	CONSTRAINT fk_person
+		FOREIGN KEY (limbowner) 
+		REFERENCES person(personid)
+		ON DELETE CASCADE
 );
 
 /*
