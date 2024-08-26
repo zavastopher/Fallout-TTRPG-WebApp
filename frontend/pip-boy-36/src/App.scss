@@ -336,7 +336,22 @@ nav > ul {
 }
 
 .selected {
+  position: relative;
   color: yellow;
+  .remove-icon {
+    visibility: visible;
+
+    &:hover {
+      color: white;
+      cursor: pointer;
+    }
+  }
+}
+
+.remove-icon {
+  visibility: hidden;
+  position: absolute;
+  right: 0;
 }
 
 .list-container {

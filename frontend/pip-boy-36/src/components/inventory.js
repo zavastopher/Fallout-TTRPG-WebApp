@@ -23,6 +23,7 @@ function Inventory({
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
   const [itemOptions, setItemOptions] = useState([]);
+  const [tabIdx, setTabIdx] = useState(0);
 
   const blackTransColor = "rgba(0, 0, 0, .75)";
   const greenTransColor = "rgba(0, 128, 0, .75)";
@@ -136,25 +137,42 @@ function Inventory({
     event.preventDefault();
 
     if (currentUser || !self.isadmin) {
-      addToPlayer(event);
+      addToPlayer();
     } else {
-      addToDatabase(event);
+      UpdateDatabase();
     }
   };
 
-  function addToPlayer(event) {
-    console.log(inputs);
-
+  function addToPlayer() {
     if (inputs.item && inputs.quantity) {
       console.log("add!");
     }
   }
 
-  function addToDatabase(event) {
-    console.log(inputs);
-    if (inputs.name && inputs.description && inputs.quantity) {
-      console.log("add!");
+  function UpdateDatabase() {
+    if (tabIdx == 0) {
+      // Add Item
+      if (inputs.name && inputs.description && inputs.quantity) {
+        console.log("add to database!");
+
+        if (inputs.players) {
+          inputs.players.forEach((player) => {
+            console.log(`Add to ${player.label} at ${player.value}`);
+            var playerid = player.value;
+          });
+        }
+      }
+    } else {
+      // Update Item
+      if (inputs.name || inputs.description) {
+        console.log("update!");
+      }
     }
+  }
+
+  function deleteItem() {
+    // Delete with axios,
+    console.log("delete item");
   }
 
   return (
@@ -165,6 +183,7 @@ function Inventory({
           items={inventory}
           selected={selected}
           setSelected={setSelected}
+          deleteItem={deleteItem}
         ></List>
         <div className="inventory-description description">
           <Description
@@ -207,58 +226,110 @@ function Inventory({
                 </div>
               ) : (
                 <div>
-                  <span>Add Item to Database</span>
+                  <Tabs
+                    onSelect={(index) => {
+                      setTabIdx(index);
+                      resetInputs();
+                    }}
+                  >
+                    <TabList>
+                      <Tab>Add Item</Tab>
+                      <Tab>Update Selected Item</Tab>
+                    </TabList>
 
-                  <div className="fields">
-                    <label htmlFor="name">Name</label>
-                    <input
-                      name="name"
-                      id="name"
-                      type="text"
-                      value={inputs.name || ""}
-                      onChange={handleChange}
-                    ></input>
-                  </div>
+                    <TabPanel>
+                      <span>Add Item to Database</span>
 
-                  <div className="fields">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                      name="description"
-                      id="description"
-                      cols="22"
-                      rows="5"
-                      value={inputs.description || ""}
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                  <div className="player-dropdown">
-                    <div className="fields field-column">
-                      <label>Players</label>
-                      <Select
-                        options={playerOptions}
-                        styles={colorStyles}
-                        theme={customTheme}
-                        defaultValue={null}
-                        isMulti
-                        onChange={(choice) =>
-                          setInputs((values) => ({
-                            ...values,
-                            ["players"]: choice,
-                          }))
-                        }
-                      ></Select>
-                    </div>
-                    <div className="fields field-column">
-                      <label htmlFor="quantity">Qty</label>
-                      <input
-                        name="quantity"
-                        id="quantity"
-                        type="text"
-                        value={inputs.quantity || ""}
-                        onChange={handleChange}
-                      ></input>
-                    </div>
-                  </div>
+                      <div className="fields">
+                        <label htmlFor="name">Name</label>
+                        <input
+                          name="name"
+                          id="name"
+                          type="text"
+                          value={inputs.name || ""}
+                          onChange={handleChange}
+                        ></input>
+                      </div>
+
+                      <div className="fields">
+                        <label htmlFor="description">Description</label>
+                        <textarea
+                          name="description"
+                          id="description"
+                          cols="22"
+                          rows="5"
+                          value={inputs.description || ""}
+                          onChange={handleChange}
+                        ></textarea>
+                      </div>
+                      <div className="player-dropdown">
+                        <div className="fields field-column">
+                          <label>Players</label>
+                          <Select
+                            options={playerOptions}
+                            styles={colorStyles}
+                            theme={customTheme}
+                            defaultValue={null}
+                            isMulti
+                            onChange={(choice) =>
+                              setInputs((values) => ({
+                                ...values,
+                                ["players"]: choice,
+                              }))
+                            }
+                          ></Select>
+                        </div>
+                        <div className="fields field-column">
+                          <label htmlFor="quantity">Qty</label>
+                          <input
+                            name="quantity"
+                            id="quantity"
+                            type="text"
+                            value={inputs.quantity || ""}
+                            onChange={handleChange}
+                          ></input>
+                        </div>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <span>Update Item in Database</span>
+
+                      <div className="fields">
+                        <label htmlFor="name">Name</label>
+                        <input
+                          name="name"
+                          id="name"
+                          type="text"
+                          value={
+                            inputs.name
+                              ? inputs.name
+                              : inventory
+                              ? inventory[selected].name
+                              : ""
+                          }
+                          onChange={handleChange}
+                        ></input>
+                      </div>
+
+                      <div className="fields">
+                        <label htmlFor="description">Description</label>
+                        <textarea
+                          name="description"
+                          id="description"
+                          cols="22"
+                          rows="5"
+                          value={
+                            inputs.description
+                              ? inputs.description
+                              : inventory
+                              ? inventory[selected].description
+                              : ""
+                          }
+                          onChange={handleChange}
+                        ></textarea>
+                      </div>
+                    </TabPanel>
+                  </Tabs>
                 </div>
               )}
             </div>

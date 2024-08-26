@@ -1,4 +1,7 @@
-function ListItem({ item, itemIndex, clickEvent, currentItem }) {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+
+function ListItem({ item, itemIndex, clickEvent, currentItem, deleteItem }) {
   return (
     <li
       className={`list-item ${currentItem === itemIndex ? "selected" : ""}`}
@@ -7,6 +10,12 @@ function ListItem({ item, itemIndex, clickEvent, currentItem }) {
       <div className="list-item-container" onClick={clickEvent}>
         {item.name}
       </div>
+
+      <FontAwesomeIcon
+        className="remove-icon"
+        icon={faTrashCan}
+        onClick={deleteItem}
+      />
     </li>
   );
 }

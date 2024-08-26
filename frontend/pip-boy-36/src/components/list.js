@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 
 import ListItem from "./listItem";
 
-function List({ items, selected, setSelected }) {
+function List({ items, selected, setSelected, deleteItem }) {
   const select = useCallback(
     (itemIndex) => {
       if (itemIndex < 0 || itemIndex >= items.length) return;
@@ -77,6 +77,7 @@ function List({ items, selected, setSelected }) {
             clickEvent={() => handleListClick(items.indexOf(item))}
             key={item.id}
             currentItem={selected}
+            deleteItem={deleteItem}
           >
             {" "}
           </ListItem>
