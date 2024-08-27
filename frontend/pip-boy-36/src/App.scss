@@ -48,6 +48,23 @@ nav > ul {
   justify-content: space-evenly;
 }
 
+textarea,
+input[type="text"] {
+  background: transparent;
+  border: unset;
+  color: $fontGreen;
+  caret-color: $fontGreen;
+
+  &:focus-visible,
+  &:focus {
+    outline: none;
+  }
+}
+
+input[type="text"] {
+  border-bottom: 1px solid $fontGreen;
+}
+
 @keyframes flicker {
   $steps: 20;
   @for $i from 0 through $steps {
@@ -155,23 +172,6 @@ nav > ul {
     display: inline-block;
     margin-bottom: 15px;
     font-size: 20px;
-  }
-
-  textarea,
-  input[type="text"] {
-    background: transparent;
-    border: unset;
-    color: $fontGreen;
-    caret-color: $fontGreen;
-
-    &:focus-visible,
-    &:focus {
-      outline: none;
-    }
-  }
-
-  input[type="text"] {
-    border-bottom: 1px solid $fontGreen;
   }
 
   textarea {
@@ -294,7 +294,7 @@ nav > ul {
   padding: 20px;
 }
 
-#hp {
+#hp-container {
   display: flex;
   justify-content: space-between;
   position: absolute;
@@ -302,6 +302,25 @@ nav > ul {
   right: 15px;
   width: 200px;
   color: $lineGreen;
+
+  .hp {
+    input {
+      width: 25%;
+    }
+
+    svg {
+      margin-right: 5px;
+      &:hover {
+        color: white;
+        cursor: pointer;
+      }
+    }
+
+    &.hp-label:hover {
+      color: white;
+      cursor: pointer;
+    }
+  }
 }
 
 .limb {
