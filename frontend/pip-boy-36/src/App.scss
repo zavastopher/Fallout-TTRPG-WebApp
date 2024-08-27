@@ -139,6 +139,10 @@ nav > ul {
     border-color: rgba(0, 128, 0, 0.5);
     color: rgba(256, 256, 256, 0.6);
   }
+
+  .react-tabs__tab:focus::after {
+    background: rgba(0, 128, 0, 0.8);
+  }
 }
 
 .context-submit {
@@ -266,14 +270,15 @@ nav > ul {
 
 .navbar {
   position: relative;
-  bottom: 5px;
+  bottom: 2px;
   left: 0;
 }
 
 .navbar li {
-  background-image: linear-gradient(to bottom, rgb(9, 30, 12), rgb(11, 21, 9));
+  // background-image: linear-gradient(to bottom, rgb(9, 30, 12), rgb(11, 21, 9));
   padding: 5px;
   margin-bottom: -5px;
+  backdrop-filter: blur(200px);
 }
 
 //-----------------------------------------------------------

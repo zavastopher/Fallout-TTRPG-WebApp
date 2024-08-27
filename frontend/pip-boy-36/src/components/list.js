@@ -38,7 +38,7 @@ function List({ items, selected, setSelected, deleteItem }) {
     [select, selected]
   );
 
-  const handleListClick = (itemId) => {
+  const handleListClick = (itemId, item) => {
     select(itemId);
   };
 
@@ -75,7 +75,7 @@ function List({ items, selected, setSelected, deleteItem }) {
             item={item}
             itemIndex={items.indexOf(item)}
             clickEvent={() => handleListClick(items.indexOf(item))}
-            key={item.id}
+            key={item.itemid}
             currentItem={selected}
             deleteItem={deleteItem}
           >
