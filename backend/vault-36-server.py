@@ -46,10 +46,11 @@ jwt = JWTManager(app)
 #socketio = SocketIO(app, cors_allowed_origins="*")
 
 class Player:
-    def __init__(self, id, name, hp, isadmin) -> None:
+    def __init__(self, id, name, hp, maxhp, isadmin) -> None:
         self.id = id
         self.name = name
         self.hp = hp
+        self.maxhp = maxhp
         self.isadmin = isadmin
 
 
@@ -64,7 +65,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     playerDB = GetPlayerFromDatabaseById(identity)
     player = Player(
-        playerDB["personid"], playerDB["name"], playerDB["hp"], playerDB["admin"]
+        playerDB["personid"], playerDB["name"], playerDB["hp"], playerDB["maxhp"], playerDB["admin"]
     )
 
     app.logger.debug(f"loader: {identity}, {player}")
@@ -149,7 +150,7 @@ def login_user():
     if not res:
         return "Player doesn't exist!", 401
 
-    player = Player(res["personid"], res["name"], res["hp"], res["admin"])
+    player = Player(res["personid"], res["name"], res["hp"], res["maxhp"], res["admin"])
 
     role = {"is_admin": res["admin"]}
 
@@ -176,6 +177,7 @@ def GetSelf():
         "id": user.id,
         "name": user.name,
         "hp": user.hp,
+        "maxhp": user.maxhp,
         "isadmin": user.isadmin
     }
 
@@ -200,6 +202,20 @@ def UpdateHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s health.", 400
+
+    return res
+
+### Updates the hp of the player with the given player id
+@app.route("/players/maxhp/<int:playerid>", methods=["PUT"])
+@jwt_required()
+def UpdateMaxHP(playerid):
+    data = request.get_json()
+    maxhp = data["maxhp"]
+
+    res = UpdatePlayerMaxHPInDatabase(playerid, maxhp)
+
+    if not res:
+        return f"Can't update player {playerid}'s max health.", 400
 
     return res
 

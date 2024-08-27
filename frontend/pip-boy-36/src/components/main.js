@@ -88,6 +88,7 @@ function Main({ self, refreshSelf, logMeOut }) {
             element={
               <Stats
                 hp={currentUser ? currentUser.hp : self.hp}
+                maxhp={currentUser ? currentUser.maxhp : self.maxhp}
                 limbsHurt={limbsHurt}
               />
             }

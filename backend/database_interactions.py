@@ -88,6 +88,32 @@ def UpdatePlayerHPInDatabase(id, hp):
 
     return res
 
+def UpdatePlayerMaxHPInDatabase(id, maxhp):
+    con = sqlite3.connect("/db/data/vault-36-db.sqlite")
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    try:
+        cur.execute("PRAGMA foreign_keys = ON;")
+
+        data = cur.execute("SELECT * FROM person WHERE personid=?;", (id,))
+        personToUpdate = data.fetchone()
+
+        if personToUpdate:
+            cur.execute("UPDATE person SET maxhp=? WHERE personid=?;", (maxhp, id))
+            data = cur.execute("SELECT * FROM person WHERE personid=?;", (id,))
+            res = data.fetchone()
+            con.commit()
+        else:
+            res = False
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    con.close()
+
+    return res
+
 def AddItemToPlayerInDatabase(playerid, itemid, quantity):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory

@@ -9,13 +9,14 @@
 
 ### Player Endpoints
 
-| Function name           | Relative Url               | Description | Input (Request)                               | Output(Response)                                                   | Completed Frontend Integration        |
-| ----------------------- | -------------------------- | ----------- | --------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------- |
-| login_user(string name) | POST /login                | For players | [ String name of player ](#login-request)     | Success/Failure                                                    | Yes                                   |
-| logout_user()           | POST /logout               |             | N/A                                           | Success/Failure                                                    | Yes                                   |
-| GetSelf()               | GET /self                  |             | N/A                                           | [Players object](#self-response)                                   | Yes                                   |
-| GetPlayers()            | GET /players               | For DM      | N/A                                           | [Array of players objects](#player-get-response)                   | No (Should this include any admin...) |
-| UpdateHP(int playerid)  | PUT /players/hp/{playerid} |             | [New hp of player](#player-hp-update-request) | [Updated player information w/ new hp](#player-hp-update-response) | No                                    |
+| Function name             | Relative Url                  | Description | Input (Request)                                       | Output(Response)                                                           | Completed Frontend Integration        |
+| ------------------------- | ----------------------------- | ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------- |
+| login_user(string name)   | POST /login                   | For players | [ String name of player ](#login-request)             | Success/Failure                                                            | Yes                                   |
+| logout_user()             | POST /logout                  |             | N/A                                                   | Success/Failure                                                            | Yes                                   |
+| GetSelf()                 | GET /self                     |             | N/A                                                   | [Players object](#self-response)                                           | Yes                                   |
+| GetPlayers()              | GET /players                  | For DM      | N/A                                                   | [Array of players objects](#player-get-response)                           | No (Should this include any admin...) |
+| UpdateHP(int playerid)    | PUT /players/hp/{playerid}    |             | [New hp of player](#player-hp-update-request)         | [Updated player information w/ new hp](#player-hp-update-response)         | No                                    |
+| UpdateMaxHP(int playerid) | PUT /players/maxhp/{playerid} |             | [New max hp of player](#player-max-hp-update-request) | [Updated player information w/ new max hp](#player-max-hp-update-response) | No                                    |
 
 ### Inventory Stock Endpoints
 
@@ -117,6 +118,30 @@
 ```
 {
   "hp": 70,
+  "maxhp": 100,
+  "name": "person1",
+  "personid": 1
+}
+```
+
+#### Player Max HP Update Request
+
+[(Back to Top)](#rest-api)
+
+```
+{
+  "maxhp": 70
+}
+```
+
+#### Player Max HP Update Response
+
+[(Back to Top)](#rest-api)
+
+```
+{
+  "hp": 70,
+  "maxhp": 100,
   "name": "person1",
   "personid": 1
 }
@@ -623,6 +648,7 @@ Person
 - id (int, primary key)
 - Name (varchar 40)
 - HP (int)
+- MaxHP (int)
 - Limbs (Limb: Many to Many)
 - Quests (Quest: Many to Many) (Deprecated)
 - Inventory (Item: Many to Many)

@@ -5,31 +5,50 @@ import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faCheck, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
-function Stats({ hp, limbsHurt }) {
+function Stats({ hp, maxhp, limbsHurt }) {
   const Face = "./pipboy/fullFace.png";
-  const [editHP, setEditHP] = useState(true);
+  const [editHP, setEditHP] = useState(false);
   const [newHP, setNewHP] = useState(null);
 
+  const [editMaxHP, setEditMaxHP] = useState(false);
+  const [newMaxHP, setNewMaxHP] = useState(null);
+
   function onChangeHP(event) {
-    const name = event.target.name;
     const value = event.target.value;
-    //if(value === null || value)
-    console.log(value);
     setNewHP(value);
+  }
+
+  function onChangeMaxHP(event) {
+    const value = event.target.value;
+    setNewMaxHP(value);
   }
 
   function onSubmitHP(event) {
     // Validate HP (Check if it is different or allowed)
     if (newHP == hp) {
+      setEditHP(false);
       return;
     }
-    if (newHP > 100) {
+    if (newHP > maxhp) {
       return;
     }
     // Send it
     // Refresh hp
     // Change out of edit mode
+    console.log("hm");
     setEditHP(false);
+  }
+
+  function onSubmitMaxHP(event) {
+    // Validate HP (Check if it is different or allowed)
+    if (newMaxHP == maxhp) {
+      setEditMaxHP(false);
+      return;
+    }
+    // Send it
+    // Refresh hp
+    // Change out of edit mode
+    setEditMaxHP(false);
   }
 
   return (
@@ -51,11 +70,38 @@ function Stats({ hp, limbsHurt }) {
               ></input>
             </span>
           ) : (
-            <span className="hp hp-label" onClick={() => setEditHP(true)}>
+            <span
+              className="hp hp-label"
+              onClick={() => {
+                setEditHP(true);
+                setEditMaxHP(false);
+              }}
+            >
               {hp}
             </span>
-          )}{" "}
-          / 100
+          )}
+          {""}/{""}
+          {editMaxHP ? (
+            <span className="hp">
+              <FontAwesomeIcon icon={faCheck} onClick={onSubmitMaxHP} />
+              <input
+                name="maxhp"
+                value={newMaxHP !== null ? newMaxHP : maxhp}
+                onChange={onChangeMaxHP}
+                type="text"
+              ></input>
+            </span>
+          ) : (
+            <span
+              className="hp hp-label"
+              onClick={() => {
+                setEditMaxHP(true);
+                setEditHP(false);
+              }}
+            >
+              {maxhp}
+            </span>
+          )}
         </span>
       </div>
       <div className="limbs stats-container">
