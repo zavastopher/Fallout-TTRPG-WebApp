@@ -3,7 +3,6 @@ import Description from "./description";
 import List from "./list";
 import { useEffect, useState } from "react";
 
-import { useLocation } from "react-router-dom";
 import axios from "axios";
 import ContextMenu from "./contextMenu";
 import Select from "react-select";
@@ -14,83 +13,20 @@ import "react-tabs/style/react-tabs.css";
 function Inventory({
   self,
   currentUser,
-  playerList,
+  playerOptions,
   inputs,
   setInputs,
   resetInputs,
+  customTheme,
+  colorStyles,
+  handleInputChange,
 }) {
-  const location = useLocation();
+  // const location = useLocation();
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
+
   const [itemOptions, setItemOptions] = useState([]);
   const [tabIdx, setTabIdx] = useState(0);
-
-  const blackTransColor = "rgba(0, 0, 0, .75)";
-  const greenTransColor = "rgba(0, 128, 0, .75)";
-
-  const dropdownFontSize = "16px";
-
-  const playerOptions = [
-    { value: null, label: "none" },
-    ...playerList.map((player) => ({
-      value: player.personid,
-      label: player.name,
-    })),
-  ];
-
-  const customTheme = (theme) => ({
-    ...theme,
-    fontSize: "16px",
-    colors: {
-      ...theme.colors,
-      primary25: greenTransColor, // change Background color of options on hover
-      primary: greenTransColor, // change the Background color of the selected option
-      neutral0: blackTransColor,
-      neutral5: "black",
-      neutral10: "black",
-      neutral20: "black",
-      neutral30: greenTransColor, // Border Hover Color
-      neutral40: "green", // Arrow Hover Color
-      neutral50: "green", // Select text
-      neutral60: greenTransColor, //
-      neutral70: greenTransColor, //
-      neutral80: greenTransColor, //
-      neutral90: greenTransColor, //
-    },
-  });
-
-  const colorStyles = {
-    control: (provided) => ({
-      ...provided,
-      fontSize: dropdownFontSize,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      color: state.isSelected ? "rgb(192, 247, 168)" : "white",
-    }),
-    menu: (base) => ({
-      ...base,
-      fontSize: dropdownFontSize,
-      position: "absolute",
-      //bottom: "0px",
-      right: "0",
-      overflow: "visible",
-    }),
-    menuList: (base) => ({
-      ...base,
-      position: "absolute",
-      bottom: "46px",
-      backgroundColor: blackTransColor,
-      width: "inherit",
-      //overflow: "visible",
-    }),
-  };
-
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setInputs((values) => ({ ...values, [name]: value }));
-  };
 
   useEffect(() => {
     resetInputs();
@@ -100,7 +36,6 @@ function Inventory({
     //var inventory;
 
     axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
-      //inventory = response.data;
       console.log(response.data);
       setItemOptions(
         response.data.map((item) => ({
@@ -220,7 +155,7 @@ function Inventory({
                       id="quantity"
                       type="text"
                       value={inputs.quantity || ""}
-                      onChange={handleChange}
+                      onChange={handleInputChange}
                     ></input>
                   </div>
                 </div>
@@ -247,7 +182,7 @@ function Inventory({
                           id="name"
                           type="text"
                           value={inputs.name || ""}
-                          onChange={handleChange}
+                          onChange={handleInputChange}
                         ></input>
                       </div>
 
@@ -259,7 +194,7 @@ function Inventory({
                           cols="22"
                           rows="5"
                           value={inputs.description || ""}
-                          onChange={handleChange}
+                          onChange={handleInputChange}
                         ></textarea>
                       </div>
                       <div className="player-dropdown">
@@ -286,7 +221,7 @@ function Inventory({
                             id="quantity"
                             type="text"
                             value={inputs.quantity || ""}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                           ></input>
                         </div>
                       </div>
@@ -303,11 +238,11 @@ function Inventory({
                           value={
                             inputs.name
                               ? inputs.name
-                              : inventory
+                              : inventory && inventory[selected]
                               ? inventory[selected].name
                               : ""
                           }
-                          onChange={handleChange}
+                          onChange={handleInputChange}
                         ></input>
                       </div>
 
@@ -321,11 +256,11 @@ function Inventory({
                           value={
                             inputs.description
                               ? inputs.description
-                              : inventory
+                              : inventory && inventory[selected]
                               ? inventory[selected].description
                               : ""
                           }
-                          onChange={handleChange}
+                          onChange={handleInputChange}
                         ></textarea>
                       </div>
                     </TabPanel>
@@ -356,7 +291,7 @@ function Inventory({
                   id="quantity"
                   type="text"
                   value={inputs.quantity || ""}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                 ></input>
               </div>
             </div>

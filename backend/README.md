@@ -44,13 +44,16 @@
 | CreateQuest()                  | POST /quests             |             | [A list of new quest items](#quest-addition-request) | [Updated array of all quests](#quest-addition-response)                | No                             |
 | UpdateQuestStatus(int questId) | PUT /quests/{questid}    |             | [Quest information to update](#quest-update-request) | [Quest's updated information](#quest-update-response)                  | No                             |
 | RemoveQuest(int questId)       | DELETE /quests/{questid} |             |                                                      | [Updated list of quests and the deleted quest](#quest-delete-response) | No                             |
+| GetMyQuest()                   | GET /players/quests      |             |
 
 ### Player Quest Endpoints
 
-| Function name                       | Relative Url                     | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
-| ----------------------------------- | -------------------------------- | ----------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| AssignQuestToPlayers(int questid)   | PATCH /players/quests/{questid}  |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No                             |
-| UnassignQuestToPlayers(int questid) | DELETE /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No                             |
+| Function name                                                           | Relative Url                     | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
+| ----------------------------------------------------------------------- | -------------------------------- | ----------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| AssignQuestToPlayers(int questid)                                       | PATCH /players/quests/{questid}  |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No                             |
+| UnassignQuestToPlayers(int questid)                                     | DELETE /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No                             |
+| [List of quests assigned to the current player](#my-quest-get-response) | No                               |
+| GetPlayerQuest()                                                        | GET /players/quests{questid}     |             |                                                                            | [List of quests assigned to the input player](#player-quest-get-response)                                            | No                             |
 
 ### Player Limb Endpoints
 
@@ -533,6 +536,32 @@ Returns entire new inventory
   },
 ]
 ```
+
+#### My Quest Get Response
+
+[(Back to Top)](#rest-api)
+
+[
+{
+"description": "I am quest description one",
+"name": "quest one",
+"questid": 1,
+"status": "incomplete"
+},
+]
+
+#### Player Quest Get Response
+
+[(Back to Top)](#rest-api)
+
+[
+{
+"description": "I am quest description one",
+"name": "quest one",
+"questid": 1,
+"status": "incomplete"
+},
+]
 
 #### Limbs From Database
 

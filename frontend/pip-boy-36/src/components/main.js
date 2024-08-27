@@ -15,11 +15,76 @@ function Main({ self, refreshSelf, logMeOut }) {
   const [playerList, setPlayerList] = useState([]);
   const [inputs, setInputs] = useState({});
 
+  const playerOptions = [
+    { value: null, label: "none" },
+    ...playerList.map((player) => ({
+      value: player.personid,
+      label: player.name,
+    })),
+  ];
+
+  // Dropdown styles
+  const ddStyles = {
+    blackTransColor: "rgba(0, 0, 0, .75)",
+    greenTransColor: "rgba(0, 128, 0, .75)",
+    dropdownFontSize: "16px",
+  };
+
+  const customTheme = (theme) => ({
+    ...theme,
+    fontSize: "16px",
+    colors: {
+      ...theme.colors,
+      primary25: ddStyles.greenTransColor, // change Background color of options on hover
+      primary: ddStyles.greenTransColor, // change the Background color of the selected option
+      neutral0: ddStyles.blackTransColor,
+      neutral5: "black",
+      neutral10: "black",
+      neutral20: "black",
+      neutral30: ddStyles.greenTransColor, // Border Hover Color
+      neutral40: "green", // Arrow Hover Color
+      neutral50: "green", // Select text
+      neutral60: ddStyles.greenTransColor, //
+      neutral70: ddStyles.greenTransColor, //
+      neutral80: ddStyles.greenTransColor, //
+      neutral90: ddStyles.greenTransColor, //
+    },
+  });
+
+  const colorStyles = {
+    control: (provided) => ({
+      ...provided,
+      fontSize: ddStyles.dropdownFontSize,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      color: state.isSelected ? "rgb(192, 247, 168)" : "white",
+    }),
+    menu: (base) => ({
+      ...base,
+      fontSize: ddStyles.dropdownFontSize,
+      position: "absolute",
+      right: "0",
+      overflow: "visible",
+    }),
+    menuList: (base) => ({
+      ...base,
+      position: "absolute",
+      bottom: "46px",
+      backgroundColor: ddStyles.blackTransColor,
+      width: "inherit",
+    }),
+  };
+
+  const handleInputChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setInputs((values) => ({ ...values, [name]: value }));
+  };
+
   function resetInputs() {
     setInputs({});
   }
-
-  //function updateLimb(limbs, status) {}
 
   useEffect(() => {
     // Get Limbs
@@ -99,14 +164,32 @@ function Main({ self, refreshSelf, logMeOut }) {
               <Inventory
                 self={self}
                 currentUser={currentUser}
-                playerList={playerList}
+                playerOptions={playerOptions}
                 inputs={inputs}
                 setInputs={setInputs}
                 resetInputs={resetInputs}
+                customTheme={customTheme}
+                colorStyles={colorStyles}
+                handleInputChange={handleInputChange}
               />
             }
           />
-          <Route path="quests" element={<Quests />} />
+          <Route
+            path="quests"
+            element={
+              <Quests
+                self={self}
+                currentUser={currentUser}
+                playerOptions={playerOptions}
+                inputs={inputs}
+                setInputs={setInputs}
+                resetInputs={resetInputs}
+                customTheme={customTheme}
+                colorStyles={colorStyles}
+                handleInputChange={handleInputChange}
+              />
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

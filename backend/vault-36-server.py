@@ -393,7 +393,6 @@ def UpdateDeleteQuestRoute(questid):
 def PlayerQuestRoute(questid):
     if request.method == "PATCH":
         data = request.get_json()
-        #questid = data["questid"]
         playerids = data["playerids"]
 
         for playerid in playerids:
@@ -402,7 +401,6 @@ def PlayerQuestRoute(questid):
         return res
     elif request.method == "DELETE":
         data = request.get_json()
-        #questid = data["questid"]
         playerids = data["playerids"]
 
         for playerid in playerids:
@@ -414,8 +412,14 @@ def PlayerQuestRoute(questid):
 ## Players can get their associated quest
 @app.route("/players/quests", methods=["GET"])
 @jwt_required()
-def GetPlayerQuestRoute():
+def GetMyQuestRoute():
     playerid = current_user.id
+    return GetQuestsByPlayerFromDatabase(playerid)
+
+## Get quests associated with a player
+@app.route("/players/quests/<int:playerid>", methods=["GET"])
+@jwt_required()
+def GetPlayerQuestRoute(playerid):
     return GetQuestsByPlayerFromDatabase(playerid)
 
 
