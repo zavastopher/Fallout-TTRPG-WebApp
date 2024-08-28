@@ -37,7 +37,8 @@ function Quests({
   }, []);
 
   useEffect(() => {
-    axios
+    if(self.isadmin){
+      axios
       .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
       .then((response) => {
         setQuestOptions(
@@ -57,18 +58,22 @@ function Quests({
             .then((response) => {
               setQuests(response.data);
             });
+          
         } else if (self.isadmin) {
           // If no player is selected and the logged in user is the admin
           setQuests(response.data);
-        } else {
-          // Regular player
-          axios
-            .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
-            .then((response) => {
-              setQuests(response.data);
-            });
         }
       });
+    } else  {
+      axios
+        .get(
+          `${process.env.REACT_APP_BASEURL}/players/quests`,{}
+        )
+        .then((response) => {
+          setQuests(response.data);
+        });
+    }
+    
   }, [currentUser]);
 
   const handleSubmit = (event) => {
