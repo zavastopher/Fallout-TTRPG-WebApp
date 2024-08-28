@@ -20,40 +20,84 @@ function ContextMenu(props) {
     toggleSwitcherTV();
   }
 
+  //useGSAP(
+  //  () => {
+  //    timeline.current = gsap
+  //      .timeline({ paused: true })
+  //      .to(".context-menu", {
+  //        duration: 0.1,
+  //        width: "400px",
+  //        height: "100%",
+  //        minHeight: "100%",
+  //        padding: "10px",
+  //        backgroundColor: "#ffffff",
+  //        color: "inherit",
+  //        overflow: "visible",
+  //        ease: Power2.easeOut,
+  //      })
+  //      .to(".context-menu", {
+  //        duration: 0.2,
+  //        minHeight: "0px",
+  //        height: "0",
+  //        overflow: "hidden",
+  //      })
+  //      .to(".context-menu", {
+  //        duration: 0.2,
+  //        padding: "0",
+  //        color: "white",
+  //        ease: Power2.easeOut,
+  //      })
+  //      .to(".context-menu", {
+  //        duration: 0.5,
+  //        delay: 0.2,
+  //        width: "0",
+  //        height: "0",
+  //        backgroundColor: "#ffffff",
+  //      });
+  //  },
+  //  { scope: container }
+  //); // <-- scope is for selector text (optional)
+
+  // This one
   useGSAP(
     () => {
       timeline.current = gsap
         .timeline({ paused: true })
         .to(".context-menu", {
-          duration: 0.1,
-          width: "400px",
-          height: "100%",
-          minHeight: "100%",
-          //minHeight: "275px",
-          padding: "10px",
+          duration: 0.2,
+          width: "0",
+          height: "0",
           backgroundColor: "#ffffff",
-          color: "inherit",
-          overflow: "visible",
           ease: Power2.easeOut,
         })
         .to(".context-menu", {
-          duration: 0.2,
-          minHeight: "0px",
-          height: "0",
-          overflow: "hidden",
-        })
-        .to(".context-menu", {
-          duration: 0.2,
-          padding: "0",
+          duration: 0.1,
+          delay: 0.1,
+          padding: "10px",
+          width: "400px",
           color: "white",
           ease: Power2.easeOut,
         })
         .to(".context-menu", {
-          duration: 0.5,
-          delay: 0.2,
-          width: "0",
+          duration: 0.1,
+          overflow: "hidden",
           height: "0",
-          backgroundColor: "#ffffff",
+          minHeight: "0",
+          color: "white",
+          ease: Power2.easeOut,
+        })
+
+        .to(".context-menu", {
+          duration: 0.1,
+          width: "400px",
+          height: "100%",
+          minHeight: "100%",
+          padding: "10px",
+          paddingBottom: "30px",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          color: "inherit",
+          overflow: "visible",
+          ease: Power2.easeOut,
         });
     },
     { scope: container }

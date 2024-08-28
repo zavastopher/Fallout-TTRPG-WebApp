@@ -138,14 +138,20 @@ input[type="text"] {
 }
 
 .context-menu {
-  width: 400px;
-  //height: 37vh;
-  background: rgba(0, 0, 0, 0.5);
-  //overflow: hidden;
+  width: 0;
+  height: 0;
+  background: #ffffff;
   position: relative;
   margin-right: 30px;
-  padding: 10px;
-  padding-bottom: 30px;
+  padding: 0;
+  overflow: hidden;
+
+  //width: 400px;
+  //background: rgba(0, 0, 0, 0.5);
+  //position: relative;
+  //margin-right: 30px;
+  //padding: 10px;
+  //padding-bottom: 30px;
 
   .react-tabs__tab-list {
     border-bottom: 1px solid $lineGreen;
@@ -159,6 +165,10 @@ input[type="text"] {
 
   .react-tabs__tab:focus::after {
     background: rgba(0, 128, 0, 0.8);
+  }
+
+  button {
+    color: inherit;
   }
 }
 
