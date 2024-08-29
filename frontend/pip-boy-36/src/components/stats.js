@@ -4,8 +4,9 @@ import Title from "./title";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faCheck, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import axios from "axios";
 
-function Stats({ hp, maxhp, limbsHurt }) {
+function Stats({ hp, maxhp, limbsHurt, self }) {
   const Face = "./pipboy/fullFace.png";
   const [editHP, setEditHP] = useState(false);
   const [newHP, setNewHP] = useState(null);
@@ -49,6 +50,24 @@ function Stats({ hp, maxhp, limbsHurt }) {
     // Refresh hp
     // Change out of edit mode
     setEditMaxHP(false);
+  }
+
+  function UpdateLimb(limb) {
+    console.log(limb.toLowerCase());
+    console.log(limbsHurt);
+    console.log(self);
+    axios
+      .put(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {
+        limbtype: limbsHurt[limb.toLowerCase()].limbtype,
+        status: limbsHurt[limb.toLowerCase()].status == 0 ? 1 : 0,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log("Update Limb Error:");
+        console.log(error);
+      });
   }
 
   return (
@@ -108,26 +127,32 @@ function Stats({ hp, maxhp, limbsHurt }) {
         <Limb
           limb="head"
           limbHurt={limbsHurt ? limbsHurt.head.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
         <Limb
           limb="torso"
           limbHurt={limbsHurt ? limbsHurt.torso.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
         <Limb
           limb="leftArm"
           limbHurt={limbsHurt ? limbsHurt.leftarm.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
         <Limb
           limb="rightArm"
           limbHurt={limbsHurt ? limbsHurt.rightarm.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
         <Limb
           limb="leftLeg"
           limbHurt={limbsHurt ? limbsHurt.leftleg.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
         <Limb
           limb="rightLeg"
           limbHurt={limbsHurt ? limbsHurt.rightleg.status : 0}
+          UpdateLimb={UpdateLimb}
         ></Limb>
 
         <div className="face limb">

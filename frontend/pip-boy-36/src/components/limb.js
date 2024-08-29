@@ -1,4 +1,7 @@
-function Limb({ limb, limbHurt }) {
+import { faBone } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+function Limb({ limb, limbHurt, UpdateLimb }) {
   return (
     <div className={`limb ${limb}`}>
       <img
@@ -7,6 +10,10 @@ function Limb({ limb, limbHurt }) {
         }.png`}
         alt={`${limb}`}
       />
+
+      <div className={`limbButton ${limb}`} onClick={() => UpdateLimb(limb)}>
+        <FontAwesomeIcon icon={faBone} />
+      </div>
     </div>
   );
 }

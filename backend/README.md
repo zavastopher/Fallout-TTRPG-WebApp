@@ -44,7 +44,6 @@
 | CreateQuest()                  | POST /quests             |             | [A list of new quest items](#quest-addition-request) | [Updated array of all quests](#quest-addition-response)                | No                             |
 | UpdateQuestStatus(int questId) | PUT /quests/{questid}    |             | [Quest information to update](#quest-update-request) | [Quest's updated information](#quest-update-response)                  | No                             |
 | RemoveQuest(int questId)       | DELETE /quests/{questid} |             |                                                      | [Updated list of quests and the deleted quest](#quest-delete-response) | No                             |
-| GetMyQuest()                   | GET /players/quests      |             |
 
 ### Player Quest Endpoints
 
@@ -663,7 +662,7 @@ Returns entire new inventory
 ```
 {
   "name": "player1",
-  "limbname": 1,
+  "limbname": "head",
   "status": 1
 }
 ```

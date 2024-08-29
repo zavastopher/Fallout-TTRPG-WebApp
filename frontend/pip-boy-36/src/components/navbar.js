@@ -13,7 +13,8 @@ function Navbar({
   //const [name, setName] = useState("");
 
   //console.log(`user: ${currentUser}`);
-  const name = !self.isadmin || !currentUser ? self.name : currentUser.name;
+
+  //const name = !self.isadmin || !currentUser ? self.name : currentUser.name;
 
   return (
     <>
@@ -32,7 +33,7 @@ function Navbar({
             setPlayerList={setPlayerList}
             resetInputs={resetInputs}
           ></UserDropdown>
-          <div className="header-title">{name}</div>
+          <div className="header-title">{self.name}</div>
         </div>
         <div className="outlet">
           <Outlet />

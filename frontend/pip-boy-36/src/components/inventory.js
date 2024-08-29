@@ -26,7 +26,9 @@ function Inventory({
   const [inventory, setInventory] = useState(null);
 
   const [itemOptions, setItemOptions] = useState([]);
-  const [tabIdx, setTabIdx] = useState(0);
+  const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState(0);
+  const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState(0);
+  const [tabPlayerIdx, setTabPlayerIdx] = useState(0);
 
   useEffect(() => {
     resetInputs();
@@ -72,20 +74,45 @@ function Inventory({
     event.preventDefault();
 
     if (currentUser || !self.isadmin) {
-      addToPlayer();
+      UpdatePlayer();
     } else {
       UpdateDatabase();
     }
   };
 
-  function addToPlayer() {
-    if (inputs.item && inputs.quantity) {
-      console.log("add!");
+  // Add Item to Player or change quantity
+  function UpdatePlayer() {
+    if (currentUser) {
+      // Admin Updating player, use admin player tabs
+      if (tabAdminPlayerIdx === 0) {
+        if (inputs.quantity && inputs.item) {
+          // Add item to player
+          console.log("add!");
+        }
+      } else {
+        if (inputs.quantity) {
+          // Update qty of item for player
+          console.log("update qty!");
+        }
+      }
+    } else {
+      // Player updating self, use player tabs
+      if (tabPlayerIdx === 0) {
+        if (inputs.quantity && inputs.item) {
+          // Add item to player
+          console.log("add!");
+        }
+      } else {
+        if (inputs.quantity) {
+          // Update qty of item for player
+          console.log("update qty!");
+        }
+      }
     }
   }
 
   function UpdateDatabase() {
-    if (tabIdx == 0) {
+    if (tabAdminDatabaseIdx === 0) {
       // Add Item
       if (inputs.name && inputs.description && inputs.quantity) {
         console.log("add to database!");
@@ -100,14 +127,14 @@ function Inventory({
     } else {
       // Update Item
       if (inputs.name || inputs.description) {
-        console.log("update!");
+        console.log(`update ${inventory[selected].name} to ${inputs.name}!`);
       }
     }
   }
 
   function deleteItem() {
     // Delete with axios,
-    console.log("delete item");
+    console.log(`delete ${inventory[selected].name}!`);
   }
 
   return (
@@ -134,42 +161,86 @@ function Inventory({
             <div>
               {currentUser ? (
                 <div>
-                  <span>Add Item to {currentUser.name}</span>
-
-                  <div className="fields">
-                    <label htmlFor="item">Item</label>
-                    <Select
-                      id="item"
-                      options={itemOptions}
-                      styles={colorStyles}
-                      theme={customTheme}
-                      onChange={(choice) =>
-                        setInputs((values) => ({ ...values, ["item"]: choice }))
-                      }
-                    />
-                  </div>
-                  <div className="fields">
-                    <label htmlFor="quantity">Qty</label>
-                    <input
-                      name="quantity"
-                      id="quantity"
-                      type="text"
-                      value={inputs.quantity || ""}
-                      onChange={handleInputChange}
-                    ></input>
-                  </div>
-                </div>
-              ) : (
-                <div>
                   <Tabs
                     onSelect={(index) => {
-                      setTabIdx(index);
+                      setTabAdminPlayerIdx(index);
+                      console.log(index);
                       resetInputs();
                     }}
                   >
                     <TabList>
                       <Tab>Add Item</Tab>
-                      <Tab>Update Selected Item</Tab>
+                      <Tab disabled={!(inventory && inventory[selected])}>
+                        Update Selected Item
+                      </Tab>
+                    </TabList>
+                    <TabPanel>
+                      <span>Add Item to {currentUser.name}</span>
+
+                      <div className="fields">
+                        <label htmlFor="item">Item</label>
+                        <Select
+                          id="item"
+                          options={itemOptions}
+                          styles={colorStyles}
+                          theme={customTheme}
+                          onChange={(choice) =>
+                            setInputs((values) => ({
+                              ...values,
+                              ["item"]: choice,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="fields">
+                        <label htmlFor="quantity">Qty</label>
+                        <input
+                          name="quantity"
+                          id="quantity"
+                          type="text"
+                          value={inputs.quantity || ""}
+                          onChange={handleInputChange}
+                        ></input>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <span>
+                        Update{" "}
+                        <span style={{ textTransform: "capitalize" }}>
+                          {inventory && inventory[selected]
+                            ? `"${inventory[selected].name}"`
+                            : "Item"}
+                        </span>{" "}
+                        Quantity
+                      </span>
+
+                      <div className="fields field-column">
+                        <label htmlFor="quantity">Qty</label>
+                        <input
+                          name="quantity"
+                          id="quantity"
+                          type="text"
+                          value={inputs.quantity || ""}
+                          onChange={handleInputChange}
+                        ></input>
+                      </div>
+                    </TabPanel>
+                  </Tabs>
+                </div>
+              ) : (
+                <div>
+                  <Tabs
+                    onSelect={(index) => {
+                      setTabAdminDatabaseIdx(index);
+                      resetInputs();
+                      console.log(index);
+                    }}
+                  >
+                    <TabList>
+                      <Tab>Add Item</Tab>
+                      <Tab disabled={!(inventory && inventory[selected])}>
+                        Update Selected Item
+                      </Tab>
                     </TabList>
 
                     <TabPanel>
@@ -227,7 +298,15 @@ function Inventory({
                       </div>
                     </TabPanel>
                     <TabPanel>
-                      <span>Update Item in Database</span>
+                      <span>
+                        Update{" "}
+                        <span style={{ textTransform: "capitalize" }}>
+                          {inventory && inventory[selected]
+                            ? `"${inventory[selected].name}"`
+                            : "Item"}
+                        </span>{" "}
+                        in Database
+                      </span>
 
                       <div className="fields">
                         <label htmlFor="name">Name</label>
@@ -269,32 +348,70 @@ function Inventory({
               )}
             </div>
           ) : (
-            <div>
-              <span>Add Item to My Inventory</span>
-              <div className="fields">
-                <label htmlFor="item">Item</label>
-                <Select
-                  id="item"
-                  options={itemOptions}
-                  styles={colorStyles}
-                  theme={customTheme}
-                  onChange={(choice) =>
-                    setInputs((values) => ({ ...values, ["item"]: choice }))
-                  }
-                />
-              </div>
+            <Tabs
+              onSelect={(index) => {
+                setTabPlayerIdx(index);
+                resetInputs();
+              }}
+            >
+              <TabList>
+                <Tab>Add Item</Tab>
+                <Tab disabled={!(inventory && inventory[selected])}>
+                  Update Selected Item
+                </Tab>
+              </TabList>
 
-              <div className="fields field-column">
-                <label htmlFor="quantity">Qty</label>
-                <input
-                  name="quantity"
-                  id="quantity"
-                  type="text"
-                  value={inputs.quantity || ""}
-                  onChange={handleInputChange}
-                ></input>
-              </div>
-            </div>
+              <TabPanel>
+                <div>
+                  <span>Add Item to My Inventory</span>
+                  <div className="fields">
+                    <label htmlFor="item">Item</label>
+                    <Select
+                      id="item"
+                      options={itemOptions}
+                      styles={colorStyles}
+                      theme={customTheme}
+                      onChange={(choice) =>
+                        setInputs((values) => ({ ...values, ["item"]: choice }))
+                      }
+                    />
+                  </div>
+
+                  <div className="fields field-column">
+                    <label htmlFor="quantity">Qty</label>
+                    <input
+                      name="quantity"
+                      id="quantity"
+                      type="text"
+                      value={inputs.quantity || ""}
+                      onChange={handleInputChange}
+                    ></input>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <span>
+                  Update{" "}
+                  <span style={{ textTransform: "capitalize" }}>
+                    {inventory && inventory[selected]
+                      ? `"${inventory[selected].name}"`
+                      : "Item"}
+                  </span>{" "}
+                  Quantity
+                </span>
+
+                <div className="fields field-column">
+                  <label htmlFor="quantity">Qty</label>
+                  <input
+                    name="quantity"
+                    id="quantity"
+                    type="text"
+                    value={inputs.quantity || ""}
+                    onChange={handleInputChange}
+                  ></input>
+                </div>
+              </TabPanel>
+            </Tabs>
           )}
         </div>
       </ContextMenu>

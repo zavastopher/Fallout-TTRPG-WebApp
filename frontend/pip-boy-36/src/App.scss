@@ -341,10 +341,49 @@ input[type="text"] {
 
 .limb {
   position: absolute;
+
+  img {
+    height: 450px;
+  }
 }
 
-.limb img {
-  height: 450px;
+.limbButton {
+  color: green;
+  border: solid 2px green;
+  position: absolute;
+  border-radius: 20px;
+  padding: 6px;
+  z-index: 10;
+
+  &.rightLeg {
+    bottom: 94px;
+    right: 85px;
+  }
+
+  &.leftLeg {
+    bottom: 94px;
+    left: 85px;
+  }
+
+  &.rightArm {
+    top: 110px;
+    right: -20px;
+  }
+
+  &.leftArm {
+    top: 110px;
+    left: -20px;
+  }
+
+  &.torso {
+    bottom: 184px;
+    left: 116px;
+  }
+
+  &.head {
+    top: 42px;
+    left: 122px;
+  }
 }
 
 //-----------------------------------------------------------

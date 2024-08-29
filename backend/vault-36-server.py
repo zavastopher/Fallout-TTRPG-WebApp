@@ -470,6 +470,9 @@ def PlayerLimbsRoute(playerid):
                 f"Could not update player {playerid}'s limb (id {limbtype}). Does player exist?",
                 400,
             )
+        
+        socketio.emit("limb", {"limb": res["limbname"], "status": res["status"]})
+
 
         return res
 
@@ -484,26 +487,19 @@ def PlayerLimbsRoute(playerid):
  
 ## Socket functions
 
-@socketio.on('message')
-def handle_message(message):
-    send("Your message was cool")
-
-@socketio.on('json')
-def handle_json(json):
-    send({"that": "was cool"}, json=True)
-
 @socketio.on('my event')
 def handle_custom_event(json):
-    send('received json: ' + str(json))
+    #emit("limb",'received json: ' + str(json))
+    emit("limb", {"limb": "limb thing", "status": "broken"}, broadcast=True)
     # send('received json: ')
 
 @socketio.on('connect')
 def test_connect(auth):
-    emit('my response', {'data': 'Connected'})
+    app.logger.debug("connected")
 
 @socketio.on('disconnect')
 def test_disconnect():
-    print('Client disconnected')
+    print('Client disconnected') 
 
 
 if __name__ == "__main__":

@@ -110,10 +110,6 @@ function Main({ self, refreshSelf, logMeOut }) {
     socket = io("localhost:4001");
 
     socket.on("connect", function () {
-      socket.emit("my event", { data: "I'm connected!" });
-    });
-
-    socket.on("message", () => {
       console.log("connected!");
     });
 
@@ -121,8 +117,14 @@ function Main({ self, refreshSelf, logMeOut }) {
       refreshSelf();
     });
 
-    socket.on("limb", (limb, status) => {
-      limbsHurt[limb] = status;
+    socket.on("limb", ({ limb, status }) => {
+      console.log("limb change");
+      ////limbsHurt[limb] = status;
+      //setLimbsHurt([...limbsHurt, limb])
+
+      const changedList = { ...limbsHurt };
+      changedList[limb].status = status;
+      setLimbsHurt(changedList);
     });
 
     // when component unmounts, disconnect
@@ -155,6 +157,7 @@ function Main({ self, refreshSelf, logMeOut }) {
                 hp={currentUser ? currentUser.hp : self.hp}
                 maxhp={currentUser ? currentUser.maxhp : self.maxhp}
                 limbsHurt={limbsHurt}
+                self={self}
               />
             }
           />
