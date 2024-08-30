@@ -156,7 +156,13 @@ def login_user():
 
     token = create_access_token(identity=player, additional_claims=role)
 
-    response = jsonify({"msg": f"Login Success! Hi, {player.name}!"})
+
+
+    response = jsonify({"id": player.id,
+        "name": player.name,
+        "hp": player.hp,
+        "maxhp": player.maxhp,
+        "isadmin": player.isadmin})
 
     set_access_cookies(response, token)
 

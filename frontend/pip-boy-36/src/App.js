@@ -11,14 +11,46 @@ import axios from "axios";
  */
 
 function App() {
-  //const { token, removeToken, setToken } = useToken();
   const [self, setSelf] = useState(null);
-  //const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(
+    !self ? null : self.isadmin ? null : self
+  );
   const [loading, setLoading] = useState(true);
 
+  // Good useEffect for fetching api
   useEffect(() => {
-    getSelf();
+    setLoading(true);
+    var selfHolder = null;
+    axios
+      .get(`${process.env.REACT_APP_BASEURL}/self`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("logged in");
+        selfHolder = response.data;
+      })
+      .catch(() => {
+        console.log("You are not logged in!");
+      })
+      .finally(() => {
+        setLoading(false);
+        setSelf(selfHolder);
+
+        //if (!self.isadmin) {
+        //  currentUser = self;
+        //}
+      });
   }, []);
+
+  function updateHP(hp) {
+    setSelf({ ...self, hp: hp });
+  }
+  function updateMaxHP(maxhp) {
+    setSelf({ ...self, maxhp: maxhp });
+  }
 
   async function logMeIn(event, name) {
     event.preventDefault();
@@ -30,7 +62,8 @@ function App() {
         })
         .then((response) => {
           console.log(response.data);
-          getSelf();
+          // getSelf();
+          setSelf(response.data);
         });
     } catch (error) {
       if (error.response) {
@@ -57,33 +90,6 @@ function App() {
       });
   }
 
-  function getSelf() {
-    setLoading(true);
-    var selfHolder = null;
-    axios
-      .get(`${process.env.REACT_APP_BASEURL}/self`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        console.log("logged in");
-        selfHolder = response.data;
-      })
-      .catch(() => {
-        console.log("You are not logged in!");
-      })
-      .finally(() => {
-        setLoading(false);
-        setSelf(selfHolder);
-
-        //if (!self.isadmin) {
-        //  currentUser = self;
-        //}
-      });
-  }
-
   return (
     <div className="App crt crt-scanlines">
       <div id="scan"></div>
@@ -94,7 +100,14 @@ function App() {
           <Login logMeIn={logMeIn} />
         ) : (
           <>
-            <Main self={self} refreshSelf={getSelf} logMeOut={logMeOut}></Main>
+            <Main
+              self={self}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+              updateHP={updateHP}
+              updateMaxHP={updateMaxHP}
+              logMeOut={logMeOut}
+            ></Main>
           </>
         )}
       </header>

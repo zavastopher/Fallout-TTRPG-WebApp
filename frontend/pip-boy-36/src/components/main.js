@@ -9,9 +9,15 @@ import axios from "axios";
 
 let socket;
 
-function Main({ self, refreshSelf, logMeOut }) {
+function Main({
+  self,
+  currentUser,
+  setCurrentUser,
+  updateHP,
+  updateMaxHP,
+  logMeOut,
+}) {
   const [limbsHurt, setLimbsHurt] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
   const [playerList, setPlayerList] = useState([]);
   const [inputs, setInputs] = useState({});
 
@@ -116,6 +122,7 @@ function Main({ self, refreshSelf, logMeOut }) {
     }
   }, [self, currentUser]);
 
+  // Good useEffect for syncing socket stuff
   useEffect(() => {
     // create websocket/connect
     socket = io("localhost:4001");
@@ -125,7 +132,11 @@ function Main({ self, refreshSelf, logMeOut }) {
     });
 
     socket.on("hp", (hp) => {
-      refreshSelf();
+      updateHP(hp);
+    });
+
+    socket.on("maxhp", (maxhp) => {
+      updateMaxHP(maxhp);
     });
 
     socket.on("limb", ({ limb, status }) => {
@@ -142,7 +153,7 @@ function Main({ self, refreshSelf, logMeOut }) {
     return () => {
       socket.disconnect();
     };
-  }, [limbsHurt, refreshSelf]);
+  }, [limbsHurt]);
 
   return (
     <BrowserRouter>
