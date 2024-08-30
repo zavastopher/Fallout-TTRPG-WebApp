@@ -3,7 +3,7 @@ import Navbar from "./navbar";
 import Stats from "./stats";
 import Inventory from "./inventory";
 import Quests from "./quests";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 
@@ -82,28 +82,39 @@ function Main({ self, refreshSelf, logMeOut }) {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  function resetInputs() {
+  const resetInputs = useCallback(() => {
     setInputs({});
-  }
+  }, []);
 
   useEffect(() => {
     // Get Limbs
     if (self) {
-      if (self.isadmin) {
+      if (self.isadmin && currentUser) {
+        axios
+          .get(
+            `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.personid}`,
+            {}
+          )
+          .then((response) => {
+            //console.log(response.data);
+            //console.log(response.data[currentUser.name]);
+
+            var hurtLimbs = response.data[currentUser.name];
+            setLimbsHurt(hurtLimbs);
+          });
       } else {
         axios
           .get(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {})
           .then((response) => {
-            console.log(response.data);
-            console.log(response.data[self.name]);
+            //console.log(response.data);
+            //console.log(response.data[self.name]);
 
             var hurtLimbs = response.data[self.name];
             setLimbsHurt(hurtLimbs);
-            console.log("pause");
           });
       }
     }
-  }, [self]);
+  }, [self, currentUser]);
 
   useEffect(() => {
     // create websocket/connect
@@ -158,6 +169,7 @@ function Main({ self, refreshSelf, logMeOut }) {
                 maxhp={currentUser ? currentUser.maxhp : self.maxhp}
                 limbsHurt={limbsHurt}
                 self={self}
+                currentUser={currentUser}
               />
             }
           />

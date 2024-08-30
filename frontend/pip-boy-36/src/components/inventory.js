@@ -32,7 +32,7 @@ function Inventory({
 
   useEffect(() => {
     resetInputs();
-  }, []);
+  }, [resetInputs]);
 
   useEffect(() => {
     //var inventory;
@@ -120,7 +120,7 @@ function Inventory({
         if (inputs.players) {
           inputs.players.forEach((player) => {
             console.log(`Add to ${player.label} at ${player.value}`);
-            var playerid = player.value;
+            //var playerid = player.value;
           });
         }
       }
@@ -134,7 +134,19 @@ function Inventory({
 
   function deleteItem() {
     // Delete with axios,
-    console.log(`delete ${inventory[selected].name}!`);
+
+    if (currentUser) {
+      // Delete from Player by Admin
+      console.log(
+        `delete ${inventory[selected].name} from ${currentUser.name}!`
+      );
+    } else if (!self.admin) {
+      // Delete from Player by Player
+      console.log(`delete ${inventory[selected].name} from ${self.name}!`);
+    } else {
+      // Delete from Database
+      console.log(`delete ${inventory[selected].name} from Database!`);
+    }
   }
 
   return (
@@ -143,9 +155,11 @@ function Inventory({
       <div id="inventory" className="list-container">
         <List
           items={inventory}
+          setItems={setInventory}
           selected={selected}
           setSelected={setSelected}
           deleteItem={deleteItem}
+          shouldDelete={true}
         ></List>
         <div className="inventory-description description">
           <Description
@@ -187,7 +201,7 @@ function Inventory({
                           onChange={(choice) =>
                             setInputs((values) => ({
                               ...values,
-                              ["item"]: choice,
+                              item: choice,
                             }))
                           }
                         />
@@ -280,7 +294,7 @@ function Inventory({
                             onChange={(choice) =>
                               setInputs((values) => ({
                                 ...values,
-                                ["players"]: choice,
+                                players: choice,
                               }))
                             }
                           ></Select>
@@ -372,7 +386,7 @@ function Inventory({
                       styles={colorStyles}
                       theme={customTheme}
                       onChange={(choice) =>
-                        setInputs((values) => ({ ...values, ["item"]: choice }))
+                        setInputs((values) => ({ ...values, item: choice }))
                       }
                     />
                   </div>

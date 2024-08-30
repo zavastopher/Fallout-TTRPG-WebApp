@@ -1,3 +1,13 @@
+# Todo
+
+# Completed
+
+- Add menu for updatng item quantity for selected item
+- Add buttons to toggle limbs
+- Change delete icons for quests so that players can't delete their own quests
+- Add status to quest information
+- Add filter for inventory and quests lists
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

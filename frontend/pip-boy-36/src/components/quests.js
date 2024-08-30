@@ -27,54 +27,45 @@ function Quests({
   const [questOptions, setQuestOptions] = useState([]);
   const [tabIdx, setTabIdx] = useState(0);
 
-  // Dropdown styles
-  const blackTransColor = "rgba(0, 0, 0, .75)";
-  const greenTransColor = "rgba(0, 128, 0, .75)";
-  const dropdownFontSize = "16px";
-
   useEffect(() => {
     resetInputs();
-  }, []);
+  }, [resetInputs]);
 
   useEffect(() => {
-    if(self.isadmin){
+    if (self.isadmin) {
       axios
-      .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
-      .then((response) => {
-        setQuestOptions(
-          response.data.map((quest) => ({
-            value: quest,
-            label: quest.name,
-          }))
-        );
+        .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
+        .then((response) => {
+          setQuestOptions(
+            response.data.map((quest) => ({
+              value: quest,
+              label: quest.name,
+            }))
+          );
 
-        if (currentUser && currentUser !== undefined) {
-          // If a player is selected in the dropdown
-          axios
-            .get(
-              `${process.env.REACT_APP_BASEURL}/players/quests/${currentUser.personid}`,
-              {}
-            )
-            .then((response) => {
-              setQuests(response.data);
-            });
-          
-        } else if (self.isadmin) {
-          // If no player is selected and the logged in user is the admin
-          setQuests(response.data);
-        }
-      });
-    } else  {
+          if (currentUser && currentUser !== undefined) {
+            // If a player is selected in the dropdown
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/quests/${currentUser.personid}`,
+                {}
+              )
+              .then((response) => {
+                setQuests(response.data);
+              });
+          } else if (self.isadmin) {
+            // If no player is selected and the logged in user is the admin
+            setQuests(response.data);
+          }
+        });
+    } else {
       axios
-        .get(
-          `${process.env.REACT_APP_BASEURL}/players/quests`,{}
-        )
+        .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
         .then((response) => {
           setQuests(response.data);
         });
     }
-    
-  }, [currentUser]);
+  }, [currentUser, self]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -93,7 +84,7 @@ function Quests({
   }
 
   function UpdateDatabase() {
-    if (tabIdx == 0) {
+    if (tabIdx === 0) {
       // Add quest
       if (inputs.name && inputs.description) {
         console.log("add to database!");
@@ -101,21 +92,31 @@ function Quests({
         if (inputs.players) {
           inputs.players.forEach((player) => {
             console.log(`Add to ${player.label} at ${player.value}`);
-            var playerid = player.value;
+            //var playerid = player.value;
           });
         }
       }
     } else {
       // Update quest
-      if (inputs.name || inputs.description) {
+      if (inputs.name || inputs.description || inputs.status) {
         console.log("update!");
+        console.log(inputs);
       }
     }
   }
 
   function deleteQuest() {
-    // Delete with axios,
-    console.log("delete quest");
+    // Delete with axios
+    // Deleting quest only posible for admin
+
+    if (currentUser) {
+      console.log(
+        `delete quest: ${quests[selected].name} from player ${currentUser.personid}`
+      );
+    } else if (self.isadmin) {
+      // Delete quest from database
+      console.log(`delete quest: ${quests[selected].name} from database`);
+    }
   }
 
   return (
@@ -124,9 +125,11 @@ function Quests({
       <div id="quests" className="list-container">
         <List
           items={quests}
+          setItems={setQuests}
           selected={selected}
           setSelected={setSelected}
           deleteItem={deleteQuest}
+          shouldDelete={self.isadmin}
         ></List>
         <div className="quest-description description">
           <Description
@@ -134,6 +137,9 @@ function Quests({
             currentItem={selected}
             currentList="Quest"
           ></Description>
+          <div>
+            Status: {quests && quests[selected] ? quests[selected].status : ""}
+          </div>
         </div>
       </div>
       {self.isadmin ? (
@@ -151,7 +157,7 @@ function Quests({
                     styles={colorStyles}
                     theme={customTheme}
                     onChange={(choice) =>
-                      setInputs((values) => ({ ...values, ["quest"]: choice }))
+                      setInputs((values) => ({ ...values, quest: choice }))
                     }
                   />
                 </div>
@@ -206,7 +212,7 @@ function Quests({
                           onChange={(choice) =>
                             setInputs((values) => ({
                               ...values,
-                              ["players"]: choice,
+                              players: choice,
                             }))
                           }
                         ></Select>
@@ -249,6 +255,25 @@ function Quests({
                         }
                         onChange={handleInputChange}
                       ></textarea>
+                    </div>
+
+                    <div className="fields">
+                      <label htmlFor="status">Status</label>
+                      <Select
+                        options={[
+                          { value: "incomplete", label: "Incomplete" },
+                          { value: "success", label: "Success" },
+                          { value: "failure", label: "Failure" },
+                        ]}
+                        styles={colorStyles}
+                        theme={customTheme}
+                        onChange={(choice) =>
+                          setInputs((values) => ({
+                            ...values,
+                            status: choice,
+                          }))
+                        }
+                      />
                     </div>
                   </TabPanel>
                 </Tabs>

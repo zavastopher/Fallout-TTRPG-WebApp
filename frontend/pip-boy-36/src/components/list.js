@@ -1,9 +1,19 @@
 import $ from "jquery";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import ListItem from "./listItem";
 
-function List({ items, selected, setSelected, deleteItem }) {
+function List({
+  items,
+  setItems,
+  selected,
+  setSelected,
+  deleteItem,
+  shouldDelete,
+}) {
+  const [filteredList, setFilteredList] = useState(null);
+  const [filterText, setFilterText] = useState("");
+
   const select = useCallback(
     (itemIndex) => {
       if (itemIndex < 0 || itemIndex >= items.length) return;
@@ -42,6 +52,20 @@ function List({ items, selected, setSelected, deleteItem }) {
     select(itemId);
   };
 
+  const filterList = (event) => {
+    const value = event.target.value;
+    setFilterText(value);
+
+    if (value.length === 0) {
+      setFilteredList(items);
+    } else {
+      const newList = items.filter((item) =>
+        item.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredList(newList);
+    }
+  };
+
   useEffect(() => {
     window.addEventListener(
       "keydown",
@@ -64,28 +88,43 @@ function List({ items, selected, setSelected, deleteItem }) {
   }, [handleListKeyDown]);
 
   useEffect(() => {
+    if (items) {
+      setFilteredList([...items]);
+    }
+  }, [items]);
+
+  useEffect(() => {
     $(".list").scrollTop(0);
   }, []);
 
   return (
-    <ul id="list" className="list test">
-      {items !== null && items !== undefined && items.length > 0 ? (
-        items.map((item) => (
-          <ListItem
-            item={item}
-            itemIndex={items.indexOf(item)}
-            clickEvent={() => handleListClick(items.indexOf(item))}
-            key={item.itemid}
-            currentItem={selected}
-            deleteItem={deleteItem}
-          >
-            {" "}
-          </ListItem>
-        ))
-      ) : (
-        <div></div>
-      )}
-    </ul>
+    <div className="item-list-container">
+      <input type="text" value={filterText} onChange={filterList}></input>
+
+      <ul id="list" className="list test">
+        {filteredList !== null &&
+        filteredList !== undefined &&
+        filteredList.length > 0 ? (
+          <div>
+            {filteredList.map((item) => (
+              <ListItem
+                item={item}
+                itemIndex={items.indexOf(item)}
+                clickEvent={() => handleListClick(items.indexOf(item))}
+                key={item.itemid}
+                currentItem={selected}
+                deleteItem={deleteItem}
+                shouldDelete={shouldDelete}
+              >
+                {" "}
+              </ListItem>
+            ))}
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </ul>
+    </div>
   );
 }
 

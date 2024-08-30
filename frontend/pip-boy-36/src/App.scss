@@ -42,7 +42,7 @@ nav {
   width: 100%;
 }
 
-nav > ul {
+nav ul {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -390,9 +390,12 @@ input[type="text"] {
 // Scroll List Styles
 //-----------------------------------------------------------
 
+.item-list-container {
+  width: 45%;
+}
+
 .list {
   height: 400px;
-  width: 45%;
   overflow: scroll;
   position: relative;
   //z-index: 101;

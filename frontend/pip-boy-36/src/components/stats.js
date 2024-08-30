@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Limb from "./limb";
 import Title from "./title";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { faCheck, faPencil } from "@fortawesome/free-solid-svg-icons";
+//import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axios from "axios";
 
-function Stats({ hp, maxhp, limbsHurt, self }) {
+function Stats({ hp, maxhp, limbsHurt, self, currentUser }) {
   const Face = "./pipboy/fullFace.png";
   const [editHP, setEditHP] = useState(false);
   const [newHP, setNewHP] = useState(null);
@@ -26,7 +26,7 @@ function Stats({ hp, maxhp, limbsHurt, self }) {
 
   function onSubmitHP(event) {
     // Validate HP (Check if it is different or allowed)
-    if (newHP == hp) {
+    if (newHP === hp) {
       setEditHP(false);
       return;
     }
@@ -42,7 +42,7 @@ function Stats({ hp, maxhp, limbsHurt, self }) {
 
   function onSubmitMaxHP(event) {
     // Validate HP (Check if it is different or allowed)
-    if (newMaxHP == maxhp) {
+    if (newMaxHP === maxhp) {
       setEditMaxHP(false);
       return;
     }
@@ -56,18 +56,37 @@ function Stats({ hp, maxhp, limbsHurt, self }) {
     console.log(limb.toLowerCase());
     console.log(limbsHurt);
     console.log(self);
-    axios
-      .put(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {
-        limbtype: limbsHurt[limb.toLowerCase()].limbtype,
-        status: limbsHurt[limb.toLowerCase()].status == 0 ? 1 : 0,
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log("Update Limb Error:");
-        console.log(error);
-      });
+
+    if (currentUser) {
+      axios
+        .put(
+          `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.personid}`,
+          {
+            limbtype: limbsHurt[limb.toLowerCase()].limbtype,
+            status: limbsHurt[limb.toLowerCase()].status === 0 ? 1 : 0,
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log("Update Limb Error:");
+          console.log(error);
+        });
+    } else if (!self.isadmin) {
+      axios
+        .put(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {
+          limbtype: limbsHurt[limb.toLowerCase()].limbtype,
+          status: limbsHurt[limb.toLowerCase()].status === 0 ? 1 : 0,
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log("Update Limb Error:");
+          console.log(error);
+        });
+    }
   }
 
   return (
@@ -123,42 +142,46 @@ function Stats({ hp, maxhp, limbsHurt, self }) {
           )}
         </span>
       </div>
-      <div className="limbs stats-container">
-        <Limb
-          limb="head"
-          limbHurt={limbsHurt ? limbsHurt.head.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
-        <Limb
-          limb="torso"
-          limbHurt={limbsHurt ? limbsHurt.torso.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
-        <Limb
-          limb="leftArm"
-          limbHurt={limbsHurt ? limbsHurt.leftarm.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
-        <Limb
-          limb="rightArm"
-          limbHurt={limbsHurt ? limbsHurt.rightarm.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
-        <Limb
-          limb="leftLeg"
-          limbHurt={limbsHurt ? limbsHurt.leftleg.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
-        <Limb
-          limb="rightLeg"
-          limbHurt={limbsHurt ? limbsHurt.rightleg.status : 0}
-          UpdateLimb={UpdateLimb}
-        ></Limb>
+      {!self.isadmin || currentUser ? (
+        <div className="limbs stats-container">
+          <Limb
+            limb="head"
+            limbHurt={limbsHurt ? limbsHurt.head.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
+          <Limb
+            limb="torso"
+            limbHurt={limbsHurt ? limbsHurt.torso.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
+          <Limb
+            limb="leftArm"
+            limbHurt={limbsHurt ? limbsHurt.leftarm.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
+          <Limb
+            limb="rightArm"
+            limbHurt={limbsHurt ? limbsHurt.rightarm.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
+          <Limb
+            limb="leftLeg"
+            limbHurt={limbsHurt ? limbsHurt.leftleg.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
+          <Limb
+            limb="rightLeg"
+            limbHurt={limbsHurt ? limbsHurt.rightleg.status : 0}
+            UpdateLimb={UpdateLimb}
+          ></Limb>
 
-        <div className="face limb">
-          <img src={Face} alt="Face" />
+          <div className="face limb">
+            <img src={Face} alt="Face" />
+          </div>
         </div>
-      </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

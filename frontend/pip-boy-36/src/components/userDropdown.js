@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Select from "react-select";
 
 function UserDropdown({
@@ -105,7 +105,7 @@ function UserDropdown({
         })
         .catch((error) => {});
     }
-  }, [self]);
+  }, [self, setPlayerList]);
 
   return (
     <div className="dropdown-container">
