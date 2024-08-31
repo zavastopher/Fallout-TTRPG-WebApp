@@ -1,60 +1,70 @@
+// Libraries
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Navbar from "./navbar";
-import Stats from "./stats";
-import Inventory from "./inventory";
-import Quests from "./quests";
-import { useCallback, useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import axios from "axios";
 
-let socket;
+// Components
+import { Navbar } from "./navbar";
+import { Stats } from "./stats";
+import { Inventory } from "./inventory";
+import { Quests } from "./quests";
 
-function Main({ self, refreshSelf, logMeOut }) {
-  const [limbsHurt, setLimbsHurt] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [playerList, setPlayerList] = useState([]);
-  const [inputs, setInputs] = useState({});
+export function Main({
+  self,
+  currentUser,
+  playerList,
+  logMeOut,
+  updateCurrentUser,
+  userBools,
+}) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
 
+  /**
+   * Cached list of players placed into an options list that is readable by
+   * the React Select library.
+   */
   const playerOptions = [
     { value: null, label: "none" },
     ...playerList.map((player) => ({
-      value: player.personid,
+      value: player.id,
       label: player.name,
     })),
   ];
 
-  // Dropdown styles
-  const ddStyles = {
+  // ----------------------------
+  // Dropdown Styles
+  // ----------------------------
+  const ddVars = {
     blackTransColor: "rgba(0, 0, 0, .75)",
     greenTransColor: "rgba(0, 128, 0, .75)",
     dropdownFontSize: "16px",
   };
 
-  const customTheme = (theme) => ({
+  const ddThemeStyles = (theme) => ({
     ...theme,
     fontSize: "16px",
     colors: {
       ...theme.colors,
-      primary25: ddStyles.greenTransColor, // change Background color of options on hover
-      primary: ddStyles.greenTransColor, // change the Background color of the selected option
-      neutral0: ddStyles.blackTransColor,
+      primary25: ddVars.greenTransColor, // change Background color of options on hover
+      primary: ddVars.greenTransColor, // change the Background color of the selected option
+      neutral0: ddVars.blackTransColor,
       neutral5: "black",
       neutral10: "black",
       neutral20: "black",
-      neutral30: ddStyles.greenTransColor, // Border Hover Color
+      neutral30: ddVars.greenTransColor, // Border Hover Color
       neutral40: "green", // Arrow Hover Color
       neutral50: "green", // Select text
-      neutral60: ddStyles.greenTransColor, //
-      neutral70: ddStyles.greenTransColor, //
-      neutral80: ddStyles.greenTransColor, //
-      neutral90: ddStyles.greenTransColor, //
+      neutral60: ddVars.greenTransColor, //
+      neutral70: ddVars.greenTransColor, //
+      neutral80: ddVars.greenTransColor, //
+      neutral90: ddVars.greenTransColor, //
     },
   });
 
-  const colorStyles = {
+  const ddCompStyles = {
     control: (provided) => ({
       ...provided,
-      fontSize: ddStyles.dropdownFontSize,
+      fontSize: ddVars.dropdownFontSize,
     }),
     option: (provided, state) => ({
       ...provided,
@@ -62,7 +72,7 @@ function Main({ self, refreshSelf, logMeOut }) {
     }),
     menu: (base) => ({
       ...base,
-      fontSize: ddStyles.dropdownFontSize,
+      fontSize: ddVars.dropdownFontSize,
       position: "absolute",
       right: "0",
       overflow: "visible",
@@ -71,78 +81,26 @@ function Main({ self, refreshSelf, logMeOut }) {
       ...base,
       position: "absolute",
       bottom: "46px",
-      backgroundColor: ddStyles.blackTransColor,
+      backgroundColor: ddVars.blackTransColor,
       width: "inherit",
     }),
   };
 
-  const handleInputChange = (event) => {
+  const dropdownStyles = {
+    ddVars: ddVars,
+    ddTheme: ddThemeStyles,
+    ddComp: ddCompStyles,
+  };
+
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
+
+  const handleInputChange = (event, setInputs) => {
     const name = event.target.name;
     const value = event.target.value;
     setInputs((values) => ({ ...values, [name]: value }));
   };
-
-  const resetInputs = useCallback(() => {
-    setInputs({});
-  }, []);
-
-  useEffect(() => {
-    // Get Limbs
-    if (self) {
-      if (self.isadmin && currentUser) {
-        axios
-          .get(
-            `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.personid}`,
-            {}
-          )
-          .then((response) => {
-            //console.log(response.data);
-            //console.log(response.data[currentUser.name]);
-
-            var hurtLimbs = response.data[currentUser.name];
-            setLimbsHurt(hurtLimbs);
-          });
-      } else {
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {})
-          .then((response) => {
-            //console.log(response.data);
-            //console.log(response.data[self.name]);
-
-            var hurtLimbs = response.data[self.name];
-            setLimbsHurt(hurtLimbs);
-          });
-      }
-    }
-  }, [self, currentUser]);
-
-  useEffect(() => {
-    // create websocket/connect
-    socket = io("localhost:4001");
-
-    socket.on("connect", function () {
-      console.log("connected!");
-    });
-
-    socket.on("hp", (hp) => {
-      refreshSelf();
-    });
-
-    socket.on("limb", ({ limb, status }) => {
-      console.log("limb change");
-      ////limbsHurt[limb] = status;
-      //setLimbsHurt([...limbsHurt, limb])
-
-      const changedList = { ...limbsHurt };
-      changedList[limb].status = status;
-      setLimbsHurt(changedList);
-    });
-
-    // when component unmounts, disconnect
-    return () => {
-      socket.disconnect();
-    };
-  }, [limbsHurt, refreshSelf]);
 
   return (
     <BrowserRouter>
@@ -152,12 +110,12 @@ function Main({ self, refreshSelf, logMeOut }) {
           element={
             <Navbar
               self={self}
-              currentUser={currentUser}
-              setCurrentUser={setCurrentUser}
               logMeOut={logMeOut}
               playerList={playerList}
-              setPlayerList={setPlayerList}
-              resetInputs={resetInputs}
+              playerOptions={playerOptions}
+              // resetInputs={resetInputs}
+              dropdownStyles={dropdownStyles}
+              updateCurrentUser={updateCurrentUser}
             />
           }
         >
@@ -167,9 +125,10 @@ function Main({ self, refreshSelf, logMeOut }) {
               <Stats
                 hp={currentUser ? currentUser.hp : self.hp}
                 maxhp={currentUser ? currentUser.maxhp : self.maxhp}
-                limbsHurt={limbsHurt}
+                limbsHurt={currentUser ? currentUser.limbsHurt : self.limbsHurt}
                 self={self}
                 currentUser={currentUser}
+                userBools={userBools}
               />
             }
           />
@@ -180,12 +139,12 @@ function Main({ self, refreshSelf, logMeOut }) {
                 self={self}
                 currentUser={currentUser}
                 playerOptions={playerOptions}
-                inputs={inputs}
-                setInputs={setInputs}
-                resetInputs={resetInputs}
-                customTheme={customTheme}
-                colorStyles={colorStyles}
+                // inputs={inputs}
+                // setInputs={setInputs}
+                // resetInputs={resetInputs}
+                dropdownStyles={dropdownStyles}
                 handleInputChange={handleInputChange}
+                key={currentUser ? currentUser.id : -1}
               />
             }
           />
@@ -196,11 +155,10 @@ function Main({ self, refreshSelf, logMeOut }) {
                 self={self}
                 currentUser={currentUser}
                 playerOptions={playerOptions}
-                inputs={inputs}
-                setInputs={setInputs}
-                resetInputs={resetInputs}
-                customTheme={customTheme}
-                colorStyles={colorStyles}
+                // inputs={inputs}
+                // setInputs={setInputs}
+                // resetInputs={resetInputs}
+                dropdownStyles={dropdownStyles}
                 handleInputChange={handleInputChange}
               />
             }
@@ -210,5 +168,3 @@ function Main({ self, refreshSelf, logMeOut }) {
     </BrowserRouter>
   );
 }
-
-export default Main;

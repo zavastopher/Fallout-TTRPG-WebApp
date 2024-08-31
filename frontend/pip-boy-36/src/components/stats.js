@@ -1,18 +1,27 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Limb from "./limb";
-import Title from "./title";
-//import { faEdit } from "@fortawesome/free-regular-svg-icons";
+// Libraries
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function Stats({ hp, maxhp, limbsHurt, self, currentUser }) {
+// Components
+import { Limb } from "./limb";
+import { Title } from "./title";
+
+export function Stats({ hp, maxhp, limbsHurt, self, currentUser, userBools }) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
   const Face = "./pipboy/fullFace.png";
   const [editHP, setEditHP] = useState(false);
   const [newHP, setNewHP] = useState(null);
 
   const [editMaxHP, setEditMaxHP] = useState(false);
   const [newMaxHP, setNewMaxHP] = useState(null);
+
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   function onChangeHP(event) {
     const value = event.target.value;
@@ -60,7 +69,7 @@ function Stats({ hp, maxhp, limbsHurt, self, currentUser }) {
     if (currentUser) {
       axios
         .put(
-          `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.personid}`,
+          `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.id}`,
           {
             limbtype: limbsHurt[limb.toLowerCase()].limbtype,
             status: limbsHurt[limb.toLowerCase()].status === 0 ? 1 : 0,
@@ -142,7 +151,7 @@ function Stats({ hp, maxhp, limbsHurt, self, currentUser }) {
           )}
         </span>
       </div>
-      {!self.isadmin || currentUser ? (
+      {userBools.playerIsFocusedUser ? (
         <div className="limbs stats-container">
           <Limb
             limb="head"
@@ -185,5 +194,3 @@ function Stats({ hp, maxhp, limbsHurt, self, currentUser }) {
     </div>
   );
 }
-
-export default Stats;

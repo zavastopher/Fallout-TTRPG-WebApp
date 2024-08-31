@@ -1,21 +1,16 @@
+// Components
 import { Outlet, Link } from "react-router-dom";
-import UserDropdown from "./userDropdown";
+import { UserDropdown } from "./userDropdown";
 
-function Navbar({
+export function Navbar({
   self,
-  currentUser,
-  setCurrentUser,
   logMeOut,
   playerList,
-  setPlayerList,
+  playerOptions,
   resetInputs,
+  dropdownStyles,
+  updateCurrentUser,
 }) {
-  //const [name, setName] = useState("");
-
-  //console.log(`user: ${currentUser}`);
-
-  //const name = !self.isadmin || !currentUser ? self.name : currentUser.name;
-
   return (
     <>
       <div className="pipboy-screen">
@@ -28,10 +23,11 @@ function Navbar({
 
           <UserDropdown
             self={self}
-            setCurrentUser={setCurrentUser}
             playerList={playerList}
-            setPlayerList={setPlayerList}
+            playerOptions={playerOptions}
             resetInputs={resetInputs}
+            dropdownStyles={dropdownStyles}
+            updateCurrentUser={updateCurrentUser}
           ></UserDropdown>
           <div className="header-title">{self.name}</div>
         </div>
@@ -57,5 +53,3 @@ function Navbar({
     </>
   );
 }
-
-export default Navbar;

@@ -1,12 +1,13 @@
+// Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
-function ListItem({
+export function ListItem({
   item,
   itemIndex,
   clickEvent,
   currentItem,
-  deleteItem,
+  deleteItemHandler,
   shouldDelete,
 }) {
   return (
@@ -22,7 +23,7 @@ function ListItem({
         <FontAwesomeIcon
           className="remove-icon"
           icon={faTrashCan}
-          onClick={deleteItem}
+          onClick={deleteItemHandler}
         />
       ) : (
         <div></div>
@@ -30,5 +31,3 @@ function ListItem({
     </li>
   );
 }
-
-export default ListItem;

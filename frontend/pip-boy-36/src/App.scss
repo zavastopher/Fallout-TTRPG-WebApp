@@ -395,10 +395,16 @@ input[type="text"] {
 }
 
 .list {
+  padding: unset;
   height: 400px;
   overflow: scroll;
   position: relative;
-  //z-index: 101;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .list-item {
@@ -442,6 +448,15 @@ input[type="text"] {
 
 .description p {
   font-size: 20px;
+}
+
+//-----------------------------------------------------------
+// Quest Styles
+//-----------------------------------------------------------
+
+.quest-status {
+  float: right;
+  width: 56%;
 }
 
 //-----------------------------------------------------------

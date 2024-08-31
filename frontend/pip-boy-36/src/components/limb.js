@@ -1,7 +1,8 @@
+// Libraries
 import { faBone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function Limb({ limb, limbHurt, UpdateLimb }) {
+export function Limb({ limb, limbHurt, UpdateLimb }) {
   return (
     <div className={`limb ${limb}`}>
       <img
@@ -17,5 +18,3 @@ function Limb({ limb, limbHurt, UpdateLimb }) {
     </div>
   );
 }
-
-export default Limb;

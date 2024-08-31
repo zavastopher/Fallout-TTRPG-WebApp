@@ -1,4 +1,4 @@
-function Title({ title }) {
+export function Title({ title }) {
   return (
     <div className="title">
       <div className="title-box">
@@ -7,5 +7,3 @@ function Title({ title }) {
     </div>
   );
 }
-
-export default Title;

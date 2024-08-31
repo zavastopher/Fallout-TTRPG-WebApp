@@ -1,74 +1,49 @@
-import Title from "./title";
-import Description from "./description";
-import List from "./list";
+// Libraries
 import { useEffect, useState } from "react";
-
 import axios from "axios";
-import ContextMenu from "./contextMenu";
+
+// Components
+import { Title } from "./title";
+import { ContextMenu } from "./contextMenu";
 import Select from "react-select";
-
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 
-function Inventory({
+// Import Stylesheets
+import "react-tabs/style/react-tabs.css";
+import { ListWithDescription } from "./ListWithDescription";
+
+export function Inventory({
   self,
   currentUser,
   playerOptions,
-  inputs,
-  setInputs,
-  resetInputs,
   customTheme,
   colorStyles,
   handleInputChange,
 }) {
-  // const location = useLocation();
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
   const [selected, setSelected] = useState(0);
   const [inventory, setInventory] = useState(null);
+  const [filterText, setFilterText] = useState("");
+
+  const filteredList =
+    filterText.length === 0
+      ? inventory
+      : inventory.filter((item) =>
+          item.name.toLowerCase().includes(filterText.toLowerCase())
+        );
+
+  const [inputs, setInputs] = useState({});
 
   const [itemOptions, setItemOptions] = useState([]);
   const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState(0);
   const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState(0);
   const [tabPlayerIdx, setTabPlayerIdx] = useState(0);
 
-  useEffect(() => {
-    resetInputs();
-  }, [resetInputs]);
-
-  useEffect(() => {
-    //var inventory;
-
-    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
-      console.log(response.data);
-      setItemOptions(
-        response.data.map((item) => ({
-          value: item,
-          label: item.name,
-        }))
-      );
-
-      if (currentUser && currentUser !== undefined) {
-        // If a player is selected in the dropdown
-        axios
-          .get(
-            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.personid}`,
-            {}
-          )
-          .then((response) => {
-            setInventory(response.data);
-          });
-      } else if (self.isadmin) {
-        // If no player is selected and the logged in user is the admin
-        setInventory(response.data);
-      } else {
-        // Regular player
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
-          .then((response) => {
-            setInventory(response.data);
-          });
-      }
-    });
-  }, [currentUser, self]);
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -127,48 +102,81 @@ function Inventory({
     } else {
       // Update Item
       if (inputs.name || inputs.description) {
-        console.log(`update ${inventory[selected].name} to ${inputs.name}!`);
+        console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
       }
     }
   }
 
-  function deleteItem() {
+  const deleteItem = (item) => {
     // Delete with axios,
 
     if (currentUser) {
       // Delete from Player by Admin
-      console.log(
-        `delete ${inventory[selected].name} from ${currentUser.name}!`
-      );
-    } else if (!self.admin) {
+      console.log(`delete ${item.name} from ${currentUser.name}!`);
+    } else if (!self.isadmin) {
       // Delete from Player by Player
-      console.log(`delete ${inventory[selected].name} from ${self.name}!`);
+      console.log(`delete ${item.name} from ${self.name}!`);
     } else {
       // Delete from Database
-      console.log(`delete ${inventory[selected].name} from Database!`);
+      console.log(`delete ${item.name} from Database!`);
     }
-  }
+  };
+
+  // --------------------------------------------------------
+  // Effects
+  // --------------------------------------------------------
+
+  /**
+   * Effect for fetching inventory data from server
+   */
+  useEffect(() => {
+    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
+      // console.log(response.data);
+      setItemOptions(
+        response.data.map((item) => ({
+          value: item,
+          label: item.name,
+        }))
+      );
+
+      if (currentUser && currentUser !== undefined) {
+        // If a player is selected in the dropdown
+        axios
+          .get(
+            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+            {}
+          )
+          .then((response) => {
+            setInventory(response.data);
+          });
+      } else if (self.isadmin) {
+        // If no player is selected and the logged in user is the admin
+        setInventory(response.data);
+      } else {
+        // Regular player
+        axios
+          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
+          .then((response) => {
+            setInventory(response.data);
+          });
+      }
+    });
+  }, [currentUser, self]);
 
   return (
     <div>
       <Title title={"INVENTORY"}></Title>
-      <div id="inventory" className="list-container">
-        <List
-          items={inventory}
-          setItems={setInventory}
-          selected={selected}
-          setSelected={setSelected}
-          deleteItem={deleteItem}
-          shouldDelete={true}
-        ></List>
-        <div className="inventory-description description">
-          <Description
-            items={inventory}
-            currentItem={selected}
-            currentList="Inventory"
-          ></Description>
-        </div>
-      </div>
+      <ListWithDescription
+        selected={selected}
+        setSelected={setSelected}
+        items={inventory}
+        deleteItemHandler={deleteItem}
+        shouldDelete={true}
+        currentList="Inventory"
+        filteredList={filteredList}
+        filterText={filterText}
+        setFilterText={setFilterText}
+      />
       <ContextMenu submitFunction={handleSubmit}>
         <div className="context-form">
           {self.isadmin ? (
@@ -178,13 +186,13 @@ function Inventory({
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminPlayerIdx(index);
-                      console.log(index);
-                      resetInputs();
+                      setInputs({});
                     }}
+                    disableUpDownKeys={true}
                   >
                     <TabList>
                       <Tab>Add Item</Tab>
-                      <Tab disabled={!(inventory && inventory[selected])}>
+                      <Tab disabled={!(filteredList && filteredList[selected])}>
                         Update Selected Item
                       </Tab>
                     </TabList>
@@ -213,7 +221,9 @@ function Inventory({
                           id="quantity"
                           type="text"
                           value={inputs.quantity || ""}
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></input>
                       </div>
                     </TabPanel>
@@ -221,8 +231,8 @@ function Inventory({
                       <span>
                         Update{" "}
                         <span style={{ textTransform: "capitalize" }}>
-                          {inventory && inventory[selected]
-                            ? `"${inventory[selected].name}"`
+                          {filteredList && filteredList[selected]
+                            ? `"${filteredList[selected].name}"`
                             : "Item"}
                         </span>{" "}
                         Quantity
@@ -235,7 +245,9 @@ function Inventory({
                           id="quantity"
                           type="text"
                           value={inputs.quantity || ""}
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></input>
                       </div>
                     </TabPanel>
@@ -246,13 +258,13 @@ function Inventory({
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminDatabaseIdx(index);
-                      resetInputs();
-                      console.log(index);
+                      setInputs({});
                     }}
+                    disableUpDownKeys={true}
                   >
                     <TabList>
                       <Tab>Add Item</Tab>
-                      <Tab disabled={!(inventory && inventory[selected])}>
+                      <Tab disabled={!(filteredList && filteredList[selected])}>
                         Update Selected Item
                       </Tab>
                     </TabList>
@@ -267,7 +279,9 @@ function Inventory({
                           id="name"
                           type="text"
                           value={inputs.name || ""}
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></input>
                       </div>
 
@@ -279,7 +293,9 @@ function Inventory({
                           cols="22"
                           rows="5"
                           value={inputs.description || ""}
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></textarea>
                       </div>
                       <div className="player-dropdown">
@@ -306,7 +322,9 @@ function Inventory({
                             id="quantity"
                             type="text"
                             value={inputs.quantity || ""}
-                            onChange={handleInputChange}
+                            onChange={(event) =>
+                              handleInputChange(event, setInputs)
+                            }
                           ></input>
                         </div>
                       </div>
@@ -315,8 +333,8 @@ function Inventory({
                       <span>
                         Update{" "}
                         <span style={{ textTransform: "capitalize" }}>
-                          {inventory && inventory[selected]
-                            ? `"${inventory[selected].name}"`
+                          {filteredList && filteredList[selected]
+                            ? `"${filteredList[selected].name}"`
                             : "Item"}
                         </span>{" "}
                         in Database
@@ -331,11 +349,13 @@ function Inventory({
                           value={
                             inputs.name
                               ? inputs.name
-                              : inventory && inventory[selected]
-                              ? inventory[selected].name
+                              : filteredList && filteredList[selected]
+                              ? filteredList[selected].name
                               : ""
                           }
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></input>
                       </div>
 
@@ -349,11 +369,13 @@ function Inventory({
                           value={
                             inputs.description
                               ? inputs.description
-                              : inventory && inventory[selected]
-                              ? inventory[selected].description
+                              : filteredList && filteredList[selected]
+                              ? filteredList[selected].description
                               : ""
                           }
-                          onChange={handleInputChange}
+                          onChange={(event) =>
+                            handleInputChange(event, setInputs)
+                          }
                         ></textarea>
                       </div>
                     </TabPanel>
@@ -365,12 +387,13 @@ function Inventory({
             <Tabs
               onSelect={(index) => {
                 setTabPlayerIdx(index);
-                resetInputs();
+                setInputs({});
               }}
+              disableUpDownKeys={true}
             >
               <TabList>
                 <Tab>Add Item</Tab>
-                <Tab disabled={!(inventory && inventory[selected])}>
+                <Tab disabled={!(filteredList && filteredList[selected])}>
                   Update Selected Item
                 </Tab>
               </TabList>
@@ -398,7 +421,7 @@ function Inventory({
                       id="quantity"
                       type="text"
                       value={inputs.quantity || ""}
-                      onChange={handleInputChange}
+                      onChange={(event) => handleInputChange(event, setInputs)}
                     ></input>
                   </div>
                 </div>
@@ -407,8 +430,8 @@ function Inventory({
                 <span>
                   Update{" "}
                   <span style={{ textTransform: "capitalize" }}>
-                    {inventory && inventory[selected]
-                      ? `"${inventory[selected].name}"`
+                    {filteredList && filteredList[selected]
+                      ? `"${filteredList[selected].name}"`
                       : "Item"}
                   </span>{" "}
                   Quantity
@@ -421,7 +444,7 @@ function Inventory({
                     id="quantity"
                     type="text"
                     value={inputs.quantity || ""}
-                    onChange={handleInputChange}
+                    onChange={(event) => handleInputChange(event, setInputs)}
                   ></input>
                 </div>
               </TabPanel>
@@ -432,5 +455,3 @@ function Inventory({
     </div>
   );
 }
-
-export default Inventory;
