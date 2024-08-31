@@ -22,6 +22,5 @@ frontend/pip-boy-36/yarn-error.log*
 
 #pythonenvironment
 backend/.venv/*
-backend/__pycache__/config.cpython-312.pyc
-backend/__pycache__/database_interactions.cpython-312.pyc
-backend/__pycache__/config.cpython-312.pyc
+*.pyc
+backend/create_script.db

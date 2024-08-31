@@ -1,28 +1,50 @@
+// Libraries
 import $ from "jquery";
 import { useCallback, useEffect } from "react";
 
-import ListItem from "./listItem";
+// Components
+import { ListItem } from "./listItem";
 
-function List({ items, selected, setSelected }) {
-  function select(itemIndex) {
-    if (itemIndex < 0 || itemIndex >= items.length) return;
+export function List({
+  items,
+  selected,
+  setSelected,
+  filteredList,
+  filterText,
+  setFilterText,
+  deleteItemHandler,
+  shouldDelete,
+}) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
 
-    setSelected(itemIndex);
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
-    var element = $(`#item${itemIndex}`);
-    var list = $(".list");
+  const select = useCallback(
+    (itemIndex) => {
+      if (itemIndex < 0 || itemIndex >= filteredList.length) return;
 
-    var elHeight = element.outerHeight();
-    var scrollTop = list.scrollTop();
-    var viewport = scrollTop + list.height();
-    var elOffset = elHeight * itemIndex;
+      setSelected(itemIndex);
 
-    if (elOffset < scrollTop) {
-      list.scrollTop(elOffset);
-    } else if (elOffset + elHeight > viewport) {
-      list.scrollTop(scrollTop + elHeight);
-    }
-  }
+      var element = $(`#item${itemIndex}`);
+      var list = $(".list");
+
+      var elHeight = element.outerHeight();
+      var scrollTop = list.scrollTop();
+      var viewport = scrollTop + list.height();
+      var elOffset = elHeight * itemIndex;
+
+      if (elOffset < scrollTop) {
+        list.scrollTop(elOffset);
+      } else if (elOffset + elHeight > viewport) {
+        list.scrollTop(scrollTop + elHeight);
+      }
+    },
+    [setSelected, filteredList]
+  );
 
   const handleListKeyDown = useCallback(
     (event) => {
@@ -35,18 +57,31 @@ function List({ items, selected, setSelected }) {
     [select, selected]
   );
 
-  const handleListClick = (itemId) => {
+  const handleListClick = (itemId, item) => {
     select(itemId);
   };
 
+  const filterList = useCallback(
+    (event) => {
+      const value = event.target.value;
+      setFilterText(value);
+      setSelected(0);
+    },
+    [setFilterText, setSelected]
+  );
+
+  // --------------------------------------------------------
+  // Effects
+  // --------------------------------------------------------
+
+  // Mounts and unmounts an event listener
   useEffect(() => {
     window.addEventListener(
       "keydown",
       function (e) {
         if (
-          ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(
-            e.code
-          ) > -1
+          ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) >
+          -1
         ) {
           e.preventDefault();
         }
@@ -61,25 +96,38 @@ function List({ items, selected, setSelected }) {
     };
   }, [handleListKeyDown]);
 
+  // Scroll list to top at the start of page life cycle
   useEffect(() => {
     $(".list").scrollTop(0);
   }, []);
 
   return (
-    <ul id="list" className="list test">
-      {items.map((item) => (
-        <ListItem
-          item={item}
-          itemIndex={items.indexOf(item)}
-          clickEvent={() => handleListClick(items.indexOf(item))}
-          key={item.id}
-          currentItem={selected}
-        >
-          {" "}
-        </ListItem>
-      ))}
-    </ul>
+    <div className="item-list-container">
+      <input type="text" value={filterText} onChange={filterList}></input>
+
+      <ul id="list" className="list test">
+        {filteredList !== null &&
+        filteredList !== undefined &&
+        filteredList.length > 0 ? (
+          <div>
+            {filteredList.map((item) => (
+              <ListItem
+                item={item}
+                itemIndex={filteredList.indexOf(item)}
+                clickEvent={() => handleListClick(filteredList.indexOf(item))}
+                key={item.itemid}
+                currentItem={selected}
+                deleteItemHandler={deleteItemHandler}
+                shouldDelete={shouldDelete}
+              >
+                {" "}
+              </ListItem>
+            ))}
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </ul>
+    </div>
   );
 }
-
-export default List;

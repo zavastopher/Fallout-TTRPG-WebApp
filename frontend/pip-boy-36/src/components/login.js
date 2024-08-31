@@ -1,48 +1,32 @@
+// Libraries
 import { useState } from "react";
-import Navbar from "./navbar";
-import axios from "axios";
 
-function Login({ setToken }) {
+export function Login({ logMeIn }) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
   const [name, setName] = useState("");
 
-  function logMeIn(event) {
-    axios({
-      method: "POST",
-      url: "/token",
-      data: {
-        name: name,
-      },
-    })
-      .then((response) => {
-        setToken(response.data.access_token);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        }
-      });
+  const [errorMsg, setErrorMessage] = useState("");
 
-    setName("");
-
-    event.preventDefault();
-  }
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   function handleChange(event) {
-    console.log("change!!");
     setName(event.target.value);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    console.log(`Submit name:  ${name}`);
 
-    if (name.toLowerCase() === "camille") {
-      setToken("set");
+    try {
+      await logMeIn(event, name);
+      setName("");
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("Unable to Login");
     }
-
-    console.log("Oh boy");
   }
 
   return (
@@ -51,8 +35,7 @@ function Login({ setToken }) {
         <input type="text" value={name} onChange={handleChange}></input>
         <input type="submit" value="Submit"></input>
       </form>
+      <p>{errorMsg}</p>
     </div>
   );
 }
-
-export default Login;

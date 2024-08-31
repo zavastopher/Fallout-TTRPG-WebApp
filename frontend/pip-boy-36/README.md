@@ -1,3 +1,31 @@
+# Todo
+
+- Add update function for HP update menu
+- Add update function for Max HP update menu
+
+- Add Add funciton for Inventory Items to database
+- Add Update function for Inventory Items to database
+- Add Delete function for Inventory Items in database
+
+- Add Add function for Inventory Items to player inventory
+- Add Update function for Inventory Items to player inventory
+- Add Remove function for Inventory Items to player inventory
+
+- Add Add funciton for Quest Items to database
+- Add Update function for Quest Items to database
+- Add Delete function for Quest Items in database
+
+- Add Assign function for Quest Items to player inventory
+- Add Unassign function for Quest Items to player inventory
+
+# Completed
+
+- Add menu for updatng item quantity for selected item
+- Add buttons to toggle limbs
+- Change delete icons for quests so that players can't delete their own quests
+- Add status to quest information
+- Add filter for inventory and quests lists
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
