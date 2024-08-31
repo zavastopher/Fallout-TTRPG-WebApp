@@ -1,5 +1,7 @@
 from functools import wraps
 
+import json
+
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -52,6 +54,14 @@ class Player:
         self.hp = hp
         self.maxhp = maxhp
         self.isadmin = isadmin
+    
+    def toJSON(self):
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__, 
+            sort_keys=True,
+            indent=4
+        )
 
 
 @jwt.user_identity_loader
@@ -138,6 +148,9 @@ def LockedThing():
 ## Routes used for updating players
 ## -------------------------------------------------------------
 
+def createPlayerFromRes(res):
+    player = Player(res["personid"], res["name"], res["hp"], res["maxhp"], res["admin"])
+    return player
 
 ### Responsible for logging players in by name and setting a session token
 @app.route("/login", methods=["POST"])
@@ -194,7 +207,12 @@ def GetSelf():
 def GetPlayers():
     res = GetPlayersFromDatabase()
 
-    return res
+    playerReturn = []
+
+    for playerRes in res:
+        playerReturn.append(createPlayerFromRes(playerRes))
+
+    return json.dumps([player.__dict__ for player in playerReturn])
 
 
 ### Updates the hp of the player with the given player id
@@ -240,7 +258,9 @@ def AddGetItemsRoute():
         try:
             data = request.get_json()
             items = data["items"]
-            itemtuples = [tuple(item.values()) for item in items]
+            app.logger.debug(items)
+
+            itemtuples = [tuple(item) for item in items]
             app.logger.debug(itemtuples)
         except:
             return "Missing items", 400

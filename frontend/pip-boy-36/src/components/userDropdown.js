@@ -1,42 +1,23 @@
-import axios from "axios";
-import { useEffect } from "react";
+// Components
 import Select from "react-select";
 
-function UserDropdown({
+export function UserDropdown({
   self,
-  setCurrentUser,
   playerList,
-  setPlayerList,
-  resetInputs,
+  playerOptions,
+  dropdownStyles,
+  updateCurrentUser,
 }) {
-  const blackTransColor = "rgba(0, 0, 0, .75)";
-  const greenTransColor = "rgba(0, 128, 0, .75)";
-
-  const dropdownFontSize = "16px";
-
-  const options = [
-    { value: null, label: "none" },
-    ...playerList.map((player) => ({
-      value: player.personid,
-      label: player.name,
-    })),
-  ];
-
-  const filterdOptions = options.filter((option) => {
-    return option.value !== self.id;
-  });
-
-  //const options = [
-  //  { value: "chocolate", label: "Chocolate" },
-  //  { value: "strawberry", label: "Strawberry" },
-  //  { value: "vanilla", label: "Vanilla" },
-
-  //];
-
-  const colorStyles = {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
+  // ----------------------------
+  // Dropdown Styles
+  // ----------------------------
+  const userDDCompStyles = {
     control: (provided) => ({
       ...provided,
-      fontSize: dropdownFontSize,
+      fontSize: dropdownStyles.ddVars.dropdownFontSize,
     }),
     option: (provided, state) => ({
       ...provided,
@@ -44,90 +25,34 @@ function UserDropdown({
     }),
     menu: (base) => ({
       ...base,
-      fontSize: dropdownFontSize,
+      fontSize: dropdownStyles.ddVars.dropdownFontSize,
     }),
-    //menuList: (baseStyles, state) => ({
-    //  ...baseStyles,
-    //  background: "rgba(0, 0, 0, 0)",
-    //}),
   };
 
-  const customTheme = (theme) => ({
-    ...theme,
-    fontSize: "16px",
-    colors: {
-      ...theme.colors,
-      primary25: greenTransColor, // change Background color of options on hover
-      primary: greenTransColor, // change the Background color of the selected option
-      neutral0: blackTransColor,
-      neutral5: "black",
-      neutral10: "black",
-      neutral20: "black",
-      neutral30: greenTransColor, // Border Hover Color
-      neutral40: "green", // Arrow Hover Color
-      neutral50: "green", // Select text
-      neutral60: greenTransColor, //
-      neutral70: greenTransColor, //
-      neutral80: greenTransColor, //
-      neutral90: greenTransColor, //
-    },
+  const filteredOptions = playerOptions.filter((option) => {
+    return option.value !== self.id;
   });
 
-  function updateDropdown(event) {
-    resetInputs();
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
+  function updateDropdown(event) {
     var user = playerList.find((player) => {
-      return player.personid === event.value;
+      return player.id === event.value;
     });
 
-    setCurrentUser(user && user !== undefined ? user : null);
+    updateCurrentUser(user && user !== undefined ? user : null);
   }
-
-  //  useEffect(() => {
-  //    console.log(playerList);
-
-  //    var options = playerList.map((player) => (
-  //      <option key={player.id} value={player.id}>
-  //        {player.name}
-  //      </option>
-  //    ));
-
-  //    setOptions(options);
-  //  }, [playerList]);
-
-  useEffect(() => {
-    if (self.isadmin) {
-      // Add axios call
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/players`, {})
-        .then((response) => {
-          setPlayerList([...response.data]);
-        })
-        .catch((error) => {});
-    }
-  }, [self, setPlayerList]);
 
   return (
     <div className="dropdown-container">
       {self.isadmin ? (
         <div className="dropdown">
-          {/*<select
-            id="userDropdown"
-            name="userDropdown"
-            onChange={updateDropdown}
-          >
-            <option value="none">Everything</option>
-            {playerList.map((player) => (
-              <option key={player.id} value={JSON.stringify(player.id)}>
-                {player.name}
-              </option>
-            ))}
-          </select>*/}
-
           <Select
-            options={filterdOptions}
-            styles={colorStyles}
-            theme={customTheme}
+            options={filteredOptions}
+            styles={userDDCompStyles}
+            theme={dropdownStyles.ddTheme}
             onChange={updateDropdown}
             defaultValue={null}
           />
@@ -138,5 +63,3 @@ function UserDropdown({
     </div>
   );
 }
-
-export default UserDropdown;

@@ -76,10 +76,11 @@
 
 ```
 {
-  id: 1,
-  name: admin,
   hp: 100,
-  isadmin: 1
+  id: 1,
+  isadmin: 1,
+  maxhp: 100,
+  name: admin,
 }
 ```
 
@@ -91,13 +92,17 @@
 [
   {
         "hp": 100,
+        "id": 1,
+        "isadmin": 1,
+        "maxhp": 100,
         "name": "person1",
-        "personid": 1
     },
     {
         "hp": 90,
+        "id": 2,
+        "isadmin": 0,
+        "maxhp": 100,
         "name": "person2",
-        "personid": 2
     },
     ...
 ]
@@ -122,7 +127,7 @@
   "hp": 70,
   "maxhp": 100,
   "name": "person1",
-  "personid": 1
+  "id": 1
 }
 ```
 
@@ -145,7 +150,7 @@
   "hp": 70,
   "maxhp": 100,
   "name": "person1",
-  "personid": 1
+  "id": 1
 }
 ```
 

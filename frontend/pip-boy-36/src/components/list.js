@@ -1,22 +1,31 @@
+// Libraries
 import $ from "jquery";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
-import ListItem from "./listItem";
+// Components
+import { ListItem } from "./listItem";
 
-function List({
+export function List({
   items,
-  setItems,
   selected,
   setSelected,
-  deleteItem,
+  filteredList,
+  filterText,
+  setFilterText,
+  deleteItemHandler,
   shouldDelete,
 }) {
-  const [filteredList, setFilteredList] = useState(null);
-  const [filterText, setFilterText] = useState("");
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
+
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   const select = useCallback(
     (itemIndex) => {
-      if (itemIndex < 0 || itemIndex >= items.length) return;
+      if (itemIndex < 0 || itemIndex >= filteredList.length) return;
 
       setSelected(itemIndex);
 
@@ -34,7 +43,7 @@ function List({
         list.scrollTop(scrollTop + elHeight);
       }
     },
-    [items, setSelected]
+    [setSelected, filteredList]
   );
 
   const handleListKeyDown = useCallback(
@@ -52,20 +61,20 @@ function List({
     select(itemId);
   };
 
-  const filterList = (event) => {
-    const value = event.target.value;
-    setFilterText(value);
+  const filterList = useCallback(
+    (event) => {
+      const value = event.target.value;
+      setFilterText(value);
+      setSelected(0);
+    },
+    [setFilterText, setSelected]
+  );
 
-    if (value.length === 0) {
-      setFilteredList(items);
-    } else {
-      const newList = items.filter((item) =>
-        item.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredList(newList);
-    }
-  };
+  // --------------------------------------------------------
+  // Effects
+  // --------------------------------------------------------
 
+  // Mounts and unmounts an event listener
   useEffect(() => {
     window.addEventListener(
       "keydown",
@@ -87,12 +96,7 @@ function List({
     };
   }, [handleListKeyDown]);
 
-  useEffect(() => {
-    if (items) {
-      setFilteredList([...items]);
-    }
-  }, [items]);
-
+  // Scroll list to top at the start of page life cycle
   useEffect(() => {
     $(".list").scrollTop(0);
   }, []);
@@ -109,11 +113,11 @@ function List({
             {filteredList.map((item) => (
               <ListItem
                 item={item}
-                itemIndex={items.indexOf(item)}
-                clickEvent={() => handleListClick(items.indexOf(item))}
+                itemIndex={filteredList.indexOf(item)}
+                clickEvent={() => handleListClick(filteredList.indexOf(item))}
                 key={item.itemid}
                 currentItem={selected}
-                deleteItem={deleteItem}
+                deleteItemHandler={deleteItemHandler}
                 shouldDelete={shouldDelete}
               >
                 {" "}
@@ -127,5 +131,3 @@ function List({
     </div>
   );
 }
-
-export default List;

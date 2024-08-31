@@ -1,71 +1,46 @@
-import Title from "./title";
-import Description from "./description";
-import List from "./list";
+// Libraries
 import { useEffect, useState } from "react";
-
 import axios from "axios";
-import ContextMenu from "./contextMenu";
+
+// Components
+import { Title } from "./title";
+import { ContextMenu } from "./contextMenu";
 import Select from "react-select";
-
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 
-function Quests({
+// Import Stylesheets
+import "react-tabs/style/react-tabs.css";
+import { ListWithDescription } from "./ListWithDescription";
+
+export function Quests({
   self,
   currentUser,
   playerOptions,
-  inputs,
-  setInputs,
-  resetInputs,
   customTheme,
   colorStyles,
   handleInputChange,
 }) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
   const [selected, setSelected] = useState(0);
   const [quests, setQuests] = useState(null);
+  const [filterText, setFilterText] = useState("");
+
+  const filteredList =
+    filterText.length === 0
+      ? quests
+      : quests.filter((item) =>
+          item.name.toLowerCase().includes(filterText.toLowerCase())
+        );
+  const [inputs, setInputs] = useState({});
 
   const [questOptions, setQuestOptions] = useState([]);
   const [tabIdx, setTabIdx] = useState(0);
 
-  useEffect(() => {
-    resetInputs();
-  }, [resetInputs]);
-
-  useEffect(() => {
-    if (self.isadmin) {
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
-        .then((response) => {
-          setQuestOptions(
-            response.data.map((quest) => ({
-              value: quest,
-              label: quest.name,
-            }))
-          );
-
-          if (currentUser && currentUser !== undefined) {
-            // If a player is selected in the dropdown
-            axios
-              .get(
-                `${process.env.REACT_APP_BASEURL}/players/quests/${currentUser.personid}`,
-                {}
-              )
-              .then((response) => {
-                setQuests(response.data);
-              });
-          } else if (self.isadmin) {
-            // If no player is selected and the logged in user is the admin
-            setQuests(response.data);
-          }
-        });
-    } else {
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
-        .then((response) => {
-          setQuests(response.data);
-        });
-    }
-  }, [currentUser, self]);
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -105,42 +80,79 @@ function Quests({
     }
   }
 
-  function deleteQuest() {
+  function deleteQuest(item) {
     // Delete with axios
     // Deleting quest only posible for admin
 
     if (currentUser) {
-      console.log(
-        `delete quest: ${quests[selected].name} from player ${currentUser.personid}`
-      );
+      console.log(`delete quest: ${item.name} from player ${currentUser.id}`);
     } else if (self.isadmin) {
       // Delete quest from database
-      console.log(`delete quest: ${quests[selected].name} from database`);
+      console.log(`delete quest: ${item.name} from database`);
     }
   }
+
+  // --------------------------------------------------------
+  // Effects
+  // --------------------------------------------------------
+  /**
+   * Effect for fetching quest data from server
+   */
+  useEffect(() => {
+    if (self.isadmin) {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
+        .then((response) => {
+          setQuestOptions(
+            response.data.map((quest) => ({
+              value: quest,
+              label: quest.name,
+            }))
+          );
+
+          if (currentUser && currentUser !== undefined) {
+            // If a player is selected in the dropdown
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/quests/${currentUser.id}`,
+                {}
+              )
+              .then((response) => {
+                setQuests(response.data);
+              });
+          } else if (self.isadmin) {
+            // If no player is selected and the logged in user is the admin
+            setQuests(response.data);
+          }
+        });
+    } else {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/players/quests`, {})
+        .then((response) => {
+          setQuests(response.data);
+        });
+    }
+  }, [currentUser, self]);
 
   return (
     <div>
       <Title title={"QUESTS"}></Title>
-      <div id="quests" className="list-container">
-        <List
-          items={quests}
-          setItems={setQuests}
-          selected={selected}
-          setSelected={setSelected}
-          deleteItem={deleteQuest}
-          shouldDelete={self.isadmin}
-        ></List>
-        <div className="quest-description description">
-          <Description
-            items={quests}
-            currentItem={selected}
-            currentList="Quest"
-          ></Description>
-          <div>
-            Status: {quests && quests[selected] ? quests[selected].status : ""}
-          </div>
-        </div>
+      <ListWithDescription
+        selected={selected}
+        setSelected={setSelected}
+        items={quests}
+        deleteItemHandler={deleteQuest}
+        shouldDelete={self.isadmin}
+        currentList="Quests"
+        filteredList={filteredList}
+        filterText={filterText}
+        setFilterText={setFilterText}
+      />
+      <div className="quest-status">
+        Status:{" "}
+        {filteredList && filteredList[selected]
+          ? filteredList[selected].status
+          : ""}
       </div>
       {self.isadmin ? (
         <ContextMenu submitFunction={handleSubmit}>
@@ -167,8 +179,9 @@ function Quests({
                 <Tabs
                   onSelect={(index) => {
                     setTabIdx(index);
-                    resetInputs();
+                    setInputs({});
                   }}
+                  disableUpDownKeys={true}
                 >
                   <TabList>
                     <Tab>Add Quest</Tab>
@@ -185,7 +198,9 @@ function Quests({
                         id="name"
                         type="text"
                         value={inputs.name || ""}
-                        onChange={handleInputChange}
+                        onChange={(event) =>
+                          handleInputChange(event, setInputs)
+                        }
                       ></input>
                     </div>
 
@@ -197,7 +212,9 @@ function Quests({
                         cols="22"
                         rows="5"
                         value={inputs.description || ""}
-                        onChange={handleInputChange}
+                        onChange={(event) =>
+                          handleInputChange(event, setInputs)
+                        }
                       ></textarea>
                     </div>
                     <div className="player-dropdown">
@@ -231,11 +248,13 @@ function Quests({
                         value={
                           inputs.name
                             ? inputs.name
-                            : quests && quests[selected]
-                            ? quests[selected].name
+                            : filteredList && filteredList[selected]
+                            ? filteredList[selected].name
                             : ""
                         }
-                        onChange={handleInputChange}
+                        onChange={(event) =>
+                          handleInputChange(event, setInputs)
+                        }
                       ></input>
                     </div>
 
@@ -249,11 +268,13 @@ function Quests({
                         value={
                           inputs.description
                             ? inputs.description
-                            : quests && quests[selected]
-                            ? quests[selected].description
+                            : filteredList && filteredList[selected]
+                            ? filteredList[selected].description
                             : ""
                         }
-                        onChange={handleInputChange}
+                        onChange={(event) =>
+                          handleInputChange(event, setInputs)
+                        }
                       ></textarea>
                     </div>
 
@@ -287,5 +308,3 @@ function Quests({
     </div>
   );
 }
-
-export default Quests;

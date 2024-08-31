@@ -1,9 +1,17 @@
+// Libraries
 import { useState } from "react";
 
-function Login({ logMeIn }) {
+export function Login({ logMeIn }) {
+  // --------------------------------------------------------
+  // Members
+  // --------------------------------------------------------
   const [name, setName] = useState("");
 
   const [errorMsg, setErrorMessage] = useState("");
+
+  // --------------------------------------------------------
+  // Functions
+  // --------------------------------------------------------
 
   function handleChange(event) {
     setName(event.target.value);
@@ -31,5 +39,3 @@ function Login({ logMeIn }) {
     </div>
   );
 }
-
-export default Login;
