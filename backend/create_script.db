@@ -3,11 +3,15 @@ PRAGMA foreign_keys = ON;
 DROP TABLE IF EXISTS person_quest;
 DROP TABLE IF EXISTS person_item;
 DROP TABLE IF EXISTS person_limb;
+DROP TABLE IF EXISTS person_gun;
+DROP TABLE IF EXISTS person_ammo;
 
 DROP TABLE IF EXISTS limb;
 
 DROP TABLE IF EXISTS quest;
 DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS gun;
+DROP TABLE IF EXISTS ammo;
 
 DROP TABLE IF EXISTS person;
 
@@ -37,6 +41,37 @@ CREATE TABLE item (
 	name		TEXT,
 	description	TEXT,
 	UNIQUE(name)
+);
+
+CREATE TABLE ammo (
+	ammoId 		INTEGER PRIMARY KEY AUTOINCREMENT,
+	name 		TEXT
+);
+
+CREATE TABLE gun (
+	gunid					INTEGER PRIMARY KEY AUTOINCREMENT,
+	name					TEXT,
+	capacity				INTEGER,
+	ap						INTEGER,
+	attack					TEXT,
+	damage					TEXT,
+	range					TEXT,
+	specialProperties 		TEXT
+	FOREIGN KEY (ammoID)	REFERENCES ammo(ammoId)
+);
+
+CREATE TABLE player_ammo (
+	playerammoId 	INTEGER PRIMARY KEY AUTOINCREMENT,
+	quantity		INTEGER,
+	FOREIGN KEY ammoowner	REFERENCES person(personid),
+	FOREIGN KEY ammotype 	REFERENCES ammo(ammoId)
+);
+
+CREATE TABLE player_gun (
+	playergunid 	INTEGER PRIMARY KEY AUTOINCREMENT,
+	quantity 		INTEGER,
+	FOREIGN KEY	playergunplayerid	REFERENCES person(personid),
+	FOREIGN KEY plaeyrgungunid		REFERENCES ammo(ammoId)
 );
 
 CREATE TABLE person_quest( 
