@@ -226,6 +226,8 @@ def UpdateHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s health.", 400
+    
+    socketio.emit("hp", {"hp": res["hp"]})
 
     return res
 
@@ -240,6 +242,8 @@ def UpdateMaxHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s max health.", 400
+    
+    socketio.emit("maxhp", {"maxhp": res["maxhp"]})
 
     return res
 
@@ -515,9 +519,7 @@ def PlayerLimbsRoute(playerid):
 
 @socketio.on('my event')
 def handle_custom_event(json):
-    #emit("limb",'received json: ' + str(json))
-    emit("limb", {"limb": "limb thing", "status": "broken"}, broadcast=True)
-    # send('received json: ')
+    emit("limb", {"limb": "limb thing", "status": "broken"})
 
 @socketio.on('connect')
 def test_connect(auth):

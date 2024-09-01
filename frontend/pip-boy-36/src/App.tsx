@@ -231,16 +231,22 @@ function App() {
     });
 
     socket.on("hp", (hp) => {
+      console.log(hp);
       setSelf((val) => {
-        if (!val) return null;
-        return { ...val, hp: hp };
+        if (!val) {
+          return null;
+        }
+        return { ...val, hp: hp.hp };
       });
     });
 
     socket.on("maxhp", (maxhp) => {
+      console.log(maxhp);
       setSelf((val) => {
-        if (!val) return null;
-        return { ...val, maxhp: maxhp };
+        if (!val) {
+          return null;
+        }
+        return { ...val, maxhp: maxhp.maxhp };
       });
     });
 
