@@ -79,7 +79,7 @@ CREATE TABLE person_gun (
 	playergunplayerid	INTEGER,
 	playergungunid		INTEGER,
 	FOREIGN KEY	(playergunplayerid)	REFERENCES person(personid),
-	FOREIGN KEY (playergungunid)		REFERENCES ammo(ammoId)
+	FOREIGN KEY (playergungunid)		REFERENCES gun(gunid)
 );
 
 CREATE TABLE person_quest( 
@@ -243,3 +243,9 @@ INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gauss pistol',0,3,'1d10 ballistic','x8/x16','20 2d10',30,12,'Charge. Energy Weapon. Kickback Powerful. Unstable',12,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gauss rifle',0,3,'1d12 ballistic','x10/x20','20 4d12',30,6,'Charge. Energy Weapon. Powerful Two Handed Unstable',18,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gatling laser',0,6,'2d10 laser','x30/x30','20 1d10  applies burning',31,100,'Automatic: 4 Destructive. Energy Weapon. Unwieldy',50,5);
+
+/*
+	Give Cam a gun and some ammo for it
+*/
+INSERT INTO person_gun (quantity, playergunplayerid, playergungunid) VALUES (1,3,3);
+INSERT INTO person_gun (quantity, playergunplayerid, playergungunid) VALUES (1,3,38);
