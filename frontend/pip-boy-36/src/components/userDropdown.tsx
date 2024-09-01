@@ -25,7 +25,7 @@ export function UserDropdown({
   // ----------------------------
 
   const filteredOptions = playerOptions.filter((option) => {
-    return option.value.id !== self.id;
+    return option.value?.id !== self.id;
   });
 
   // --------------------------------------------------------
@@ -34,7 +34,7 @@ export function UserDropdown({
 
   function updateDropdown(option: UserOption | null) {
     var user = playerList.find((player) => {
-      return player.id === option?.value.id;
+      return player.id === option?.value?.id;
     });
 
     updateCurrentUser(user && user !== undefined ? user : null);

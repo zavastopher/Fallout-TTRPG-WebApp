@@ -5,12 +5,12 @@ import { useCallback, useEffect } from "react";
 // Components
 import { ListItem } from "./listItem";
 import React from "react";
-import { Item } from "./types";
+import { ListItemType } from "./types";
 
 type ListProps = {
   selected: number;
   setSelected: Function;
-  filteredList: Array<Item>;
+  filteredList: Array<ListItemType>;
   filterText: string;
   setFilterText: Function;
   deleteItemHandler: React.MouseEventHandler<SVGSVGElement>;
@@ -128,7 +128,7 @@ export function List({
                 item={item}
                 itemIndex={filteredList.indexOf(item)}
                 clickEvent={() => handleListClick(filteredList.indexOf(item))}
-                key={item.itemid}
+                key={item.id}
                 currentItem={selected}
                 deleteItemHandler={deleteItemHandler}
                 shouldDelete={shouldDelete}

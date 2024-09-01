@@ -11,22 +11,20 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 // Import Stylesheets
 import "react-tabs/style/react-tabs.css";
 import { ListWithDescription } from "./ListWithDescription";
-import { Inputs, Item, ItemOption, User, UserOption } from "./types";
+import { InventoryInputs, Item, ItemOption, User, UserOption } from "./types";
 import React from "react";
 import { ddStyles, ddTheme, ddUserStyles } from "./styles";
 
 type InventoryProps = {
-  self: User;
-  currentUser: User;
+  self: User | null;
+  currentUser: User | null;
   playerOptions: UserOption[];
-  handleInputChange: Function;
 };
 
 export function Inventory({
   self,
   currentUser,
   playerOptions,
-  handleInputChange,
 }: InventoryProps) {
   // --------------------------------------------------------
   // Members
@@ -42,7 +40,7 @@ export function Inventory({
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
 
-  const [inputs, setInputs] = useState<Inputs>({
+  const [inputs, setInputs] = useState<InventoryInputs>({
     name: null,
     item: undefined,
     players: null,
@@ -62,7 +60,7 @@ export function Inventory({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (currentUser || !self.isadmin) {
+    if (currentUser || !self?.isadmin) {
       UpdatePlayer();
     } else {
       UpdateDatabase();
@@ -127,13 +125,24 @@ export function Inventory({
     if (currentUser) {
       // Delete from Player by Admin
       console.log(`delete ${item.name} from ${currentUser.name}!`);
-    } else if (!self.isadmin) {
+    } else if (!self?.isadmin) {
       // Delete from Player by Player
-      console.log(`delete ${item.name} from ${self.name}!`);
+      console.log(`delete ${item.name} from ${self?.name}!`);
     } else {
       // Delete from Database
       console.log(`delete ${item.name} from Database!`);
     }
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setInputs: React.Dispatch<React.SetStateAction<InventoryInputs>>
+  ) => {
+    const name = event.currentTarget.name;
+    const value = event.currentTarget.value;
+    setInputs((values) => {
+      return { ...values, [name]: value };
+    });
   };
 
   // --------------------------------------------------------
@@ -163,13 +172,13 @@ export function Inventory({
           .then((response) => {
             setInventory(response.data);
           });
-      } else if (self.isadmin) {
+      } else if (self?.isadmin) {
         // If no player is selected and the logged in user is the admin
         setInventory(response.data);
       } else {
         // Regular player
         axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
+          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {})
           .then((response) => {
             setInventory(response.data);
           });
@@ -190,9 +199,18 @@ export function Inventory({
         filterText={filterText}
         setFilterText={setFilterText}
       />
+      <div className="under-description inventory-quantity">
+        <p>
+          {filteredList &&
+          filteredList[selected] &&
+          filteredList[selected].quantity != null
+            ? `Quantity: ${filteredList[selected].quantity}`
+            : ""}
+        </p>
+      </div>
       <ContextMenu submitFunction={handleSubmit}>
         <div className="context-form">
-          {self.isadmin ? (
+          {self?.isadmin ? (
             <div>
               {currentUser ? (
                 <div>
@@ -200,7 +218,13 @@ export function Inventory({
                     onSelect={(index) => {
                       setTabAdminPlayerIdx(index);
                       setInputs((val) => {
-                        return { ...val, name: null };
+                        return {
+                          name: null,
+                          item: undefined,
+                          players: null,
+                          quantity: null,
+                          description: null,
+                        };
                       });
                     }}
                     disableUpDownKeys={true}
@@ -277,7 +301,13 @@ export function Inventory({
                     onSelect={(index) => {
                       setTabAdminDatabaseIdx(index);
                       setInputs((val) => {
-                        return { ...val, name: null };
+                        return {
+                          name: null,
+                          item: undefined,
+                          players: null,
+                          quantity: null,
+                          description: null,
+                        };
                       });
                     }}
                     disableUpDownKeys={true}
@@ -419,7 +449,13 @@ export function Inventory({
               onSelect={(index) => {
                 setTabPlayerIdx(index);
                 setInputs((val) => {
-                  return { ...val, name: null };
+                  return {
+                    name: null,
+                    item: undefined,
+                    players: null,
+                    quantity: null,
+                    description: null,
+                  };
                 });
               }}
               disableUpDownKeys={true}

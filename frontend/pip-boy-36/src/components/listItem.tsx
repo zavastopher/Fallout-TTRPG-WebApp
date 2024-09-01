@@ -2,10 +2,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import React from "react";
-import { Item } from "./types";
+import { ListItemType } from "./types";
 
 type ListItemProps = {
-  item: Item;
+  item: ListItemType;
   itemIndex: number;
   currentItem: number;
   clickEvent: React.MouseEventHandler<HTMLDivElement>;

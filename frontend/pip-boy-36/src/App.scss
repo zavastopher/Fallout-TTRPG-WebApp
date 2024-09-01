@@ -454,8 +454,9 @@ input[type="text"] {
 // Quest Styles
 //-----------------------------------------------------------
 
-.quest-status {
-  float: right;
+.under-description {
+  position: absolute;
+  right: 0;
   width: 56%;
 }
 

@@ -6,6 +6,17 @@ import { Navbar } from "./navbar";
 import { Stats } from "./stats";
 import { Inventory } from "./inventory";
 import { Quests } from "./quests";
+import { User } from "./types";
+import { MouseEventHandler } from "react";
+import React from "react";
+
+type MainProps = {
+  self: User;
+  currentUser: User | null;
+  playerList: Array<User>;
+  logMeOut: MouseEventHandler;
+  updateCurrentUser: Function;
+};
 
 export function Main({
   self,
@@ -13,8 +24,7 @@ export function Main({
   playerList,
   logMeOut,
   updateCurrentUser,
-  userBools,
-}) {
+}: MainProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
@@ -26,7 +36,7 @@ export function Main({
   const playerOptions = [
     { value: null, label: "none" },
     ...playerList.map((player) => ({
-      value: player.id,
+      value: player,
       label: player.name,
     })),
   ];
@@ -34,12 +44,6 @@ export function Main({
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
-
-  const handleInputChange = (event, setInputs) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setInputs((values) => ({ ...values, [name]: value }));
-  };
 
   return (
     <BrowserRouter>
@@ -65,7 +69,6 @@ export function Main({
                 limbsHurt={currentUser ? currentUser.limbsHurt : self.limbsHurt}
                 self={self}
                 currentUser={currentUser}
-                userBools={userBools}
               />
             }
           />
@@ -76,7 +79,6 @@ export function Main({
                 self={self}
                 currentUser={currentUser}
                 playerOptions={playerOptions}
-                handleInputChange={handleInputChange}
                 key={currentUser ? currentUser.id : -1}
               />
             }
@@ -88,7 +90,6 @@ export function Main({
                 self={self}
                 currentUser={currentUser}
                 playerOptions={playerOptions}
-                handleInputChange={handleInputChange}
               />
             }
           />

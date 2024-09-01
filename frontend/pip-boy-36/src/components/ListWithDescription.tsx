@@ -1,7 +1,7 @@
 import React from "react";
 import { Description } from "./description";
 import { List } from "./list";
-import { Item } from "./types";
+import { ListItemType } from "./types";
 
 type ListWithDescriptionProps = {
   selected: number;
@@ -9,7 +9,7 @@ type ListWithDescriptionProps = {
   deleteItemHandler: Function;
   shouldDelete: Boolean;
   currentList: string;
-  filteredList: Array<Item>;
+  filteredList: Array<ListItemType>;
   filterText: string;
   setFilterText: Function;
 };
@@ -27,7 +27,9 @@ export function ListWithDescription({
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
-  const currentItem: Item | null = filteredList ? filteredList[selected] : null;
+  const currentItem: ListItemType | null = filteredList
+    ? filteredList[selected]
+    : null;
 
   return (
     <div id={currentList.toLowerCase()} className="list-container">

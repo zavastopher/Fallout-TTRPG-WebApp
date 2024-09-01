@@ -1,8 +1,8 @@
 import React from "react";
-import { Item } from "./types";
+import { ListItemType } from "./types";
 
 type DescriptionProps = {
-  currentItem: Item | null;
+  currentItem: ListItemType | null;
   currentList: string;
 };
 
@@ -11,11 +11,6 @@ export function Description({ currentItem, currentList }: DescriptionProps) {
     <div>
       <h3>{currentItem ? currentItem.name : ""}</h3>
       <p>{currentItem ? currentItem.description : ""}</p>
-      <p>
-        {currentItem && currentItem.quantity != null
-          ? `Quantity: ${currentItem.quantity}`
-          : ""}
-      </p>
     </div>
   ) : (
     <div>{`No ${currentList} Items`}</div>

@@ -1,6 +1,16 @@
 // Components
 import { Outlet, Link } from "react-router-dom";
 import { UserDropdown } from "./userDropdown";
+import { User, UserOption } from "./types";
+import React, { MouseEventHandler } from "react";
+
+type NavbarProps = {
+  self: User;
+  logMeOut: MouseEventHandler;
+  playerList: Array<User>;
+  playerOptions: UserOption[];
+  updateCurrentUser: Function;
+};
 
 export function Navbar({
   self,
@@ -8,7 +18,7 @@ export function Navbar({
   playerList,
   playerOptions,
   updateCurrentUser,
-}) {
+}: NavbarProps) {
   return (
     <>
       <div className="pipboy-screen">

@@ -5,7 +5,7 @@ import React from "react";
 
 type LimbProps = {
   limb: string;
-  limbHurt: string;
+  limbHurt: number;
   UpdateLimb: Function;
 };
 

@@ -1,6 +1,11 @@
 import CSS from "csstype";
 import { ThemeConfig, StylesConfig } from "react-select";
-import { User, UserOption, ItemOption } from "./types";
+import {
+  UserOption,
+  ItemOption,
+  QuestOption,
+  QuestStatusOption,
+} from "./types";
 
 export const ddVars = {
   blackTransColor: "rgba(0, 0, 0, .75)",
@@ -30,6 +35,56 @@ export const ddTheme: ThemeConfig = (theme) => ({
 });
 
 export const ddStyles: StylesConfig<ItemOption> = {
+  control: (provided) => ({
+    ...provided,
+    fontSize: ddVars.dropdownFontSize,
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    color: state.isSelected ? "rgb(192, 247, 168)" : "white",
+  }),
+  menu: (base) => ({
+    ...base,
+    fontSize: ddVars.dropdownFontSize,
+    position: "absolute",
+    right: "0",
+    overflow: "visible",
+  }),
+  menuList: (base) => ({
+    ...base,
+    position: "absolute",
+    bottom: "46px",
+    backgroundColor: ddVars.blackTransColor,
+    width: "inherit",
+  }),
+};
+
+export const ddQuestStyles: StylesConfig<QuestOption> = {
+  control: (provided) => ({
+    ...provided,
+    fontSize: ddVars.dropdownFontSize,
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    color: state.isSelected ? "rgb(192, 247, 168)" : "white",
+  }),
+  menu: (base) => ({
+    ...base,
+    fontSize: ddVars.dropdownFontSize,
+    position: "absolute",
+    right: "0",
+    overflow: "visible",
+  }),
+  menuList: (base) => ({
+    ...base,
+    position: "absolute",
+    bottom: "46px",
+    backgroundColor: ddVars.blackTransColor,
+    width: "inherit",
+  }),
+};
+
+export const ddQuestStatusStyles: StylesConfig<QuestStatusOption> = {
   control: (provided) => ({
     ...provided,
     fontSize: ddVars.dropdownFontSize,
