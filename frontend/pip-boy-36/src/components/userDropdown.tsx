@@ -1,45 +1,40 @@
 // Components
 import Select from "react-select";
+import { User, UserOption } from "./types";
+import { ddTheme, userDDStyles } from "./styles";
+import React from "react";
+
+type UserDropdownProps = {
+  self: User;
+  playerList: Array<User>;
+  playerOptions: UserOption[];
+  updateCurrentUser: Function;
+};
 
 export function UserDropdown({
   self,
   playerList,
   playerOptions,
-  dropdownStyles,
   updateCurrentUser,
-}) {
+}: UserDropdownProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
   // ----------------------------
   // Dropdown Styles
   // ----------------------------
-  const userDDCompStyles = {
-    control: (provided) => ({
-      ...provided,
-      fontSize: dropdownStyles.ddVars.dropdownFontSize,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      color: state.isSelected ? "rgb(192, 247, 168)" : "white",
-    }),
-    menu: (base) => ({
-      ...base,
-      fontSize: dropdownStyles.ddVars.dropdownFontSize,
-    }),
-  };
 
   const filteredOptions = playerOptions.filter((option) => {
-    return option.value !== self.id;
+    return option.value.id !== self.id;
   });
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
-  function updateDropdown(event) {
+  function updateDropdown(option: UserOption | null) {
     var user = playerList.find((player) => {
-      return player.id === event.value;
+      return player.id === option?.value.id;
     });
 
     updateCurrentUser(user && user !== undefined ? user : null);
@@ -51,8 +46,9 @@ export function UserDropdown({
         <div className="dropdown">
           <Select
             options={filteredOptions}
-            styles={userDDCompStyles}
-            theme={dropdownStyles.ddTheme}
+            styles={userDDStyles}
+            theme={ddTheme}
+            isMulti={false}
             onChange={updateDropdown}
             defaultValue={null}
           />

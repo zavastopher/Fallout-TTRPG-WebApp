@@ -1,4 +1,12 @@
-export function Description({ currentItem, currentList }) {
+import React from "react";
+import { Item } from "./types";
+
+type DescriptionProps = {
+  currentItem: Item | null;
+  currentList: string;
+};
+
+export function Description({ currentItem, currentList }: DescriptionProps) {
   return currentItem && currentItem !== null ? (
     <div>
       <h3>{currentItem ? currentItem.name : ""}</h3>

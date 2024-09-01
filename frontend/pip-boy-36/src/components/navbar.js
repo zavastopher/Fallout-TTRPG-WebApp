@@ -7,8 +7,6 @@ export function Navbar({
   logMeOut,
   playerList,
   playerOptions,
-  resetInputs,
-  dropdownStyles,
   updateCurrentUser,
 }) {
   return (
@@ -25,8 +23,6 @@ export function Navbar({
             self={self}
             playerList={playerList}
             playerOptions={playerOptions}
-            resetInputs={resetInputs}
-            dropdownStyles={dropdownStyles}
             updateCurrentUser={updateCurrentUser}
           ></UserDropdown>
           <div className="header-title">{self.name}</div>

@@ -1,4 +1,10 @@
-export function Title({ title }) {
+import React from "react";
+
+type TitleProps = {
+  title: string;
+};
+
+export function Title({ title }: TitleProps) {
   return (
     <div className="title">
       <div className="title-box">

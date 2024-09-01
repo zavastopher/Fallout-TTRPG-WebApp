@@ -11,13 +11,12 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 // Import Stylesheets
 import "react-tabs/style/react-tabs.css";
 import { ListWithDescription } from "./ListWithDescription";
+import { ddCompStyles, ddThemeStyles } from "./styles";
 
 export function Quests({
   self,
   currentUser,
   playerOptions,
-  customTheme,
-  colorStyles,
   handleInputChange,
 }) {
   // --------------------------------------------------------
@@ -140,7 +139,6 @@ export function Quests({
       <ListWithDescription
         selected={selected}
         setSelected={setSelected}
-        items={quests}
         deleteItemHandler={deleteQuest}
         shouldDelete={self.isadmin}
         currentList="Quests"
@@ -166,8 +164,8 @@ export function Quests({
                   <Select
                     id="quest"
                     options={questOptions}
-                    styles={colorStyles}
-                    theme={customTheme}
+                    styles={ddCompStyles}
+                    theme={ddThemeStyles}
                     onChange={(choice) =>
                       setInputs((values) => ({ ...values, quest: choice }))
                     }
@@ -222,8 +220,8 @@ export function Quests({
                         <label>Players</label>
                         <Select
                           options={playerOptions}
-                          styles={colorStyles}
-                          theme={customTheme}
+                          styles={ddCompStyles}
+                          theme={ddThemeStyles}
                           defaultValue={null}
                           isMulti
                           onChange={(choice) =>
@@ -286,8 +284,8 @@ export function Quests({
                           { value: "success", label: "Success" },
                           { value: "failure", label: "Failure" },
                         ]}
-                        styles={colorStyles}
-                        theme={customTheme}
+                        styles={ddCompStyles}
+                        theme={ddThemeStyles}
                         onChange={(choice) =>
                           setInputs((values) => ({
                             ...values,

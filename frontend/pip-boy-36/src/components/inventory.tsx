@@ -5,47 +5,61 @@ import axios from "axios";
 // Components
 import { Title } from "./title";
 import { ContextMenu } from "./contextMenu";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 // Import Stylesheets
 import "react-tabs/style/react-tabs.css";
 import { ListWithDescription } from "./ListWithDescription";
+import { Inputs, Item, ItemOption, User, UserOption } from "./types";
+import React from "react";
+import { ddStyles, ddTheme, ddUserStyles } from "./styles";
+
+type InventoryProps = {
+  self: User;
+  currentUser: User;
+  playerOptions: UserOption[];
+  handleInputChange: Function;
+};
 
 export function Inventory({
   self,
   currentUser,
   playerOptions,
-  customTheme,
-  colorStyles,
   handleInputChange,
-}) {
+}: InventoryProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
-  const [selected, setSelected] = useState(0);
-  const [inventory, setInventory] = useState(null);
-  const [filterText, setFilterText] = useState("");
+  const [selected, setSelected] = useState<number>(0);
+  const [inventory, setInventory] = useState<Array<Item>>([]);
+  const [filterText, setFilterText] = useState<string>("");
 
   const filteredList =
     filterText.length === 0
       ? inventory
-      : inventory.filter((item) =>
+      : inventory?.filter((item: Item) =>
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
 
-  const [inputs, setInputs] = useState({});
+  const [inputs, setInputs] = useState<Inputs>({
+    name: null,
+    item: undefined,
+    players: null,
+    quantity: null,
+    description: null,
+  });
 
-  const [itemOptions, setItemOptions] = useState([]);
-  const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState(0);
-  const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState(0);
-  const [tabPlayerIdx, setTabPlayerIdx] = useState(0);
+  const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
+  const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState<number>(0);
+  const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState<number>(0);
+  const [tabPlayerIdx, setTabPlayerIdx] = useState<number>(0);
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     if (currentUser || !self.isadmin) {
@@ -60,12 +74,12 @@ export function Inventory({
     if (currentUser) {
       // Admin Updating player, use admin player tabs
       if (tabAdminPlayerIdx === 0) {
-        if (inputs.quantity && inputs.item) {
+        if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
         }
       } else {
-        if (inputs.quantity) {
+        if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
         }
@@ -73,12 +87,12 @@ export function Inventory({
     } else {
       // Player updating self, use player tabs
       if (tabPlayerIdx === 0) {
-        if (inputs.quantity && inputs.item) {
+        if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
         }
       } else {
-        if (inputs.quantity) {
+        if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
         }
@@ -89,11 +103,11 @@ export function Inventory({
   function UpdateDatabase() {
     if (tabAdminDatabaseIdx === 0) {
       // Add Item
-      if (inputs.name && inputs.description && inputs.quantity) {
+      if (inputs?.name && inputs.description && inputs.quantity) {
         console.log("add to database!");
 
-        if (inputs.players) {
-          inputs.players.forEach((player) => {
+        if (inputs?.players) {
+          inputs.players.forEach((player: UserOption) => {
             console.log(`Add to ${player.label} at ${player.value}`);
             //var playerid = player.value;
           });
@@ -101,13 +115,13 @@ export function Inventory({
       }
     } else {
       // Update Item
-      if (inputs.name || inputs.description) {
+      if (inputs?.name || inputs?.description) {
         console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
       }
     }
   }
 
-  const deleteItem = (item) => {
+  const deleteItem = (item: Item) => {
     // Delete with axios,
 
     if (currentUser) {
@@ -133,7 +147,7 @@ export function Inventory({
     axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
       // console.log(response.data);
       setItemOptions(
-        response.data.map((item) => ({
+        response.data.map((item: Item) => ({
           value: item,
           label: item.name,
         }))
@@ -169,7 +183,6 @@ export function Inventory({
       <ListWithDescription
         selected={selected}
         setSelected={setSelected}
-        items={inventory}
         deleteItemHandler={deleteItem}
         shouldDelete={true}
         currentList="Inventory"
@@ -186,7 +199,9 @@ export function Inventory({
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminPlayerIdx(index);
-                      setInputs({});
+                      setInputs((val) => {
+                        return { ...val, name: null };
+                      });
                     }}
                     disableUpDownKeys={true}
                   >
@@ -204,14 +219,17 @@ export function Inventory({
                         <Select
                           id="item"
                           options={itemOptions}
-                          styles={colorStyles}
-                          theme={customTheme}
-                          onChange={(choice) =>
-                            setInputs((values) => ({
-                              ...values,
-                              item: choice,
-                            }))
-                          }
+                          styles={ddStyles}
+                          theme={ddTheme}
+                          isMulti={false}
+                          onChange={(choice: ItemOption | null) => {
+                            setInputs((val) => {
+                              return {
+                                ...val,
+                                item: choice?.value,
+                              };
+                            });
+                          }}
                         />
                       </div>
                       <div className="fields">
@@ -258,7 +276,9 @@ export function Inventory({
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminDatabaseIdx(index);
-                      setInputs({});
+                      setInputs((val) => {
+                        return { ...val, name: null };
+                      });
                     }}
                     disableUpDownKeys={true}
                   >
@@ -290,8 +310,8 @@ export function Inventory({
                         <textarea
                           name="description"
                           id="description"
-                          cols="22"
-                          rows="5"
+                          cols={22}
+                          rows={5}
                           value={inputs.description || ""}
                           onChange={(event) =>
                             handleInputChange(event, setInputs)
@@ -303,16 +323,27 @@ export function Inventory({
                           <label>Players</label>
                           <Select
                             options={playerOptions}
-                            styles={colorStyles}
-                            theme={customTheme}
+                            styles={ddUserStyles}
+                            theme={ddTheme}
                             defaultValue={null}
-                            isMulti
-                            onChange={(choice) =>
-                              setInputs((values) => ({
-                                ...values,
-                                players: choice,
-                              }))
-                            }
+                            isMulti={true}
+                            onChange={(
+                              choice: MultiValue<UserOption | UserOption[]>
+                            ) => {
+                              choice.forEach((value) => {
+                                if (Array.isArray(value)) {
+                                  setInputs((val) => ({
+                                    ...val,
+                                    players: value,
+                                  }));
+                                } else {
+                                  setInputs((val) => ({
+                                    ...val,
+                                    players: [value],
+                                  }));
+                                }
+                              });
+                            }}
                           ></Select>
                         </div>
                         <div className="fields field-column">
@@ -364,8 +395,8 @@ export function Inventory({
                         <textarea
                           name="description"
                           id="description"
-                          cols="22"
-                          rows="5"
+                          cols={22}
+                          rows={5}
                           value={
                             inputs.description
                               ? inputs.description
@@ -387,7 +418,9 @@ export function Inventory({
             <Tabs
               onSelect={(index) => {
                 setTabPlayerIdx(index);
-                setInputs({});
+                setInputs((val) => {
+                  return { ...val, name: null };
+                });
               }}
               disableUpDownKeys={true}
             >
@@ -406,10 +439,13 @@ export function Inventory({
                     <Select
                       id="item"
                       options={itemOptions}
-                      styles={colorStyles}
-                      theme={customTheme}
-                      onChange={(choice) =>
-                        setInputs((values) => ({ ...values, item: choice }))
+                      styles={ddStyles}
+                      theme={ddTheme}
+                      isMulti={false}
+                      onChange={(choice: ItemOption | null) =>
+                        setInputs((values) => {
+                          return { ...values, item: choice?.value };
+                        })
                       }
                     />
                   </div>
