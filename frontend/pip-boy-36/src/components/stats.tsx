@@ -7,39 +7,62 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // Components
 import { Limb } from "./limb";
 import { Title } from "./title";
+import { LimbsType, User } from "./types";
+import React from "react";
 
-export function Stats({ hp, maxhp, limbsHurt, self, currentUser, userBools }) {
+type StatsProps = {
+  hp: number;
+  maxhp: number;
+  limbsHurt: LimbsType | null;
+  self: User | null;
+  currentUser: User | null;
+};
+
+export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
   const Face = "./pipboy/fullFace.png";
-  const [editHP, setEditHP] = useState(false);
-  const [newHP, setNewHP] = useState(null);
+  const [editHP, setEditHP] = useState<Boolean>(false);
+  const [newHP, setNewHP] = useState<number>(-1);
 
-  const [editMaxHP, setEditMaxHP] = useState(false);
-  const [newMaxHP, setNewMaxHP] = useState(null);
+  const [editMaxHP, setEditMaxHP] = useState<Boolean>(false);
+  const [newMaxHP, setNewMaxHP] = useState<number>(-1);
+
+  const userBools = {
+    adminHasSelectedUser: self ? self.isadmin && currentUser : null,
+    playerIsFocusedUser: self ? !self.isadmin || currentUser : null,
+  };
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
-  function onChangeHP(event) {
-    const value = event.target.value;
-    setNewHP(value);
+  function onChangeHP(event: React.FormEvent<HTMLInputElement>) {
+    if (!Number.isNaN(event.currentTarget.valueAsNumber)) {
+      setNewHP(event.currentTarget.valueAsNumber);
+    }
   }
 
-  function onChangeMaxHP(event) {
-    const value = event.target.value;
-    setNewMaxHP(value);
+  function onChangeMaxHP(event: React.FormEvent<HTMLInputElement>) {
+    if (!Number.isNaN(event.currentTarget.valueAsNumber)) {
+      setNewMaxHP(event.currentTarget.valueAsNumber);
+    }
   }
 
-  function onSubmitHP(event) {
+  function onSubmitHP() {
     // Validate HP (Check if it is different or allowed)
+    if (newHP < 0) {
+      alert("Please enter a positive number.");
+      return;
+    }
+
     if (newHP === hp) {
       setEditHP(false);
       return;
     }
     if (newHP > maxhp) {
+      alert("Please enter a number less than the current max hp.");
       return;
     }
     // Send it
@@ -49,52 +72,56 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser, userBools }) {
     setEditHP(false);
   }
 
-  function onSubmitMaxHP(event) {
+  function onSubmitMaxHP() {
     // Validate HP (Check if it is different or allowed)
     if (newMaxHP === maxhp) {
       setEditMaxHP(false);
       return;
     }
+
+    // If maxhp is lower than current hp, lower current hp too
+
     // Send it
     // Refresh hp
+
     // Change out of edit mode
     setEditMaxHP(false);
   }
 
-  function UpdateLimb(limb) {
-    console.log(limb.toLowerCase());
-    console.log(limbsHurt);
-    console.log(self);
+  function UpdateLimb(limb: string) {
+    if (limbsHurt) {
+      let limbKey = limb.toLowerCase() as keyof typeof limbsHurt;
 
-    if (currentUser) {
-      axios
-        .put(
-          `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.id}`,
-          {
-            limbtype: limbsHurt[limb.toLowerCase()].limbtype,
-            status: limbsHurt[limb.toLowerCase()].status === 0 ? 1 : 0,
-          }
-        )
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("Update Limb Error:");
-          console.log(error);
-        });
-    } else if (!self.isadmin) {
-      axios
-        .put(`${process.env.REACT_APP_BASEURL}/players/limbs/${self.id}`, {
-          limbtype: limbsHurt[limb.toLowerCase()].limbtype,
-          status: limbsHurt[limb.toLowerCase()].status === 0 ? 1 : 0,
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("Update Limb Error:");
-          console.log(error);
-        });
+      if (currentUser) {
+        axios
+          .put(
+            `${process.env.REACT_APP_BASEURL}/players/limbs/${currentUser.id}`,
+            {
+              limbtype: limbsHurt[limbKey].limbtype,
+              status: limbsHurt[limbKey].status === 0 ? 1 : 0,
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log("Update Limb Error:");
+            console.log(error);
+          });
+      } else if (!self?.isadmin) {
+        axios
+          .put(`${process.env.REACT_APP_BASEURL}/players/limbs/${self?.id}`, {
+            limbtype: limbsHurt[limbKey].limbtype,
+            status: limbsHurt[limbKey].status === 0 ? 1 : 0,
+          })
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log("Update Limb Error:");
+            console.log(error);
+          });
+      }
     }
   }
 

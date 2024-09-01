@@ -1,7 +1,12 @@
 // Libraries
+import React from "react";
 import { useState } from "react";
 
-export function Login({ logMeIn }) {
+type LoginProps = {
+  logMeIn: Function;
+};
+
+export function Login({ logMeIn }: LoginProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
@@ -13,11 +18,11 @@ export function Login({ logMeIn }) {
   // Functions
   // --------------------------------------------------------
 
-  function handleChange(event) {
-    setName(event.target.value);
+  function handleChange(event: React.FormEvent<HTMLInputElement>) {
+    setName(event.currentTarget.value);
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     try {

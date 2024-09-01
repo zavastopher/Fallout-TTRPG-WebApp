@@ -1,7 +1,7 @@
 // Libraries
 import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
-import { io } from "socket.io-client";
+import axios, { AxiosError } from "axios";
+import { Socket, io } from "socket.io-client";
 
 // Components
 import { Main } from "./components/main";
@@ -10,11 +10,14 @@ import { Login } from "./components/login";
 // Import Stylesheets
 import "./App.css";
 import "./App.scss";
+import React from "react";
+import { DefaultEventsMap } from "@socket.io/component-emitter";
+import { User } from "./components/types";
 
 /**
  * IO Socket variable
  */
-let socket;
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 /**
  * Top level react component.
@@ -27,40 +30,52 @@ function App() {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
-  const [self, setSelf] = useState("");
-  const [currentUser, setCurrentUser] = useState(
+  const [self, setSelf] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(
     !self ? null : self.isadmin ? null : self
   );
-  const [playerList, setPlayerList] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const userBools = {
-    adminHasSelectedUser: self ? self.isadmin && currentUser : null,
-    playerIsFocusedUser: self ? !self.isadmin || currentUser : null,
-  };
+  const [playerList, setPlayerList] = useState<Array<User>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
   const changeLimbStatus = useCallback(
-    (limb, status) => {
+    (limb: string, status: number) => {
       if (currentUser) {
-        const changedList = { ...currentUser.limbsHurt };
-        changedList[limb].status = status;
-        setCurrentUser({ ...currentUser, limbsHurt: changedList });
+        if (currentUser.limbsHurt) {
+          const changedList = { ...currentUser.limbsHurt };
+
+          let limbKey = limb.toLowerCase() as keyof typeof changedList;
+
+          changedList[limbKey].status = status;
+          setCurrentUser({ ...currentUser, limbsHurt: changedList });
+        }
       } else {
-        const changedList = { ...self.limbsHurt };
-        changedList[limb].status = status;
-        setSelf({ ...self, limbsHurt: changedList });
+        if (self && self.limbsHurt) {
+          const changedList = { ...self.limbsHurt };
+
+          let limbKey = limb.toLowerCase() as keyof typeof changedList;
+
+          changedList[limbKey].status = status;
+          setSelf({ ...self, limbsHurt: changedList });
+        }
       }
     },
     [currentUser, self]
   );
 
-  async function logMeIn(event, name) {
+  async function logMeIn(event: MouseEvent, name: string) {
     event.preventDefault();
-    let selfHolder;
+    let selfHolder: User = {
+      id: 0,
+      name: "",
+      isadmin: false,
+      hp: 0,
+      maxhp: 0,
+      limbsHurt: null,
+    };
 
     try {
       await axios
@@ -97,11 +112,10 @@ function App() {
             console.log("Could not retrieve players");
           });
       }
-    } catch (error) {
-      if (error.response) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
         //console.log(error.response);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        console.log(error.message);
       } else {
         console.log("Didn't get a response");
       }
@@ -129,7 +143,7 @@ function App() {
    * Note: currentUser is stil cached for the function runtime
    * @param {User} user The new user to be set
    */
-  async function updateCurrentUser(user) {
+  async function updateCurrentUser(user: User) {
     if (user) {
       let userCopy = { ...user };
 
@@ -156,7 +170,15 @@ function App() {
   useEffect(() => {
     setLoading(true);
     console.log("getting self");
-    var selfHolder = null;
+    let selfHolder: User = {
+      id: 0,
+      name: "",
+      isadmin: false,
+      hp: 0,
+      maxhp: 0,
+      limbsHurt: null,
+    };
+
     axios
       .get(`${process.env.REACT_APP_BASEURL}/self`, {
         headers: {
@@ -209,11 +231,17 @@ function App() {
     });
 
     socket.on("hp", (hp) => {
-      setSelf((s) => ({ ...s, hp: hp }));
+      setSelf((val) => {
+        if (!val) return null;
+        return { ...val, hp: hp };
+      });
     });
 
     socket.on("maxhp", (maxhp) => {
-      setSelf((s) => ({ ...s, maxhp: maxhp }));
+      setSelf((val) => {
+        if (!val) return null;
+        return { ...val, maxhp: maxhp };
+      });
     });
 
     socket.on("limb", ({ limb, status }) => {
@@ -243,7 +271,6 @@ function App() {
               currentUser={currentUser}
               logMeOut={logMeOut}
               updateCurrentUser={updateCurrentUser}
-              userBools={userBools}
               playerList={playerList}
             ></Main>
           </>
