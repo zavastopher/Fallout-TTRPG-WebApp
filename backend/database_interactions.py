@@ -187,7 +187,7 @@ def GetPlayerInventoryFromDatabase(id):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (id,))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (id,))
         res = data.fetchall()
     except Exception as e:
         con.close()
@@ -198,7 +198,7 @@ def GetPlayerInventoryFromDatabase(id):
 
 ## Item Interactions
 
-def AddItemToDatabase(itemtuples):
+def AddItemToDatabase(name, description):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -206,9 +206,9 @@ def AddItemToDatabase(itemtuples):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        cur.executemany("INSERT OR IGNORE INTO item (name, description) VALUES (?, ?);", itemtuples)
-        data = cur.execute("SELECT * FROM item;")
-        res = data.fetchall()
+        cur.execute("INSERT OR IGNORE INTO item (name, description) VALUES (?, ?);", (name, description))
+        data = cur.execute("SELECT * FROM item where name = ?;", (name,))
+        res = data.fetchone()
     except Exception as e:
         con.commit()
         con.close()

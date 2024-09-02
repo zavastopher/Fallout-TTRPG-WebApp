@@ -226,6 +226,8 @@ def UpdateHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s health.", 400
+    
+    socketio.emit("hp", {"hp": res["hp"]})
 
     return res
 
@@ -240,6 +242,8 @@ def UpdateMaxHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s max health.", 400
+    
+    socketio.emit("maxhp", {"maxhp": res["maxhp"]})
 
     return res
 
@@ -257,21 +261,29 @@ def AddGetItemsRoute():
     if request.method == "POST":
         try:
             data = request.get_json()
-            items = data["items"]
-            app.logger.debug(items)
+            name = data["name"]
+            description = data["description"]
+            quantity = data["quantity"]
+            players = data["players"]
 
-            itemtuples = [tuple(item) for item in items]
-            app.logger.debug(itemtuples)
+            #itemtuple = [tuple(item) for item in items]
         except:
             return "Missing items", 400
 
         try:
-            app.logger.debug(itemtuples)
-            res = AddItemToDatabase(itemtuples)
+            res = AddItemToDatabase(name, description)
+            app.logger.debug(f"Added item to player: {players}")
+
+
+            for player in players:
+                playerRes = AddItemToPlayerInDatabase(player, res["itemid"], quantity)
+                app.logger.debug(f"Added item to player: {player}")
+
         except Exception as e:
             return str(e), 400
         else:
             return res
+        
     # Get all Items
     else:
         res = GetItemsInDatabase()
@@ -515,9 +527,7 @@ def PlayerLimbsRoute(playerid):
 
 @socketio.on('my event')
 def handle_custom_event(json):
-    #emit("limb",'received json: ' + str(json))
-    emit("limb", {"limb": "limb thing", "status": "broken"}, broadcast=True)
-    # send('received json: ')
+    emit("limb", {"limb": "limb thing", "status": "broken"})
 
 @socketio.on('connect')
 def test_connect(auth):

@@ -174,10 +174,10 @@
 
 ```
 {
-  "items": [
-    ["Two", "Two Description"],
-    ["Three", "Three Description"]
-  ]
+  "name": "Two",
+  "description": "Two Description",
+  "quantity": 1,
+  "players": [1, 2, 3]
 }
 ```
 
@@ -186,23 +186,11 @@
 [(Back to Top)](#rest-api)
 
 ```
-[
-    {
-        "itemid": 1,
-        "name": "One",
-        "description": "One Description",
-    },
-    {
-        "itemid": 2,
-        "name": "Two",
-        "description": "Two Description",
-    },
-    {
-        "itemid": 3,
-        "name": "Three",
-        "description": "Three Description",
-    }
-]
+{
+    "itemid": 2,
+    "name": "Two",
+    "description": "Two Description",
+}
 ```
 
 #### Item Update Request

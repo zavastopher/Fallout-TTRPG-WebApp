@@ -170,14 +170,16 @@ function App() {
   useEffect(() => {
     setLoading(true);
     console.log("getting self");
-    let selfHolder: User = {
-      id: 0,
-      name: "",
-      isadmin: false,
-      hp: 0,
-      maxhp: 0,
-      limbsHurt: null,
-    };
+    //let selfHolder: User | null = {
+    //  id: 0,
+    //  name: "",
+    //  isadmin: false,
+    //  hp: 0,
+    //  maxhp: 0,
+    //  limbsHurt: null,
+    //};
+
+    let selfHolder: User | null = null;
 
     axios
       .get(`${process.env.REACT_APP_BASEURL}/self`, {
@@ -191,12 +193,15 @@ function App() {
         selfHolder = response.data;
       })
       .then(() => {
+        if (!selfHolder) throw new Error("Not logged in");
         return axios.get(
           `${process.env.REACT_APP_BASEURL}/players/limbs/${selfHolder.id}`,
           {}
         );
       })
       .then((response) => {
+        if (!selfHolder) throw new Error("Not logged in");
+
         var hurtLimbs = response.data[selfHolder.name];
         selfHolder.limbsHurt = hurtLimbs;
       })
@@ -231,16 +236,22 @@ function App() {
     });
 
     socket.on("hp", (hp) => {
+      console.log(hp);
       setSelf((val) => {
-        if (!val) return null;
-        return { ...val, hp: hp };
+        if (!val) {
+          return null;
+        }
+        return { ...val, hp: hp.hp };
       });
     });
 
     socket.on("maxhp", (maxhp) => {
+      console.log(maxhp);
       setSelf((val) => {
-        if (!val) return null;
-        return { ...val, maxhp: maxhp };
+        if (!val) {
+          return null;
+        }
+        return { ...val, maxhp: maxhp.maxhp };
       });
     });
 

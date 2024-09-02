@@ -1,5 +1,5 @@
 // Libraries
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCross, faX } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,10 +24,12 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
   // --------------------------------------------------------
   const Face = "./pipboy/fullFace.png";
   const [editHP, setEditHP] = useState<Boolean>(false);
-  const [newHP, setNewHP] = useState<number>(-1);
+  const [newHP, setNewHP] = useState<number>(currentUser?.hp ?? self?.hp ?? 0);
 
   const [editMaxHP, setEditMaxHP] = useState<Boolean>(false);
-  const [newMaxHP, setNewMaxHP] = useState<number>(-1);
+  const [newMaxHP, setNewMaxHP] = useState<number>(
+    currentUser?.maxhp ?? self?.maxhp ?? 0
+  );
 
   const userBools = {
     adminHasSelectedUser: self ? self.isadmin && currentUser : null,
@@ -50,6 +52,38 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
     }
   }
 
+  function UpdateHP(hp: number) {
+    let user: User | null = currentUser ?? self;
+
+    if (!user) return;
+
+    axios
+      .put(`${process.env.REACT_APP_BASEURL}/players/hp/${user.id}`, { hp: hp })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function UpdateMaxHP(maxhp: number) {
+    let user: User | null = currentUser ?? self;
+
+    if (!user) return;
+
+    axios
+      .put(`${process.env.REACT_APP_BASEURL}/players/maxhp/${user.id}`, {
+        maxhp: maxhp,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   function onSubmitHP() {
     // Validate HP (Check if it is different or allowed)
     if (newHP < 0) {
@@ -66,9 +100,10 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
       return;
     }
     // Send it
-    // Refresh hp
+
+    UpdateHP(newHP);
+
     // Change out of edit mode
-    console.log("hm");
     setEditHP(false);
   }
 
@@ -79,10 +114,13 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
       return;
     }
 
-    // If maxhp is lower than current hp, lower current hp too
-
     // Send it
-    // Refresh hp
+    UpdateMaxHP(newMaxHP);
+
+    // If maxhp is lower than current hp, lower current hp too
+    if (newMaxHP < hp) {
+      UpdateHP(newMaxHP);
+    }
 
     // Change out of edit mode
     setEditMaxHP(false);
@@ -132,15 +170,23 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
         {/*<FontAwesomeIcon icon={faPencil} />*/}
         <span>HP</span>
 
-        <span>
+        <span className="hp-fields">
           {editHP ? (
             <span className="hp">
-              <FontAwesomeIcon icon={faCheck} onClick={onSubmitHP} />
+              <div className="hp-buttons">
+                <FontAwesomeIcon icon={faCheck} onClick={onSubmitHP} />
+                <FontAwesomeIcon
+                  icon={faX}
+                  onClick={() => {
+                    setEditHP(false);
+                  }}
+                />
+              </div>
               <input
                 name="hp"
-                value={newHP !== null ? newHP : hp}
+                value={newHP}
                 onChange={onChangeHP}
-                type="text"
+                type="number"
               ></input>
             </span>
           ) : (
@@ -157,12 +203,20 @@ export function Stats({ hp, maxhp, limbsHurt, self, currentUser }: StatsProps) {
           {""}/{""}
           {editMaxHP ? (
             <span className="hp">
-              <FontAwesomeIcon icon={faCheck} onClick={onSubmitMaxHP} />
+              <div className="hp-buttons">
+                <FontAwesomeIcon icon={faCheck} onClick={onSubmitMaxHP} />
+                <FontAwesomeIcon
+                  icon={faX}
+                  onClick={() => {
+                    setEditMaxHP(false);
+                  }}
+                />
+              </div>
               <input
                 name="maxhp"
-                value={newMaxHP !== null ? newMaxHP : maxhp}
+                value={newMaxHP}
                 onChange={onChangeMaxHP}
-                type="text"
+                type="number"
               ></input>
             </span>
           ) : (
