@@ -128,7 +128,7 @@ export function List({
                 item={item}
                 itemIndex={filteredList.indexOf(item)}
                 clickEvent={() => handleListClick(filteredList.indexOf(item))}
-                key={item.id}
+                key={item.name}
                 currentItem={selected}
                 deleteItemHandler={deleteItemHandler}
                 shouldDelete={shouldDelete}

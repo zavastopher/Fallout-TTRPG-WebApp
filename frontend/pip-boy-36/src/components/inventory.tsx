@@ -128,7 +128,7 @@ export function Inventory({
           })
           .then((response) => {
             let item: Item = response.data;
-            item.id = response.data.id;
+            //item.id = response.data.id;
 
             setInventory((val) => {
               return [...val, item];
@@ -138,7 +138,44 @@ export function Inventory({
     } else {
       // Update Item
       if (inputs?.name || inputs?.description) {
-        console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
+        //console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
+        var currentItem = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentItem.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentItem.description;
+        }
+
+        axios
+          .put(`${process.env.REACT_APP_BASEURL}/items/${currentItem.itemid}`, {
+            name: inputs.name,
+            description: inputs.description,
+          })
+          .then((response) => {
+            console.log(response.data);
+
+            var filteredItems = inventory.filter(
+              (item) => item.itemid === response.data.itemid
+            );
+            var item = filteredItems[0];
+            var itemIdx = inventory.indexOf(item);
+
+            var invCopy = [...inventory];
+            var itemCopy = { ...filteredItems[0] };
+
+            itemCopy.name = response.data.name;
+            itemCopy.description = response.data.description;
+
+            invCopy[itemIdx] = itemCopy;
+
+            setInventory(invCopy);
+
+            //item.name = response.data.name;
+            //item.description = response.data.description;
+          });
       }
     }
   }
@@ -155,6 +192,12 @@ export function Inventory({
     } else {
       // Delete from Database
       console.log(`delete ${item.name} from Database!`);
+
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/items/${item.itemid}`)
+        .then((response) => {
+          setInventory(response.data);
+        });
     }
   };
 
@@ -177,37 +220,44 @@ export function Inventory({
    * Effect for fetching inventory data from server
    */
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
-      // console.log(response.data);
-      setItemOptions(
-        response.data.map((item: Item) => ({
-          value: item,
-          label: item.name,
-        }))
-      );
+    if (self) {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/items`, {})
+        .then((response) => {
+          // console.log(response.data);
+          setItemOptions(
+            response.data.map((item: Item) => ({
+              value: item,
+              label: item.name,
+            }))
+          );
 
-      if (currentUser && currentUser !== undefined) {
-        // If a player is selected in the dropdown
-        axios
-          .get(
-            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
-            {}
-          )
-          .then((response) => {
+          if (currentUser && currentUser !== undefined) {
+            // If a player is selected in the dropdown
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+              });
+          } else if (self?.isadmin) {
+            // If no player is selected and the logged in user is the admin
             setInventory(response.data);
-          });
-      } else if (self?.isadmin) {
-        // If no player is selected and the logged in user is the admin
-        setInventory(response.data);
-      } else {
-        // Regular player
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {})
-          .then((response) => {
-            setInventory(response.data);
-          });
-      }
-    });
+          } else {
+            // Regular player
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+              });
+          }
+        });
+    }
   }, [currentUser, self]);
 
   return (
