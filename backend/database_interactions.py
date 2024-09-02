@@ -122,7 +122,7 @@ def AddItemToPlayerInDatabase(playerid, itemid, quantity):
 
     try:
         cur.execute("INSERT INTO person_item (quantity,itemowner,owneditem) VALUES (?,?,?);", (quantity, playerid, itemid))
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND item.itemid = ?;", (playerid, itemid))
     except Exception as e:
         con.commit()
         con.close()

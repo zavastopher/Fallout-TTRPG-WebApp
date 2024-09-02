@@ -40,6 +40,10 @@ export function Inventory({
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
 
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
   const [inputs, setInputs] = useState<InventoryInputs>({
     name: null,
     item: undefined,
@@ -75,6 +79,20 @@ export function Inventory({
         if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: inputs.item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
         if (inputs?.quantity) {
@@ -88,6 +106,17 @@ export function Inventory({
         if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: inputs.item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
         if (inputs?.quantity) {
@@ -128,7 +157,6 @@ export function Inventory({
           })
           .then((response) => {
             let item: Item = response.data;
-            //item.id = response.data.id;
 
             setInventory((val) => {
               return [...val, item];
@@ -220,17 +248,24 @@ export function Inventory({
    * Effect for fetching inventory data from server
    */
   useEffect(() => {
+    var itemOptions: Array<ItemOption>;
+
     if (self) {
       axios
         .get(`${process.env.REACT_APP_BASEURL}/items`, {})
         .then((response) => {
           // console.log(response.data);
-          setItemOptions(
-            response.data.map((item: Item) => ({
-              value: item,
-              label: item.name,
-            }))
-          );
+          //setItemOptions(
+          //  response.data.map((item: Item) => ({
+          //    value: item,
+          //    label: item.name,
+          //  }))
+          //);
+
+          itemOptions = response.data.map((item: Item) => ({
+            value: item,
+            label: item.name,
+          }));
 
           if (currentUser && currentUser !== undefined) {
             // If a player is selected in the dropdown
@@ -241,6 +276,17 @@ export function Inventory({
               )
               .then((response) => {
                 setInventory(response.data);
+                var inv: Array<Item> = response.data;
+
+                var unaddedItemOptions = itemOptions.filter((itemOption) => {
+                  if (inv.find((el) => el.name === itemOption.value.name)) {
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+
+                setItemOptions(unaddedItemOptions);
               });
           } else if (self?.isadmin) {
             // If no player is selected and the logged in user is the admin
@@ -254,6 +300,17 @@ export function Inventory({
               )
               .then((response) => {
                 setInventory(response.data);
+                var inv: Array<Item> = response.data;
+
+                var unaddedItemOptions = itemOptions.filter((itemOption) => {
+                  if (inv.find((item) => item === itemOption.value)) {
+                    return false;
+                  } else {
+                    return true;
+                  }
+                });
+
+                setItemOptions(unaddedItemOptions);
               });
           }
         });
