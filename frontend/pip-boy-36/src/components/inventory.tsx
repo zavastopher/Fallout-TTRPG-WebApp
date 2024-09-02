@@ -43,7 +43,7 @@ export function Inventory({
   const [inputs, setInputs] = useState<InventoryInputs>({
     name: null,
     item: undefined,
-    players: null,
+    players: [],
     quantity: null,
     description: null,
   });
@@ -101,15 +101,39 @@ export function Inventory({
   function UpdateDatabase() {
     if (tabAdminDatabaseIdx === 0) {
       // Add Item
-      if (inputs?.name && inputs.description && inputs.quantity) {
+      if (inputs?.name && inputs.description) {
         console.log("add to database!");
 
+        let qty = inputs.quantity ?? 1;
+        let playerids: number[] = [];
+
         if (inputs?.players) {
+          console.log(inputs.players);
+
           inputs.players.forEach((player: UserOption) => {
-            console.log(`Add to ${player.label} at ${player.value}`);
-            //var playerid = player.value;
+            if (player.value) {
+              playerids.push(player.value?.id);
+            }
           });
         }
+
+        console.log(playerids);
+
+        axios
+          .post(`${process.env.REACT_APP_BASEURL}/items`, {
+            name: inputs.name,
+            description: inputs.description,
+            quantity: qty,
+            players: playerids,
+          })
+          .then((response) => {
+            let item: Item = response.data;
+            item.id = response.data.id;
+
+            setInventory((val) => {
+              return [...val, item];
+            });
+          });
       }
     } else {
       // Update Item
@@ -367,10 +391,20 @@ export function Inventory({
                                     players: value,
                                   }));
                                 } else {
-                                  setInputs((val) => ({
-                                    ...val,
-                                    players: [value],
-                                  }));
+                                  setInputs((val) => {
+                                    let players = val.players;
+
+                                    if (!players) return { ...val };
+
+                                    let alreadyInList = players.includes(value);
+
+                                    if (alreadyInList) return { ...val };
+
+                                    return {
+                                      ...val,
+                                      players: [...players, value],
+                                    };
+                                  });
                                 }
                               });
                             }}
