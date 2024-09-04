@@ -255,9 +255,24 @@ export function Inventory({
     if (currentUser) {
       // Delete from Player by Admin
       console.log(`delete ${item.name} from ${currentUser.name}!`);
+      axios
+        .patch(
+          `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+          { itemid: item.itemid }
+        )
+        .then((response) => {
+          setInventory(response.data);
+        });
     } else if (!self?.isadmin) {
       // Delete from Player by Player
       console.log(`delete ${item.name} from ${self?.name}!`);
+      axios
+        .patch(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+          itemid: item.itemid,
+        })
+        .then((response) => {
+          setInventory(response.data);
+        });
     } else {
       // Delete from Database
       console.log(`delete ${item.name} from Database!`);

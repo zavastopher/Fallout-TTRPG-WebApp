@@ -316,7 +316,7 @@ def UpdateDeleteItemsRoute(itemid):
 
 ### Route for adding, removing or viewing items in regards to a specific player
 ### Used by both players and admin
-@app.route("/players/item/<int:playerid>", methods=["GET", "POST", "PUT", "DELETE"])
+@app.route("/players/item/<int:playerid>", methods=["GET", "POST", "PUT", "PATCH"])
 @jwt_required()
 def PlayerItemRoute(playerid):
     # Add Item to Player
@@ -357,7 +357,7 @@ def PlayerItemRoute(playerid):
         return res
 
     # Remove Item from Player 
-    elif request.method == "DELETE":
+    elif request.method == "PATCH":
         data = request.get_json()
 
         itemid = data["itemid"]

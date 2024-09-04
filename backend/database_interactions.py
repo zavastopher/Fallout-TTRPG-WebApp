@@ -168,7 +168,7 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
         cur.execute("PRAGMA foreign_keys = ON;")
 
         cur.execute("DELETE FROM person_item WHERE itemowner=? AND owneditem=?;", (playerid, itemid))
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
         res = data.fetchall()
     except Exception as e:
         con.commit()
