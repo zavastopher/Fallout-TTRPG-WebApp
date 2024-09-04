@@ -147,7 +147,7 @@ def UpdateItemForPlayerDatabase(playerid, itemid, quantity):
 
         if inventoryToUpdate:
             cur.execute("UPDATE person_item SET quantity = ? WHERE itemowner = ? AND owneditem = ?;", (quantity, playerid, itemid))
-            data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
+            data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
             res = data.fetchone()
             con.commit()
         else:

@@ -57,6 +57,14 @@ export function Inventory({
   const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState<number>(0);
   const [tabPlayerIdx, setTabPlayerIdx] = useState<number>(0);
 
+  const unaddedItemOptions = itemOptions.filter((itemOption) => {
+    if (inventory.find((el) => el.name === itemOption.value.name)) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
@@ -98,6 +106,26 @@ export function Inventory({
         if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     } else {
@@ -122,6 +150,23 @@ export function Inventory({
         if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     }
@@ -166,7 +211,6 @@ export function Inventory({
     } else {
       // Update Item
       if (inputs?.name || inputs?.description) {
-        //console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
         var currentItem = filteredList[selected];
 
         if (!inputs.name) {
@@ -200,9 +244,6 @@ export function Inventory({
             invCopy[itemIdx] = itemCopy;
 
             setInventory(invCopy);
-
-            //item.name = response.data.name;
-            //item.description = response.data.description;
           });
       }
     }
@@ -254,14 +295,6 @@ export function Inventory({
       axios
         .get(`${process.env.REACT_APP_BASEURL}/items`, {})
         .then((response) => {
-          // console.log(response.data);
-          //setItemOptions(
-          //  response.data.map((item: Item) => ({
-          //    value: item,
-          //    label: item.name,
-          //  }))
-          //);
-
           itemOptions = response.data.map((item: Item) => ({
             value: item,
             label: item.name,
@@ -276,17 +309,7 @@ export function Inventory({
               )
               .then((response) => {
                 setInventory(response.data);
-                var inv: Array<Item> = response.data;
-
-                var unaddedItemOptions = itemOptions.filter((itemOption) => {
-                  if (inv.find((el) => el.name === itemOption.value.name)) {
-                    return false;
-                  } else {
-                    return true;
-                  }
-                });
-
-                setItemOptions(unaddedItemOptions);
+                setItemOptions(itemOptions);
               });
           } else if (self?.isadmin) {
             // If no player is selected and the logged in user is the admin
@@ -300,17 +323,7 @@ export function Inventory({
               )
               .then((response) => {
                 setInventory(response.data);
-                var inv: Array<Item> = response.data;
-
-                var unaddedItemOptions = itemOptions.filter((itemOption) => {
-                  if (inv.find((item) => item === itemOption.value)) {
-                    return false;
-                  } else {
-                    return true;
-                  }
-                });
-
-                setItemOptions(unaddedItemOptions);
+                setItemOptions(itemOptions);
               });
           }
         });
@@ -373,7 +386,7 @@ export function Inventory({
                         <label htmlFor="item">Item</label>
                         <Select
                           id="item"
-                          options={itemOptions}
+                          options={unaddedItemOptions}
                           styles={ddStyles}
                           theme={ddTheme}
                           isMulti={false}
@@ -615,7 +628,7 @@ export function Inventory({
                     <label htmlFor="item">Item</label>
                     <Select
                       id="item"
-                      options={itemOptions}
+                      options={unaddedItemOptions}
                       styles={ddStyles}
                       theme={ddTheme}
                       isMulti={false}

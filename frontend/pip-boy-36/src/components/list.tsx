@@ -6,6 +6,8 @@ import { useCallback, useEffect } from "react";
 import { ListItem } from "./listItem";
 import React from "react";
 import { ListItemType } from "./types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 
 type ListProps = {
   selected: number;
@@ -116,7 +118,16 @@ export function List({
 
   return (
     <div className="item-list-container">
-      <input type="text" value={filterText} onChange={filterList}></input>
+      <div className="filter-container">
+        <input type="text" value={filterText} onChange={filterList}></input>
+        <FontAwesomeIcon
+          className="filter-close"
+          icon={faX}
+          onClick={() => {
+            setFilterText("");
+          }}
+        />
+      </div>
 
       <ul id="list" className="list test">
         {filteredList !== null &&

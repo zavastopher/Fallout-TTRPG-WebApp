@@ -404,6 +404,9 @@ input[type="text"] {
 
 .item-list-container {
   width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .list {
@@ -413,6 +416,7 @@ input[type="text"] {
   position: relative;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  width: 85%;
 
   &::-webkit-scrollbar {
     display: none;
@@ -460,6 +464,23 @@ input[type="text"] {
 
 .description p {
   font-size: 20px;
+}
+
+.filter-container {
+  position: relative;
+}
+
+.filter-close {
+  color: $fontGreen;
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  font-size: 18px;
+
+  &:hover {
+    color: white;
+    cursor: pointer;
+  }
 }
 
 //-----------------------------------------------------------
