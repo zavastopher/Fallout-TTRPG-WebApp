@@ -157,15 +157,31 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
     }
   }
 
+  function removeDeletedQuest(quest: Quest) {
+    var invDeleteQuest = quests.filter(
+      (invItem) => invItem.questid !== quest.questid
+    );
+
+    setQuests(invDeleteQuest);
+  }
+
   function deleteQuest(quest: Quest) {
     // Delete with axios
     // Deleting quest only posible for admin
+
+    var currentQuest: Quest = filteredList[selected];
 
     if (currentUser) {
       console.log(`delete quest: ${quest.name} from player ${currentUser.id}`);
     } else if (self?.isadmin) {
       // Delete quest from database
       console.log(`delete quest: ${quest.name} from database`);
+
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/quests/${quest.questid}`)
+        .then((response) => {
+          removeDeletedQuest(response.data.deleted);
+        });
     }
   }
 

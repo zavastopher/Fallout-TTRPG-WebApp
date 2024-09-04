@@ -372,10 +372,10 @@ def DeleteQuestFromDatabase(questid):
         }
 
         cur.execute("DELETE FROM quest WHERE questid=?", (questid,))
-        data = cur.execute("SELECT * FROM quest;")
-        res = data.fetchall()
+        #data = cur.execute("SELECT * FROM quest;")
+        #res = data.fetchall()
 
-        res.append(deleted)
+        #res.append(deleted)
     except Exception as e:
         con.commit()
         con.close()
@@ -384,7 +384,7 @@ def DeleteQuestFromDatabase(questid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 def AssignQuestToPlayerInDatabase(playerid, questid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
