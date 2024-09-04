@@ -85,12 +85,31 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       if (inputs.name && inputs.description) {
         console.log("add to database!");
 
+        let playerids: number[] = [];
+
         if (inputs.players) {
-          inputs.players.forEach((player) => {
-            console.log(`Add to ${player.label} at ${player.value}`);
-            //var playerid = player.value;
+          inputs.players.forEach((player: UserOption) => {
+            if (player.value) {
+              playerids.push(player.value?.id);
+            }
           });
         }
+
+        console.log(playerids);
+
+        axios
+          .post(`${process.env.REACT_APP_BASEURL}/quests`, {
+            name: inputs.name,
+            description: inputs.description,
+            players: playerids,
+          })
+          .then((response) => {
+            let quest: Quest = response.data;
+
+            setQuests((val) => {
+              return [...val, quest];
+            });
+          });
       }
     } else {
       // Update quest
@@ -287,10 +306,21 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
                                   players: value,
                                 }));
                               } else {
-                                setInputs((val) => ({
-                                  ...val,
-                                  players: [value],
-                                }));
+                                setInputs((val) => {
+                                  let players = val.players;
+
+                                  if (!players)
+                                    return { ...val, players: [value] };
+
+                                  let alreadyInList = players.includes(value);
+
+                                  if (alreadyInList) return { ...val };
+
+                                  return {
+                                    ...val,
+                                    players: [...players, value],
+                                  };
+                                });
                               }
                             });
                           }}

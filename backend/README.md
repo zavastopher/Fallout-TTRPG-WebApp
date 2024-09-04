@@ -374,16 +374,9 @@ Returns entire new inventory
 
 ```
 {
-  "quests": [
-    {
-      "name" : "quest two",
-      "description" : "Two description"
-    },
-    {
-      "name" : "quest three",
-      "description" : "Three description"
-    }
-  ]
+  "name" : "quest two",
+  "description" : "Two description",
+  "players": [1, 2, 3]
 }
 ```
 

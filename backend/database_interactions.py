@@ -167,9 +167,14 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
+        data = cur.execute("SELECT item.itemid, item.name, item.description FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND itemid=?", (playerid, itemid,))
+        deleted = {
+            "deleted": data.fetchone()
+        }
+
         cur.execute("DELETE FROM person_item WHERE itemowner=? AND owneditem=?;", (playerid, itemid))
-        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
-        res = data.fetchall()
+        # data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
+        # res = data.fetchall()
     except Exception as e:
         con.commit()
         con.close()
@@ -177,7 +182,7 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 def GetPlayerInventoryFromDatabase(id):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
@@ -280,10 +285,7 @@ def DeleteItemFromDatabase(itemid):
         }
 
         cur.execute("DELETE FROM item WHERE itemid=?", (itemid,))
-        data = cur.execute("SELECT * FROM item;")
-        res = data.fetchall()
 
-        res.append(deleted)
     except Exception as e:
         con.commit()
         con.close()
@@ -291,11 +293,11 @@ def DeleteItemFromDatabase(itemid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 ## Quests
 
-def AddQuestToDatabase(questtuples):
+def AddQuestToDatabase(name, description):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -303,9 +305,9 @@ def AddQuestToDatabase(questtuples):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        cur.executemany("INSERT OR IGNORE INTO quest (name, description) VALUES (?, ?);", questtuples)
-        data = cur.execute("SELECT * FROM quest;")
-        res = data.fetchall()
+        cur.execute("INSERT OR IGNORE INTO quest (name, description) VALUES (?, ?);", (name, description,))
+        data = cur.execute("SELECT * FROM quest where name = ?;", (name,))
+        res = data.fetchone()
     except Exception as e:
         con.commit()
         con.close()

@@ -249,38 +249,42 @@ export function Inventory({
     }
   }
 
+  function removeDeletedItem(item: Item) {
+    var invDeleteItem = inventory.filter(
+      (invItem) => invItem.itemid !== item.itemid
+    );
+
+    setInventory(invDeleteItem);
+  }
+
   const deleteItem = (item: Item) => {
     // Delete with axios,
 
     if (currentUser) {
       // Delete from Player by Admin
-      console.log(`delete ${item.name} from ${currentUser.name}!`);
       axios
         .patch(
           `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
           { itemid: item.itemid }
         )
         .then((response) => {
-          setInventory(response.data);
+          removeDeletedItem(response.data.deleted);
         });
     } else if (!self?.isadmin) {
       // Delete from Player by Player
-      console.log(`delete ${item.name} from ${self?.name}!`);
       axios
         .patch(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
           itemid: item.itemid,
         })
         .then((response) => {
-          setInventory(response.data);
+          removeDeletedItem(response.data.deleted);
         });
     } else {
       // Delete from Database
-      console.log(`delete ${item.name} from Database!`);
-
       axios
         .delete(`${process.env.REACT_APP_BASEURL}/items/${item.itemid}`)
         .then((response) => {
-          setInventory(response.data);
+          removeDeletedItem(response.data.deleted);
         });
     }
   };

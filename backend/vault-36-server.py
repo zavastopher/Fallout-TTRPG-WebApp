@@ -389,12 +389,18 @@ def AddGetQuestRoute():
     # Create quest
     if request.method == "POST":
         data = request.get_json()
-        quests = data["quests"]
-        questtuples = [tuple(quest.values()) for quest in quests]
+        # questtuples = [tuple(quest.values()) for quest in quests]
+        name = data["name"]
+        description = data["description"]        
+        players = data["players"]
 
-        app.logger.debug(questtuples)
+        app.logger.debug(f"name:{name}, description: {description}")
 
-        res = AddQuestToDatabase(questtuples)
+        res = AddQuestToDatabase(name, description)
+
+
+        for player in players:
+            AssignQuestToPlayerInDatabase(player, res["questid"])
 
         return res
 
