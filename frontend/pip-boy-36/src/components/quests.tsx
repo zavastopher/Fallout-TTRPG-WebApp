@@ -119,7 +119,6 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
     } else {
       // Update quest
       if (inputs.name || inputs.description || inputs.status) {
-        console.log("update!");
         var currentQuest: Quest = filteredList[selected];
 
         if (!inputs.name) {
@@ -169,17 +168,6 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       console.log(`delete quest: ${quest.name} from database`);
     }
   }
-
-  //const handleTextAreaInputChange = (
-  //  event: React.ChangeEvent<HTMLTextAreaElement>,
-  //  setInputs: React.Dispatch<React.SetStateAction<QuestInputs>>
-  //) => {
-  //  const name = event.currentTarget.name;
-  //  const value = event.currentTarget.value;
-  //  setInputs((values) => {
-  //    return { ...values, [name]: value };
-  //  });
-  //};
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
