@@ -48,6 +48,11 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       : quests.filter((item: Quest) =>
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
+
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
   const [inputs, setInputs] = useState<QuestInputs>({
     name: null,
     quest: undefined,
@@ -115,7 +120,40 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       // Update quest
       if (inputs.name || inputs.description || inputs.status) {
         console.log("update!");
-        console.log(inputs);
+        var currentQuest: Quest = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentQuest.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentQuest.description;
+        }
+
+        if (!inputs.status) {
+          inputs.status = currentQuest.status;
+        }
+
+        axios
+          .put(
+            `${process.env.REACT_APP_BASEURL}/quests/${currentQuest.questid}`,
+            {
+              name: inputs.name,
+              description: inputs.description,
+              status: inputs.status,
+            }
+          )
+          .then((response) => {
+            var updatedQuest: Quest = response.data;
+
+            var copyQuestList = quests.filter(
+              (quest) => quest.questid != updatedQuest.questid
+            );
+
+            copyQuestList.push(updatedQuest);
+
+            setQuests(copyQuestList);
+          });
       }
     }
   }
