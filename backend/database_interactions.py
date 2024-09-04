@@ -122,7 +122,7 @@ def AddItemToPlayerInDatabase(playerid, itemid, quantity):
 
     try:
         cur.execute("INSERT INTO person_item (quantity,itemowner,owneditem) VALUES (?,?,?);", (quantity, playerid, itemid))
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND item.itemid = ?;", (playerid, itemid))
     except Exception as e:
         con.commit()
         con.close()
@@ -147,7 +147,7 @@ def UpdateItemForPlayerDatabase(playerid, itemid, quantity):
 
         if inventoryToUpdate:
             cur.execute("UPDATE person_item SET quantity = ? WHERE itemowner = ? AND owneditem = ?;", (quantity, playerid, itemid))
-            data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
+            data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND person_item.owneditem = ?;", (playerid, itemid))
             res = data.fetchone()
             con.commit()
         else:
@@ -167,9 +167,14 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
+        data = cur.execute("SELECT item.itemid, item.name, item.description FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND itemid=?", (playerid, itemid,))
+        deleted = {
+            "deleted": data.fetchone()
+        }
+
         cur.execute("DELETE FROM person_item WHERE itemowner=? AND owneditem=?;", (playerid, itemid))
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
-        res = data.fetchall()
+        # data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (playerid,))
+        # res = data.fetchall()
     except Exception as e:
         con.commit()
         con.close()
@@ -177,7 +182,7 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 def GetPlayerInventoryFromDatabase(id):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
@@ -187,7 +192,7 @@ def GetPlayerInventoryFromDatabase(id):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        data = cur.execute("SELECT item.itemid, item.name, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (id,))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ?;", (id,))
         res = data.fetchall()
     except Exception as e:
         con.close()
@@ -198,7 +203,7 @@ def GetPlayerInventoryFromDatabase(id):
 
 ## Item Interactions
 
-def AddItemToDatabase(itemtuples):
+def AddItemToDatabase(name, description):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -206,9 +211,9 @@ def AddItemToDatabase(itemtuples):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        cur.executemany("INSERT OR IGNORE INTO item (name, description) VALUES (?, ?);", itemtuples)
-        data = cur.execute("SELECT * FROM item;")
-        res = data.fetchall()
+        cur.execute("INSERT OR IGNORE INTO item (name, description) VALUES (?, ?);", (name, description))
+        data = cur.execute("SELECT * FROM item where name = ?;", (name,))
+        res = data.fetchone()
     except Exception as e:
         con.commit()
         con.close()
@@ -280,10 +285,7 @@ def DeleteItemFromDatabase(itemid):
         }
 
         cur.execute("DELETE FROM item WHERE itemid=?", (itemid,))
-        data = cur.execute("SELECT * FROM item;")
-        res = data.fetchall()
 
-        res.append(deleted)
     except Exception as e:
         con.commit()
         con.close()
@@ -291,11 +293,11 @@ def DeleteItemFromDatabase(itemid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 ## Quests
 
-def AddQuestToDatabase(questtuples):
+def AddQuestToDatabase(name, description):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -303,9 +305,9 @@ def AddQuestToDatabase(questtuples):
     try:
         cur.execute("PRAGMA foreign_keys = ON;")
 
-        cur.executemany("INSERT OR IGNORE INTO quest (name, description) VALUES (?, ?);", questtuples)
-        data = cur.execute("SELECT * FROM quest;")
-        res = data.fetchall()
+        cur.execute("INSERT OR IGNORE INTO quest (name, description) VALUES (?, ?);", (name, description,))
+        data = cur.execute("SELECT * FROM quest where name = ?;", (name,))
+        res = data.fetchone()
     except Exception as e:
         con.commit()
         con.close()
@@ -370,10 +372,10 @@ def DeleteQuestFromDatabase(questid):
         }
 
         cur.execute("DELETE FROM quest WHERE questid=?", (questid,))
-        data = cur.execute("SELECT * FROM quest;")
-        res = data.fetchall()
+        #data = cur.execute("SELECT * FROM quest;")
+        #res = data.fetchall()
 
-        res.append(deleted)
+        #res.append(deleted)
     except Exception as e:
         con.commit()
         con.close()
@@ -382,7 +384,7 @@ def DeleteQuestFromDatabase(questid):
     con.commit()
     con.close()
 
-    return res
+    return deleted
 
 def AssignQuestToPlayerInDatabase(playerid, questid):
     con = sqlite3.connect("/db/data/vault-36-db.sqlite")

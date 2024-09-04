@@ -5,47 +5,73 @@ import axios from "axios";
 // Components
 import { Title } from "./title";
 import { ContextMenu } from "./contextMenu";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 // Import Stylesheets
 import "react-tabs/style/react-tabs.css";
 import { ListWithDescription } from "./ListWithDescription";
+import {
+  ddQuestStatusStyles,
+  ddQuestStyles,
+  ddTheme,
+  ddUserStyles,
+} from "./styles";
+import {
+  User,
+  UserOption,
+  QuestInputs,
+  Quest,
+  QuestOption,
+  QuestStatus,
+  QuestStatusOption,
+} from "./types";
+import React from "react";
 
-export function Quests({
-  self,
-  currentUser,
-  playerOptions,
-  customTheme,
-  colorStyles,
-  handleInputChange,
-}) {
+type QuestsProps = {
+  self: User | null;
+  currentUser: User | null;
+  playerOptions: UserOption[];
+};
+
+export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
-  const [selected, setSelected] = useState(0);
-  const [quests, setQuests] = useState(null);
-  const [filterText, setFilterText] = useState("");
+  const [selected, setSelected] = useState<number>(0);
+  const [quests, setQuests] = useState<Array<Quest>>([]);
+  const [filterText, setFilterText] = useState<string>("");
 
   const filteredList =
     filterText.length === 0
       ? quests
-      : quests.filter((item) =>
+      : quests.filter((item: Quest) =>
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
-  const [inputs, setInputs] = useState({});
 
-  const [questOptions, setQuestOptions] = useState([]);
-  const [tabIdx, setTabIdx] = useState(0);
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
+  const [inputs, setInputs] = useState<QuestInputs>({
+    name: null,
+    quest: undefined,
+    players: null,
+    description: null,
+    status: undefined,
+  });
+
+  const [questOptions, setQuestOptions] = useState<QuestOption[]>([]);
+  const [tabIdx, setTabIdx] = useState<number>(0);
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (currentUser || !self.isadmin) {
+    if (currentUser || !self?.isadmin) {
       assignToPlayer();
     } else {
       UpdateDatabase();
@@ -64,33 +90,111 @@ export function Quests({
       if (inputs.name && inputs.description) {
         console.log("add to database!");
 
+        let playerids: number[] = [];
+
         if (inputs.players) {
-          inputs.players.forEach((player) => {
-            console.log(`Add to ${player.label} at ${player.value}`);
-            //var playerid = player.value;
+          inputs.players.forEach((player: UserOption) => {
+            if (player.value) {
+              playerids.push(player.value?.id);
+            }
           });
         }
+
+        console.log(playerids);
+
+        axios
+          .post(`${process.env.REACT_APP_BASEURL}/quests`, {
+            name: inputs.name,
+            description: inputs.description,
+            players: playerids,
+          })
+          .then((response) => {
+            let quest: Quest = response.data;
+
+            setQuests((val) => {
+              return [...val, quest];
+            });
+          });
       }
     } else {
       // Update quest
       if (inputs.name || inputs.description || inputs.status) {
-        console.log("update!");
-        console.log(inputs);
+        var currentQuest: Quest = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentQuest.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentQuest.description;
+        }
+
+        if (!inputs.status) {
+          inputs.status = currentQuest.status;
+        }
+
+        axios
+          .put(
+            `${process.env.REACT_APP_BASEURL}/quests/${currentQuest.questid}`,
+            {
+              name: inputs.name,
+              description: inputs.description,
+              status: inputs.status,
+            }
+          )
+          .then((response) => {
+            var updatedQuest: Quest = response.data;
+
+            var copyQuestList = quests.filter(
+              (quest) => quest.questid != updatedQuest.questid
+            );
+
+            copyQuestList.push(updatedQuest);
+
+            setQuests(copyQuestList);
+          });
       }
     }
   }
 
-  function deleteQuest(item) {
+  function removeDeletedQuest(quest: Quest) {
+    var invDeleteQuest = quests.filter(
+      (invItem) => invItem.questid !== quest.questid
+    );
+
+    setQuests(invDeleteQuest);
+  }
+
+  function deleteQuest(quest: Quest) {
     // Delete with axios
     // Deleting quest only posible for admin
 
+    var currentQuest: Quest = filteredList[selected];
+
     if (currentUser) {
-      console.log(`delete quest: ${item.name} from player ${currentUser.id}`);
-    } else if (self.isadmin) {
+      console.log(`delete quest: ${quest.name} from player ${currentUser.id}`);
+    } else if (self?.isadmin) {
       // Delete quest from database
-      console.log(`delete quest: ${item.name} from database`);
+      console.log(`delete quest: ${quest.name} from database`);
+
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/quests/${quest.questid}`)
+        .then((response) => {
+          removeDeletedQuest(response.data.deleted);
+        });
     }
   }
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setInputs: React.Dispatch<React.SetStateAction<QuestInputs>>
+  ) => {
+    const name = event.currentTarget.name;
+    const value = event.currentTarget.value;
+    setInputs((values) => {
+      return { ...values, [name]: value };
+    });
+  };
 
   // --------------------------------------------------------
   // Effects
@@ -99,12 +203,12 @@ export function Quests({
    * Effect for fetching quest data from server
    */
   useEffect(() => {
-    if (self.isadmin) {
+    if (self?.isadmin) {
       axios
         .get(`${process.env.REACT_APP_BASEURL}/quests`, {})
         .then((response) => {
           setQuestOptions(
-            response.data.map((quest) => ({
+            response.data.map((quest: Quest) => ({
               value: quest,
               label: quest.name,
             }))
@@ -140,21 +244,20 @@ export function Quests({
       <ListWithDescription
         selected={selected}
         setSelected={setSelected}
-        items={quests}
         deleteItemHandler={deleteQuest}
-        shouldDelete={self.isadmin}
+        shouldDelete={self?.isadmin ?? false}
         currentList="Quests"
         filteredList={filteredList}
         filterText={filterText}
         setFilterText={setFilterText}
       />
-      <div className="quest-status">
+      <div className="under-description quest-status">
         Status:{" "}
         {filteredList && filteredList[selected]
           ? filteredList[selected].status
           : ""}
       </div>
-      {self.isadmin ? (
+      {self?.isadmin ? (
         <ContextMenu submitFunction={handleSubmit}>
           <div className="context-form">
             {currentUser ? (
@@ -166,10 +269,13 @@ export function Quests({
                   <Select
                     id="quest"
                     options={questOptions}
-                    styles={colorStyles}
-                    theme={customTheme}
-                    onChange={(choice) =>
-                      setInputs((values) => ({ ...values, quest: choice }))
+                    styles={ddQuestStyles}
+                    theme={ddTheme}
+                    isMulti={false}
+                    onChange={(choice: QuestOption | null) =>
+                      setInputs((val) => {
+                        return { ...val, quest: choice?.value };
+                      })
                     }
                   />
                 </div>
@@ -179,7 +285,13 @@ export function Quests({
                 <Tabs
                   onSelect={(index) => {
                     setTabIdx(index);
-                    setInputs({});
+                    setInputs({
+                      name: null,
+                      quest: undefined,
+                      players: null,
+                      description: null,
+                      status: undefined,
+                    });
                   }}
                   disableUpDownKeys={true}
                 >
@@ -209,8 +321,8 @@ export function Quests({
                       <textarea
                         name="description"
                         id="description"
-                        cols="22"
-                        rows="5"
+                        cols={22}
+                        rows={5}
                         value={inputs.description || ""}
                         onChange={(event) =>
                           handleInputChange(event, setInputs)
@@ -222,16 +334,38 @@ export function Quests({
                         <label>Players</label>
                         <Select
                           options={playerOptions}
-                          styles={colorStyles}
-                          theme={customTheme}
+                          styles={ddUserStyles}
+                          theme={ddTheme}
                           defaultValue={null}
                           isMulti
-                          onChange={(choice) =>
-                            setInputs((values) => ({
-                              ...values,
-                              players: choice,
-                            }))
-                          }
+                          onChange={(
+                            choice: MultiValue<UserOption | UserOption[]>
+                          ) => {
+                            choice.forEach((value) => {
+                              if (Array.isArray(value)) {
+                                setInputs((val) => ({
+                                  ...val,
+                                  players: value,
+                                }));
+                              } else {
+                                setInputs((val) => {
+                                  let players = val.players;
+
+                                  if (!players)
+                                    return { ...val, players: [value] };
+
+                                  let alreadyInList = players.includes(value);
+
+                                  if (alreadyInList) return { ...val };
+
+                                  return {
+                                    ...val,
+                                    players: [...players, value],
+                                  };
+                                });
+                              }
+                            });
+                          }}
                         ></Select>
                       </div>
                     </div>
@@ -263,8 +397,8 @@ export function Quests({
                       <textarea
                         name="description"
                         id="description"
-                        cols="22"
-                        rows="5"
+                        cols={22}
+                        rows={5}
                         value={
                           inputs.description
                             ? inputs.description
@@ -281,18 +415,17 @@ export function Quests({
                     <div className="fields">
                       <label htmlFor="status">Status</label>
                       <Select
-                        options={[
-                          { value: "incomplete", label: "Incomplete" },
-                          { value: "success", label: "Success" },
-                          { value: "failure", label: "Failure" },
-                        ]}
-                        styles={colorStyles}
-                        theme={customTheme}
-                        onChange={(choice) =>
-                          setInputs((values) => ({
-                            ...values,
-                            status: choice,
-                          }))
+                        options={QuestStatus}
+                        styles={ddQuestStatusStyles}
+                        theme={ddTheme}
+                        isMulti={false}
+                        onChange={(choice: QuestStatusOption | null) =>
+                          setInputs((values) => {
+                            return {
+                              ...values,
+                              status: choice?.value,
+                            };
+                          })
                         }
                       />
                     </div>

@@ -318,9 +318,14 @@ input[type="text"] {
   width: 200px;
   color: $lineGreen;
 
+  .hp-fields {
+    position: relative;
+    text-align: right;
+  }
+
   .hp {
     input {
-      width: 25%;
+      width: 35%;
       font-size: 25px;
     }
 
@@ -335,6 +340,13 @@ input[type="text"] {
     &.hp-label:hover {
       color: white;
       cursor: pointer;
+    }
+
+    .hp-buttons {
+      position: absolute;
+      bottom: -35px;
+      left: 0;
+      right: 0;
     }
   }
 }
@@ -392,6 +404,9 @@ input[type="text"] {
 
 .item-list-container {
   width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .list {
@@ -401,6 +416,7 @@ input[type="text"] {
   position: relative;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  width: 85%;
 
   &::-webkit-scrollbar {
     display: none;
@@ -450,12 +466,30 @@ input[type="text"] {
   font-size: 20px;
 }
 
+.filter-container {
+  position: relative;
+}
+
+.filter-close {
+  color: $fontGreen;
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  font-size: 18px;
+
+  &:hover {
+    color: white;
+    cursor: pointer;
+  }
+}
+
 //-----------------------------------------------------------
 // Quest Styles
 //-----------------------------------------------------------
 
-.quest-status {
-  float: right;
+.under-description {
+  position: absolute;
+  right: 0;
   width: 56%;
 }
 

@@ -4,9 +4,22 @@ import { useCallback, useEffect } from "react";
 
 // Components
 import { ListItem } from "./listItem";
+import React from "react";
+import { ListItemType } from "./types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/free-solid-svg-icons";
+
+type ListProps = {
+  selected: number;
+  setSelected: Function;
+  filteredList: Array<ListItemType>;
+  filterText: string;
+  setFilterText: Function;
+  deleteItemHandler: React.MouseEventHandler<SVGSVGElement>;
+  shouldDelete: Boolean;
+};
 
 export function List({
-  items,
   selected,
   setSelected,
   filteredList,
@@ -14,7 +27,7 @@ export function List({
   setFilterText,
   deleteItemHandler,
   shouldDelete,
-}) {
+}: ListProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
@@ -24,7 +37,7 @@ export function List({
   // --------------------------------------------------------
 
   const select = useCallback(
-    (itemIndex) => {
+    (itemIndex: number) => {
       if (itemIndex < 0 || itemIndex >= filteredList.length) return;
 
       setSelected(itemIndex);
@@ -32,9 +45,11 @@ export function List({
       var element = $(`#item${itemIndex}`);
       var list = $(".list");
 
-      var elHeight = element.outerHeight();
-      var scrollTop = list.scrollTop();
-      var viewport = scrollTop + list.height();
+      var elHeight = element.outerHeight() ?? 0;
+      var scrollTop = list.scrollTop() ?? 0;
+      var listHeight = list?.height() ?? 0;
+
+      var viewport = scrollTop + listHeight;
       var elOffset = elHeight * itemIndex;
 
       if (elOffset < scrollTop) {
@@ -47,7 +62,7 @@ export function List({
   );
 
   const handleListKeyDown = useCallback(
-    (event) => {
+    (event: KeyboardEvent) => {
       if (event.key === "ArrowUp") {
         select(selected - 1);
       } else if (event.key === "ArrowDown") {
@@ -57,13 +72,13 @@ export function List({
     [select, selected]
   );
 
-  const handleListClick = (itemId, item) => {
+  const handleListClick = (itemId: number) => {
     select(itemId);
   };
 
   const filterList = useCallback(
-    (event) => {
-      const value = event.target.value;
+    (event: React.FormEvent<HTMLInputElement>) => {
+      const value = event.currentTarget.value;
       setFilterText(value);
       setSelected(0);
     },
@@ -103,7 +118,16 @@ export function List({
 
   return (
     <div className="item-list-container">
-      <input type="text" value={filterText} onChange={filterList}></input>
+      <div className="filter-container">
+        <input type="text" value={filterText} onChange={filterList}></input>
+        <FontAwesomeIcon
+          className="filter-close"
+          icon={faX}
+          onClick={() => {
+            setFilterText("");
+          }}
+        />
+      </div>
 
       <ul id="list" className="list test">
         {filteredList !== null &&
@@ -115,13 +139,11 @@ export function List({
                 item={item}
                 itemIndex={filteredList.indexOf(item)}
                 clickEvent={() => handleListClick(filteredList.indexOf(item))}
-                key={item.itemid}
+                key={item.name}
                 currentItem={selected}
                 deleteItemHandler={deleteItemHandler}
                 shouldDelete={shouldDelete}
-              >
-                {" "}
-              </ListItem>
+              ></ListItem>
             ))}
           </div>
         ) : (

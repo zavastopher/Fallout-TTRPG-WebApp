@@ -226,6 +226,8 @@ def UpdateHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s health.", 400
+    
+    socketio.emit("hp", {"hp": res["hp"]})
 
     return res
 
@@ -240,6 +242,8 @@ def UpdateMaxHP(playerid):
 
     if not res:
         return f"Can't update player {playerid}'s max health.", 400
+    
+    socketio.emit("maxhp", {"maxhp": res["maxhp"]})
 
     return res
 
@@ -257,21 +261,29 @@ def AddGetItemsRoute():
     if request.method == "POST":
         try:
             data = request.get_json()
-            items = data["items"]
-            app.logger.debug(items)
+            name = data["name"]
+            description = data["description"]
+            quantity = data["quantity"]
+            players = data["players"]
 
-            itemtuples = [tuple(item) for item in items]
-            app.logger.debug(itemtuples)
+            #itemtuple = [tuple(item) for item in items]
         except:
             return "Missing items", 400
 
         try:
-            app.logger.debug(itemtuples)
-            res = AddItemToDatabase(itemtuples)
+            res = AddItemToDatabase(name, description)
+            app.logger.debug(f"Added item to player: {players}")
+
+
+            for player in players:
+                playerRes = AddItemToPlayerInDatabase(player, res["itemid"], quantity)
+                app.logger.debug(f"Added item to player: {player}")
+
         except Exception as e:
             return str(e), 400
         else:
             return res
+        
     # Get all Items
     else:
         res = GetItemsInDatabase()
@@ -304,7 +316,7 @@ def UpdateDeleteItemsRoute(itemid):
 
 ### Route for adding, removing or viewing items in regards to a specific player
 ### Used by both players and admin
-@app.route("/players/item/<int:playerid>", methods=["GET", "POST", "PUT", "DELETE"])
+@app.route("/players/item/<int:playerid>", methods=["GET", "POST", "PUT", "PATCH"])
 @jwt_required()
 def PlayerItemRoute(playerid):
     # Add Item to Player
@@ -345,7 +357,7 @@ def PlayerItemRoute(playerid):
         return res
 
     # Remove Item from Player 
-    elif request.method == "DELETE":
+    elif request.method == "PATCH":
         data = request.get_json()
 
         itemid = data["itemid"]
@@ -377,12 +389,18 @@ def AddGetQuestRoute():
     # Create quest
     if request.method == "POST":
         data = request.get_json()
-        quests = data["quests"]
-        questtuples = [tuple(quest.values()) for quest in quests]
+        # questtuples = [tuple(quest.values()) for quest in quests]
+        name = data["name"]
+        description = data["description"]        
+        players = data["players"]
 
-        app.logger.debug(questtuples)
+        app.logger.debug(f"name:{name}, description: {description}")
 
-        res = AddQuestToDatabase(questtuples)
+        res = AddQuestToDatabase(name, description)
+
+
+        for player in players:
+            AssignQuestToPlayerInDatabase(player, res["questid"])
 
         return res
 
@@ -515,9 +533,7 @@ def PlayerLimbsRoute(playerid):
 
 @socketio.on('my event')
 def handle_custom_event(json):
-    #emit("limb",'received json: ' + str(json))
-    emit("limb", {"limb": "limb thing", "status": "broken"}, broadcast=True)
-    # send('received json: ')
+    emit("limb", {"limb": "limb thing", "status": "broken"})
 
 @socketio.on('connect')
 def test_connect(auth):

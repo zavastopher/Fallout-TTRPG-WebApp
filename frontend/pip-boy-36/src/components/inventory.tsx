@@ -5,50 +5,74 @@ import axios from "axios";
 // Components
 import { Title } from "./title";
 import { ContextMenu } from "./contextMenu";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 // Import Stylesheets
 import "react-tabs/style/react-tabs.css";
 import { ListWithDescription } from "./ListWithDescription";
+import { InventoryInputs, Item, ItemOption, User, UserOption } from "./types";
+import React from "react";
+import { ddStyles, ddTheme, ddUserStyles } from "./styles";
+
+type InventoryProps = {
+  self: User | null;
+  currentUser: User | null;
+  playerOptions: UserOption[];
+};
 
 export function Inventory({
   self,
   currentUser,
   playerOptions,
-  customTheme,
-  colorStyles,
-  handleInputChange,
-}) {
+}: InventoryProps) {
   // --------------------------------------------------------
   // Members
   // --------------------------------------------------------
-  const [selected, setSelected] = useState(0);
-  const [inventory, setInventory] = useState(null);
-  const [filterText, setFilterText] = useState("");
+  const [selected, setSelected] = useState<number>(0);
+  const [inventory, setInventory] = useState<Array<Item>>([]);
+  const [filterText, setFilterText] = useState<string>("");
 
   const filteredList =
     filterText.length === 0
       ? inventory
-      : inventory.filter((item) =>
+      : inventory?.filter((item: Item) =>
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
 
-  const [inputs, setInputs] = useState({});
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
 
-  const [itemOptions, setItemOptions] = useState([]);
-  const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState(0);
-  const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState(0);
-  const [tabPlayerIdx, setTabPlayerIdx] = useState(0);
+  const [inputs, setInputs] = useState<InventoryInputs>({
+    name: null,
+    item: undefined,
+    players: [],
+    quantity: null,
+    description: null,
+  });
+
+  const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
+  const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState<number>(0);
+  const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState<number>(0);
+  const [tabPlayerIdx, setTabPlayerIdx] = useState<number>(0);
+
+  const unaddedItemOptions = itemOptions.filter((itemOption) => {
+    if (inventory.find((el) => el.name === itemOption.value.name)) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (currentUser || !self.isadmin) {
+    if (currentUser || !self?.isadmin) {
       UpdatePlayer();
     } else {
       UpdateDatabase();
@@ -60,27 +84,89 @@ export function Inventory({
     if (currentUser) {
       // Admin Updating player, use admin player tabs
       if (tabAdminPlayerIdx === 0) {
-        if (inputs.quantity && inputs.item) {
+        if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: inputs.item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
-        if (inputs.quantity) {
+        if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     } else {
       // Player updating self, use player tabs
       if (tabPlayerIdx === 0) {
-        if (inputs.quantity && inputs.item) {
+        if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: inputs.item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
-        if (inputs.quantity) {
+        if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     }
@@ -89,37 +175,129 @@ export function Inventory({
   function UpdateDatabase() {
     if (tabAdminDatabaseIdx === 0) {
       // Add Item
-      if (inputs.name && inputs.description && inputs.quantity) {
+      if (inputs?.name && inputs.description) {
         console.log("add to database!");
 
-        if (inputs.players) {
-          inputs.players.forEach((player) => {
-            console.log(`Add to ${player.label} at ${player.value}`);
-            //var playerid = player.value;
+        let qty = inputs.quantity ?? 1;
+        let playerids: number[] = [];
+
+        if (inputs?.players) {
+          console.log(inputs.players);
+
+          inputs.players.forEach((player: UserOption) => {
+            if (player.value) {
+              playerids.push(player.value?.id);
+            }
           });
         }
+
+        console.log(playerids);
+
+        axios
+          .post(`${process.env.REACT_APP_BASEURL}/items`, {
+            name: inputs.name,
+            description: inputs.description,
+            quantity: qty,
+            players: playerids,
+          })
+          .then((response) => {
+            let item: Item = response.data;
+
+            setInventory((val) => {
+              return [...val, item];
+            });
+          });
       }
     } else {
       // Update Item
-      if (inputs.name || inputs.description) {
-        console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
+      if (inputs?.name || inputs?.description) {
+        var currentItem = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentItem.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentItem.description;
+        }
+
+        axios
+          .put(`${process.env.REACT_APP_BASEURL}/items/${currentItem.itemid}`, {
+            name: inputs.name,
+            description: inputs.description,
+          })
+          .then((response) => {
+            console.log(response.data);
+
+            var filteredItems = inventory.filter(
+              (item) => item.itemid === response.data.itemid
+            );
+            var item = filteredItems[0];
+            var itemIdx = inventory.indexOf(item);
+
+            var invCopy = [...inventory];
+            var itemCopy = { ...filteredItems[0] };
+
+            itemCopy.name = response.data.name;
+            itemCopy.description = response.data.description;
+
+            invCopy[itemIdx] = itemCopy;
+
+            setInventory(invCopy);
+          });
       }
     }
   }
 
-  const deleteItem = (item) => {
+  function removeDeletedItem(item: Item) {
+    var invDeleteItem = inventory.filter(
+      (invItem) => invItem.itemid !== item.itemid
+    );
+
+    setInventory(invDeleteItem);
+  }
+
+  const deleteItem = (item: Item) => {
     // Delete with axios,
 
     if (currentUser) {
       // Delete from Player by Admin
-      console.log(`delete ${item.name} from ${currentUser.name}!`);
-    } else if (!self.isadmin) {
+      axios
+        .patch(
+          `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+          { itemid: item.itemid }
+        )
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
+    } else if (!self?.isadmin) {
       // Delete from Player by Player
-      console.log(`delete ${item.name} from ${self.name}!`);
+      axios
+        .patch(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+          itemid: item.itemid,
+        })
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
     } else {
       // Delete from Database
-      console.log(`delete ${item.name} from Database!`);
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/items/${item.itemid}`)
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
     }
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setInputs: React.Dispatch<React.SetStateAction<InventoryInputs>>
+  ) => {
+    const name = event.currentTarget.name;
+    const value = event.currentTarget.value;
+    setInputs((values) => {
+      return { ...values, [name]: value };
+    });
   };
 
   // --------------------------------------------------------
@@ -130,37 +308,45 @@ export function Inventory({
    * Effect for fetching inventory data from server
    */
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
-      // console.log(response.data);
-      setItemOptions(
-        response.data.map((item) => ({
-          value: item,
-          label: item.name,
-        }))
-      );
+    var itemOptions: Array<ItemOption>;
 
-      if (currentUser && currentUser !== undefined) {
-        // If a player is selected in the dropdown
-        axios
-          .get(
-            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
-            {}
-          )
-          .then((response) => {
+    if (self) {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/items`, {})
+        .then((response) => {
+          itemOptions = response.data.map((item: Item) => ({
+            value: item,
+            label: item.name,
+          }));
+
+          if (currentUser && currentUser !== undefined) {
+            // If a player is selected in the dropdown
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+                setItemOptions(itemOptions);
+              });
+          } else if (self?.isadmin) {
+            // If no player is selected and the logged in user is the admin
             setInventory(response.data);
-          });
-      } else if (self.isadmin) {
-        // If no player is selected and the logged in user is the admin
-        setInventory(response.data);
-      } else {
-        // Regular player
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self.id}`, {})
-          .then((response) => {
-            setInventory(response.data);
-          });
-      }
-    });
+          } else {
+            // Regular player
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+                setItemOptions(itemOptions);
+              });
+          }
+        });
+    }
   }, [currentUser, self]);
 
   return (
@@ -169,7 +355,6 @@ export function Inventory({
       <ListWithDescription
         selected={selected}
         setSelected={setSelected}
-        items={inventory}
         deleteItemHandler={deleteItem}
         shouldDelete={true}
         currentList="Inventory"
@@ -177,16 +362,33 @@ export function Inventory({
         filterText={filterText}
         setFilterText={setFilterText}
       />
+      <div className="under-description inventory-quantity">
+        <p>
+          {filteredList &&
+          filteredList[selected] &&
+          filteredList[selected].quantity != null
+            ? `Quantity: ${filteredList[selected].quantity}`
+            : ""}
+        </p>
+      </div>
       <ContextMenu submitFunction={handleSubmit}>
         <div className="context-form">
-          {self.isadmin ? (
+          {self?.isadmin ? (
             <div>
               {currentUser ? (
                 <div>
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminPlayerIdx(index);
-                      setInputs({});
+                      setInputs((val) => {
+                        return {
+                          name: null,
+                          item: undefined,
+                          players: null,
+                          quantity: null,
+                          description: null,
+                        };
+                      });
                     }}
                     disableUpDownKeys={true}
                   >
@@ -203,15 +405,18 @@ export function Inventory({
                         <label htmlFor="item">Item</label>
                         <Select
                           id="item"
-                          options={itemOptions}
-                          styles={colorStyles}
-                          theme={customTheme}
-                          onChange={(choice) =>
-                            setInputs((values) => ({
-                              ...values,
-                              item: choice,
-                            }))
-                          }
+                          options={unaddedItemOptions}
+                          styles={ddStyles}
+                          theme={ddTheme}
+                          isMulti={false}
+                          onChange={(choice: ItemOption | null) => {
+                            setInputs((val) => {
+                              return {
+                                ...val,
+                                item: choice?.value,
+                              };
+                            });
+                          }}
                         />
                       </div>
                       <div className="fields">
@@ -258,7 +463,15 @@ export function Inventory({
                   <Tabs
                     onSelect={(index) => {
                       setTabAdminDatabaseIdx(index);
-                      setInputs({});
+                      setInputs((val) => {
+                        return {
+                          name: null,
+                          item: undefined,
+                          players: null,
+                          quantity: null,
+                          description: null,
+                        };
+                      });
                     }}
                     disableUpDownKeys={true}
                   >
@@ -290,8 +503,8 @@ export function Inventory({
                         <textarea
                           name="description"
                           id="description"
-                          cols="22"
-                          rows="5"
+                          cols={22}
+                          rows={5}
                           value={inputs.description || ""}
                           onChange={(event) =>
                             handleInputChange(event, setInputs)
@@ -303,16 +516,37 @@ export function Inventory({
                           <label>Players</label>
                           <Select
                             options={playerOptions}
-                            styles={colorStyles}
-                            theme={customTheme}
+                            styles={ddUserStyles}
+                            theme={ddTheme}
                             defaultValue={null}
-                            isMulti
-                            onChange={(choice) =>
-                              setInputs((values) => ({
-                                ...values,
-                                players: choice,
-                              }))
-                            }
+                            isMulti={true}
+                            onChange={(
+                              choice: MultiValue<UserOption | UserOption[]>
+                            ) => {
+                              choice.forEach((value) => {
+                                if (Array.isArray(value)) {
+                                  setInputs((val) => ({
+                                    ...val,
+                                    players: value,
+                                  }));
+                                } else {
+                                  setInputs((val) => {
+                                    let players = val.players;
+
+                                    if (!players) return { ...val };
+
+                                    let alreadyInList = players.includes(value);
+
+                                    if (alreadyInList) return { ...val };
+
+                                    return {
+                                      ...val,
+                                      players: [...players, value],
+                                    };
+                                  });
+                                }
+                              });
+                            }}
                           ></Select>
                         </div>
                         <div className="fields field-column">
@@ -364,8 +598,8 @@ export function Inventory({
                         <textarea
                           name="description"
                           id="description"
-                          cols="22"
-                          rows="5"
+                          cols={22}
+                          rows={5}
                           value={
                             inputs.description
                               ? inputs.description
@@ -387,7 +621,15 @@ export function Inventory({
             <Tabs
               onSelect={(index) => {
                 setTabPlayerIdx(index);
-                setInputs({});
+                setInputs((val) => {
+                  return {
+                    name: null,
+                    item: undefined,
+                    players: null,
+                    quantity: null,
+                    description: null,
+                  };
+                });
               }}
               disableUpDownKeys={true}
             >
@@ -405,11 +647,14 @@ export function Inventory({
                     <label htmlFor="item">Item</label>
                     <Select
                       id="item"
-                      options={itemOptions}
-                      styles={colorStyles}
-                      theme={customTheme}
-                      onChange={(choice) =>
-                        setInputs((values) => ({ ...values, item: choice }))
+                      options={unaddedItemOptions}
+                      styles={ddStyles}
+                      theme={ddTheme}
+                      isMulti={false}
+                      onChange={(choice: ItemOption | null) =>
+                        setInputs((values) => {
+                          return { ...values, item: choice?.value };
+                        })
                       }
                     />
                   </div>
