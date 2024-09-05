@@ -526,7 +526,7 @@ def CreateAmmoTypeInDatabase(ammoname):
     try:
         cur.execute(turnonForeignKeys)
 
-        data = cur.execute("INSERT INTO ammo (name) VALUES (\'?\');", tuple(ammoname))
+        data = cur.execute("INSERT INTO ammo (name) VALUES (?);", tuple(ammoname))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -543,9 +543,9 @@ def GetAmmoTypeInDatabase(ammoid):
     cur = con.cursor()
 
     try:
-        cur.execute("PRAGMMA foreign_keys = ON;")
+        cur.execute(turnonForeignKeys)
 
-        data = cur.execute("SELECT * FROM ammo WHERE ammo.ammoid = ?", tuple(ammoid))
+        data = cur.execute("SELECT * FROM ammo WHERE ammo.ammoid = ?;", tuple(ammoid))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -591,8 +591,13 @@ def DeleteItemFromDatabase(ammoid):
     try:
         cur.execute(turnonForeignKeys)
         
-        data = cur.execute("DELETE FROM ammo WHERE ammo.ammoid = ?", tuple(ammoid))
-        res = data.fetchone()
+        data = cur.execute("SELECT * FROM ammo WHERE ammo.ammoid = ?;")
+        deleted = {
+            "deleted" : data.fetchone
+        }
+        data = cur.execute("DELETE FROM ammo WHERE ammoid = ?;", tuple(ammoid))
+        res = data.fetchall()
+        res.append(deleted)
         con.commit()
         con.close()
     except Exception as e:
@@ -630,7 +635,7 @@ def CreateGunInDatabase(name, basecost, ap, damage, gunrange, criticalhit, gunam
     try:
         cur.execute(turnonForeignKeys)
 
-        data = cur.execute("INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values (\'?\',?,?,\'?\',\'?\',\'?\',?,?,\'?\',?)",(name, basecost, ap,damage,gunrange,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq))
+        data = cur.execute("INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values (?,?,?,?,?,?,?,?,?,?);",(name, basecost, ap,damage,gunrange,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -669,7 +674,7 @@ def UpdateGunInDatabase(gunid,name, basecost, ap, damage, gunrange, criticalhit,
 
     try:
         cur.execute(turnonForeignKeys)
-        data = cur.execute("UPDATE gun SET name = ?,basecost = ?,ap = ?,damage = ?,range = ?,criticalhit = ?,gunammotype = ?,capacity = ?,specialProperties = ?,loadcost = ?,strreq = ? WHERE gunid = ?",(name, basecost, ap, damage, gunrange, criticalhit, gunammotype, capacity, specialProperties, loadcost, strreq,gunid))
+        data = cur.execute("UPDATE gun SET name = ?,basecost = ?,ap = ?,damage = ?,range = ?,criticalhit = ?,gunammotype = ?,capacity = ?,specialProperties = ?,loadcost = ?,strreq = ? WHERE gunid = ?;",(name, basecost, ap, damage, gunrange, criticalhit, gunammotype, capacity, specialProperties, loadcost, strreq,gunid))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -687,8 +692,13 @@ def DeleteGunInDatabase(gunid):
 
     try:
         cur.execute(turnonForeignKeys)
-        data = cur.execute("DELETE FROM gun WHERE gun.gunid = ?", tuple(gunid))
+        data = cur.execute("SELECT * FROM gun WHERE gun.gunid = ?;", tuple(gunid))
+        deleted = {
+            "deleted" : data.fetchone()
+        }
+        data = cur.execute("DELETE FROM gun WHERE gunid = ?;", tuple(gunid))
         res = data.fetchone()
+        res.append(deleted)
         con.commit()
         con.close()
     except Exception as e:
@@ -725,6 +735,24 @@ def CreatePlayerAmmoInDatabase(quantity, ammoid, playerid):
     
     return res
 
+def GetPlayerAmmoInDatabase(personammoid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT person_ammo.quantity FROM person_ammo WHERE person_ammo.personammoid = ?;",tuple(personammoid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+
+    return res
+
 def GetPlayerAmmoQuantityInDatabase(playerid, ammoid):
     con = sqlite3.connect(database)
     con.row_factory = dict_factory
@@ -750,7 +778,7 @@ def GetPlayerAmmoTypesInDatabase(playerid):
 
     try:
         cur.execute(turnonForeignKeys)
-        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammoowner = ?", tuple(playerid))
+        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammoowner = ?;", tuple(playerid))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -768,7 +796,7 @@ def GetPlayerAmmoPlayersInDatabase(ammoid):
 
     try:
         cur.execute(turnonForeignKeys)
-        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammotype = ?", tuple(ammoid))
+        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammotype = ?;", tuple(ammoid))
         res = data.fetchone()
         con.commit()
         con.close()
@@ -779,3 +807,182 @@ def GetPlayerAmmoPlayersInDatabase(ammoid):
     
     return res
 
+def UpdatePlayerAmmoInDatabase(quantity, ammoid, playerid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("UPDATE person_ammo SET quantity = ? WHERE person_ammo.ammotype = ? AND person_ammo.ammoowner = ?;", (quantity, ammoid, playerid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def DeletePlayerAmmoInDatabase(playerid, ammoid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammotype = ? AND person_ammo.ammoowner = ?;", (ammoid, playerid))
+        deleted = {
+            "deleted" : data.fetchone()
+        }
+        data = cur.execute("DELETE FROM person_ammo WHERE person_ammo.ammotype = ? AND person_ammo.ammoowner = ?;", (ammoid, playerid))
+        res = data.fetchone(deleted)
+        res.append()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+## Player Gun
+# These interactions are for modifying a players gun
+
+# person_gun
+#   playergunid -> INTEGER PRIMARY KEY AUTOINCREMENT
+#   quantity
+#   playergunplayerid   -> FOREIGN KEY REFERENCES person.personid
+#   playergungunid  -> FOREIGN KEY REFERENCES gun.gunid
+
+def CreatePlayerGunInDatabase(quantity, playerid, gunid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("INSERT INTO person_ammo (quantity, playergunplayerid, playergungunid) VALUES (?,?,?);" (quantity, playerid, gunid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayerGunInDatabase(playergunid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_gun WHERE person_gun.playergunid = ?;", tuple(playergunid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayerGunPlayerIDGunIDInDatabase(playergungunid,playergunplayerid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_gun WHERE person_gun.playergunplayerid = ? AND person_gun.playergungunid = ?;" (playergunplayerid, playergungunid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayerGunsInDatabase(playerid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_gun WHERE person_gun.playergunplayerid = ?;", tuple(playerid))
+        res = data.fetchall()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayersWithGunInDatabase(gunid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_gun WHERE person_gun.playergungunid = ?;", tuple(gunid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def UpdatePlayersGunQuantityInDatabase(quantity, playergungunid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("UPDATE person_gun SET quantity = ? WHERE person_gun.playergunid = ?;", (quantity, playergungunid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def DeletePlayersGunInDatabase(playerid, gunid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_gun WHERE person_gun.playergunplayerid = ? AND person_gun.playergungunid = ?;", (playerid, gunid))
+        delete = {
+            "deleted" : data.fetchone()
+        }
+        data = cur.execute("DELETE FROM person_gun WHERE playergunplayerid = ? AND playergungunid = ?;", (playerid, gunid))
+        res = data.fetchall()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
