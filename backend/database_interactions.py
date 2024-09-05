@@ -698,3 +698,84 @@ def DeleteGunInDatabase(gunid):
     
     return res
 
+## PlayerAmmo
+# These interactions are for modifying a players ammo count 
+
+# person_ammo
+#   personammoid -> INTEGER PRIMARY KEY AUTOINCREMENT
+#   quantity
+#   ammoowner -> FOREIGN KEY REFERENCES personid
+#   ammotype -> FOREIGN KEY REFERENCES ammoid
+
+def CreatePlayerAmmoInDatabase(quantity, ammoid, playerid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("INSERT INTO person_ammo (quantity, ammoowner, ammotype) VALUES (?, ?);", (quantity,ammoid,playerid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayerAmmoQuantityInDatabase(playerid, ammoid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT person_ammo.quantity FROM person_ammo WHERE person_ammo.ammoowner = ? AND person_ammo.ammotype = ?;",(playerid, ammoid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+
+    return res
+
+def GetPlayerAmmoTypesInDatabase(playerid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammoowner = ?", tuple(playerid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+
+def GetPlayerAmmoPlayersInDatabase(ammoid):
+    con = sqlite3.connect(database)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+
+    try:
+        cur.execute(turnonForeignKeys)
+        data = cur.execute("SELECT * FROM person_ammo WHERE person_ammo.ammotype = ?", tuple(ammoid))
+        res = data.fetchone()
+        con.commit()
+        con.close()
+    except Exception as e:
+        con.commit()
+        con.close()
+        raise Exception(e)
+    
+    return res
+

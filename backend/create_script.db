@@ -44,7 +44,7 @@ CREATE TABLE item (
 );
 
 CREATE TABLE ammo (
-	ammoId 		INTEGER PRIMARY KEY AUTOINCREMENT,
+	ammoid 		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name 		TEXT
 );
 
@@ -61,16 +61,16 @@ CREATE TABLE gun (
 	specialProperties 		TEXT,
 	loadcost				INTEGER,
 	strreq					INTEGER,
-	FOREIGN KEY (gunammotype)	REFERENCES ammo(ammoId)
+	FOREIGN KEY (gunammotype)	REFERENCES ammo(ammoid)
 );
 
 CREATE TABLE person_ammo (
-	playerammoId 	INTEGER PRIMARY KEY AUTOINCREMENT,
+	personammoid 	INTEGER PRIMARY KEY AUTOINCREMENT,
 	quantity		INTEGER,
 	ammoowner		INTEGER,
 	ammotype		INTEGER,
 	FOREIGN KEY (ammoowner)	REFERENCES person(personid),
-	FOREIGN KEY (ammotype) 	REFERENCES ammo(ammoId)
+	FOREIGN KEY (ammotype) 	REFERENCES ammo(ammoid)
 );
 
 CREATE TABLE person_gun (
