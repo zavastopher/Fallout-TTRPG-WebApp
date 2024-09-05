@@ -48,6 +48,11 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       : quests.filter((item: Quest) =>
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
+
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
   const [inputs, setInputs] = useState<QuestInputs>({
     name: null,
     quest: undefined,
@@ -85,44 +90,100 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
       if (inputs.name && inputs.description) {
         console.log("add to database!");
 
+        let playerids: number[] = [];
+
         if (inputs.players) {
-          inputs.players.forEach((player) => {
-            console.log(`Add to ${player.label} at ${player.value}`);
-            //var playerid = player.value;
+          inputs.players.forEach((player: UserOption) => {
+            if (player.value) {
+              playerids.push(player.value?.id);
+            }
           });
         }
+
+        console.log(playerids);
+
+        axios
+          .post(`${process.env.REACT_APP_BASEURL}/quests`, {
+            name: inputs.name,
+            description: inputs.description,
+            players: playerids,
+          })
+          .then((response) => {
+            let quest: Quest = response.data;
+
+            setQuests((val) => {
+              return [...val, quest];
+            });
+          });
       }
     } else {
       // Update quest
       if (inputs.name || inputs.description || inputs.status) {
-        console.log("update!");
-        console.log(inputs);
+        var currentQuest: Quest = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentQuest.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentQuest.description;
+        }
+
+        if (!inputs.status) {
+          inputs.status = currentQuest.status;
+        }
+
+        axios
+          .put(
+            `${process.env.REACT_APP_BASEURL}/quests/${currentQuest.questid}`,
+            {
+              name: inputs.name,
+              description: inputs.description,
+              status: inputs.status,
+            }
+          )
+          .then((response) => {
+            var updatedQuest: Quest = response.data;
+
+            var copyQuestList = quests.filter(
+              (quest) => quest.questid != updatedQuest.questid
+            );
+
+            copyQuestList.push(updatedQuest);
+
+            setQuests(copyQuestList);
+          });
       }
     }
+  }
+
+  function removeDeletedQuest(quest: Quest) {
+    var invDeleteQuest = quests.filter(
+      (invItem) => invItem.questid !== quest.questid
+    );
+
+    setQuests(invDeleteQuest);
   }
 
   function deleteQuest(quest: Quest) {
     // Delete with axios
     // Deleting quest only posible for admin
 
+    var currentQuest: Quest = filteredList[selected];
+
     if (currentUser) {
       console.log(`delete quest: ${quest.name} from player ${currentUser.id}`);
     } else if (self?.isadmin) {
       // Delete quest from database
       console.log(`delete quest: ${quest.name} from database`);
+
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/quests/${quest.questid}`)
+        .then((response) => {
+          removeDeletedQuest(response.data.deleted);
+        });
     }
   }
-
-  //const handleTextAreaInputChange = (
-  //  event: React.ChangeEvent<HTMLTextAreaElement>,
-  //  setInputs: React.Dispatch<React.SetStateAction<QuestInputs>>
-  //) => {
-  //  const name = event.currentTarget.name;
-  //  const value = event.currentTarget.value;
-  //  setInputs((values) => {
-  //    return { ...values, [name]: value };
-  //  });
-  //};
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -287,10 +348,21 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
                                   players: value,
                                 }));
                               } else {
-                                setInputs((val) => ({
-                                  ...val,
-                                  players: [value],
-                                }));
+                                setInputs((val) => {
+                                  let players = val.players;
+
+                                  if (!players)
+                                    return { ...val, players: [value] };
+
+                                  let alreadyInList = players.includes(value);
+
+                                  if (alreadyInList) return { ...val };
+
+                                  return {
+                                    ...val,
+                                    players: [...players, value],
+                                  };
+                                });
                               }
                             });
                           }}

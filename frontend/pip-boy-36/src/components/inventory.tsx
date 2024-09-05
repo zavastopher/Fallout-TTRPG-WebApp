@@ -40,6 +40,10 @@ export function Inventory({
           item.name.toLowerCase().includes(filterText.toLowerCase())
         );
 
+  filteredList.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
   const [inputs, setInputs] = useState<InventoryInputs>({
     name: null,
     item: undefined,
@@ -52,6 +56,14 @@ export function Inventory({
   const [tabAdminDatabaseIdx, setTabAdminDatabaseIdx] = useState<number>(0);
   const [tabAdminPlayerIdx, setTabAdminPlayerIdx] = useState<number>(0);
   const [tabPlayerIdx, setTabPlayerIdx] = useState<number>(0);
+
+  const unaddedItemOptions = itemOptions.filter((itemOption) => {
+    if (inventory.find((el) => el.name === itemOption.value.name)) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
   // --------------------------------------------------------
   // Functions
@@ -75,11 +87,45 @@ export function Inventory({
         if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: inputs.item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
         if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(
+              `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+              {
+                itemid: item.itemid,
+                quantity: inputs.quantity,
+              }
+            )
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     } else {
@@ -88,11 +134,39 @@ export function Inventory({
         if (inputs?.quantity && inputs.item) {
           // Add item to player
           console.log("add!");
+
+          axios
+            .post(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: inputs.item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              setInventory((val) => {
+                return [...val, response.data[0]];
+              });
+            });
         }
       } else {
         if (inputs?.quantity) {
           // Update qty of item for player
           console.log("update qty!");
+          var item = filteredList[selected];
+
+          axios
+            .put(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+              itemid: item.itemid,
+              quantity: inputs.quantity,
+            })
+            .then((response) => {
+              var itemIdx: number = inventory.indexOf(item);
+              var invCopy = [...inventory];
+
+              console.log(response.data);
+
+              invCopy[itemIdx] = response.data;
+
+              setInventory(invCopy);
+            });
         }
       }
     }
@@ -128,7 +202,6 @@ export function Inventory({
           })
           .then((response) => {
             let item: Item = response.data;
-            item.id = response.data.id;
 
             setInventory((val) => {
               return [...val, item];
@@ -138,9 +211,50 @@ export function Inventory({
     } else {
       // Update Item
       if (inputs?.name || inputs?.description) {
-        console.log(`update ${filteredList[selected].name} to ${inputs.name}!`);
+        var currentItem = filteredList[selected];
+
+        if (!inputs.name) {
+          inputs.name = currentItem.name;
+        }
+
+        if (!inputs.description) {
+          inputs.description = currentItem.description;
+        }
+
+        axios
+          .put(`${process.env.REACT_APP_BASEURL}/items/${currentItem.itemid}`, {
+            name: inputs.name,
+            description: inputs.description,
+          })
+          .then((response) => {
+            console.log(response.data);
+
+            var filteredItems = inventory.filter(
+              (item) => item.itemid === response.data.itemid
+            );
+            var item = filteredItems[0];
+            var itemIdx = inventory.indexOf(item);
+
+            var invCopy = [...inventory];
+            var itemCopy = { ...filteredItems[0] };
+
+            itemCopy.name = response.data.name;
+            itemCopy.description = response.data.description;
+
+            invCopy[itemIdx] = itemCopy;
+
+            setInventory(invCopy);
+          });
       }
     }
+  }
+
+  function removeDeletedItem(item: Item) {
+    var invDeleteItem = inventory.filter(
+      (invItem) => invItem.itemid !== item.itemid
+    );
+
+    setInventory(invDeleteItem);
   }
 
   const deleteItem = (item: Item) => {
@@ -148,13 +262,30 @@ export function Inventory({
 
     if (currentUser) {
       // Delete from Player by Admin
-      console.log(`delete ${item.name} from ${currentUser.name}!`);
+      axios
+        .patch(
+          `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+          { itemid: item.itemid }
+        )
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
     } else if (!self?.isadmin) {
       // Delete from Player by Player
-      console.log(`delete ${item.name} from ${self?.name}!`);
+      axios
+        .patch(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {
+          itemid: item.itemid,
+        })
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
     } else {
       // Delete from Database
-      console.log(`delete ${item.name} from Database!`);
+      axios
+        .delete(`${process.env.REACT_APP_BASEURL}/items/${item.itemid}`)
+        .then((response) => {
+          removeDeletedItem(response.data.deleted);
+        });
     }
   };
 
@@ -177,37 +308,45 @@ export function Inventory({
    * Effect for fetching inventory data from server
    */
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASEURL}/items`, {}).then((response) => {
-      // console.log(response.data);
-      setItemOptions(
-        response.data.map((item: Item) => ({
-          value: item,
-          label: item.name,
-        }))
-      );
+    var itemOptions: Array<ItemOption>;
 
-      if (currentUser && currentUser !== undefined) {
-        // If a player is selected in the dropdown
-        axios
-          .get(
-            `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
-            {}
-          )
-          .then((response) => {
+    if (self) {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/items`, {})
+        .then((response) => {
+          itemOptions = response.data.map((item: Item) => ({
+            value: item,
+            label: item.name,
+          }));
+
+          if (currentUser && currentUser !== undefined) {
+            // If a player is selected in the dropdown
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${currentUser.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+                setItemOptions(itemOptions);
+              });
+          } else if (self?.isadmin) {
+            // If no player is selected and the logged in user is the admin
             setInventory(response.data);
-          });
-      } else if (self?.isadmin) {
-        // If no player is selected and the logged in user is the admin
-        setInventory(response.data);
-      } else {
-        // Regular player
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`, {})
-          .then((response) => {
-            setInventory(response.data);
-          });
-      }
-    });
+          } else {
+            // Regular player
+            axios
+              .get(
+                `${process.env.REACT_APP_BASEURL}/players/item/${self?.id}`,
+                {}
+              )
+              .then((response) => {
+                setInventory(response.data);
+                setItemOptions(itemOptions);
+              });
+          }
+        });
+    }
   }, [currentUser, self]);
 
   return (
@@ -266,7 +405,7 @@ export function Inventory({
                         <label htmlFor="item">Item</label>
                         <Select
                           id="item"
-                          options={itemOptions}
+                          options={unaddedItemOptions}
                           styles={ddStyles}
                           theme={ddTheme}
                           isMulti={false}
@@ -508,7 +647,7 @@ export function Inventory({
                     <label htmlFor="item">Item</label>
                     <Select
                       id="item"
-                      options={itemOptions}
+                      options={unaddedItemOptions}
                       styles={ddStyles}
                       theme={ddTheme}
                       isMulti={false}

@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend/
-      dockerfile: Dockerfile.dev
+      dockerfile: dockerfile.dev
     container_name: vault-36-central-computer
     restart: unless-stopped
     volumes:
@@ -14,7 +14,7 @@ services:
   frontend:
     build:
       context: ./frontend/
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.dev
     container_name: vault-36-terminal
     restart: unless-stopped
     ports:
@@ -33,6 +33,7 @@ services:
   nginx:
     build:
       context: ./proxy/
+      dockerfile: dockerfile.dev
     restart: unless-stopped
     container_name: vault-36-proxy
     ports:

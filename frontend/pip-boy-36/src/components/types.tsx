@@ -1,14 +1,15 @@
 export type ListItemType = {
-  id: number;
   name: string;
   description: string;
 };
 
 export interface Item extends ListItemType {
+  itemid: number;
   quantity: number;
 }
 
 export interface Quest extends ListItemType {
+  questid: number;
   status: string;
 }
 
