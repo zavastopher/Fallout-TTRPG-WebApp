@@ -1,195 +1,3 @@
-PRAGMA foreign_keys = ON;
-
-DROP TABLE IF EXISTS person_quest;
-DROP TABLE IF EXISTS person_item;
-DROP TABLE IF EXISTS person_limb;
-DROP TABLE IF EXISTS person_gun;
-DROP TABLE IF EXISTS person_ammo;
-
-DROP TABLE IF EXISTS limb;
-
-DROP TABLE IF EXISTS quest;
-DROP TABLE IF EXISTS item;
-DROP TABLE IF EXISTS gun;
-DROP TABLE IF EXISTS ammo;
-
-DROP TABLE IF EXISTS person;
-
-CREATE TABLE person ( 
-	personid INTEGER PRIMARY KEY AUTOINCREMENT, 
-	name TEXT, 
-	hp INTEGER,
-	maxhp INTEGER,
-	admin INTEGER CHECK (admin IN (0, 1)) DEFAULT 0
-); 
-
-CREATE TABLE limb(
-	limbid 		INTEGER PRIMARY KEY AUTOINCREMENT, 
-	name		TEXT
-);
-
-CREATE TABLE quest (
-	questid		INTEGER PRIMARY KEY AUTOINCREMENT, 
-	name 		TEXT, 
-	description	TEXT,
-	status		TEXT CHECK (status IN ('incomplete','success','failure')) DEFAULT 'incomplete',
-	UNIQUE(name)
-);
-
-CREATE TABLE item (
-	itemid		INTEGER PRIMARY KEY AUTOINCREMENT,
-	name		TEXT,
-	description	TEXT,
-	UNIQUE(name)
-);
-
-CREATE TABLE ammo (
-	ammoid 		INTEGER PRIMARY KEY AUTOINCREMENT,
-	name 		TEXT
-);
-
-CREATE TABLE gun (
-	gunid					INTEGER PRIMARY KEY AUTOINCREMENT,
-	name					TEXT,
-	basecost				INTEGER,
-	ap						INTEGER,
-	damage					TEXT,
-	range					TEXT,
-	criticalhit				TEXT,
-	gunammotype				INTEGER,
-	capacity				INTEGER,
-	specialProperties 		TEXT,
-	loadcost				INTEGER,
-	strreq					INTEGER,
-	FOREIGN KEY (gunammotype)	REFERENCES ammo(ammoid)
-);
-
-CREATE TABLE person_ammo (
-	personammoid 	INTEGER PRIMARY KEY AUTOINCREMENT,
-	quantity		INTEGER,
-	ammoowner		INTEGER,
-	ammotype		INTEGER,
-	FOREIGN KEY (ammoowner)	REFERENCES person(personid),
-	FOREIGN KEY (ammotype) 	REFERENCES ammo(ammoid)
-);
-
-CREATE TABLE person_gun (
-	playergunid 	INTEGER PRIMARY KEY AUTOINCREMENT,
-	quantity 		INTEGER,
-	playergunplayerid	INTEGER,
-	playergungunid		INTEGER,
-	FOREIGN KEY	(playergunplayerid)	REFERENCES person(personid),
-	FOREIGN KEY (playergungunid)		REFERENCES gun(gunid)
-);
-
-CREATE TABLE person_quest( 
-	personquestid	INTEGER PRIMARY KEY AUTOINCREMENT, 
-	questassignee	INTEGER, 
-	assignedquest	INTEGER, 
-	FOREIGN KEY (questassignee) REFERENCES person(personid), 
-	CONSTRAINT fk_quests
-		FOREIGN KEY (assignedquest) 
-		REFERENCES quest(questid)
-		ON DELETE CASCADE
-);
-
-CREATE TABLE person_item(
-	quantity	INTEGER,
-	itemowner 	INTEGER,
-	owneditem	INTEGER,
-  	PRIMARY KEY (itemowner, owneditem),
-	FOREIGN KEY (itemowner) REFERENCES person(personid),
-	CONSTRAINT fk_items
-		FOREIGN KEY (owneditem) 
-		REFERENCES item(itemid)
-		ON DELETE CASCADE
-
-);
-
-CREATE TABLE person_limb( 
-	personlimbid	INTEGER PRIMARY KEY AUTOINCREMENT,
-	status 			INTEGER DEFAULT 0, 
-	limbowner 		INTEGER, 
-	limbtype		INTEGER,
-	FOREIGN KEY (limbtype) REFERENCES limb(limbid)
-	CONSTRAINT fk_person
-		FOREIGN KEY (limbowner) 
-		REFERENCES person(personid)
-		ON DELETE CASCADE
-);
-
-/*
-	Creates all available people at once
-*/
-INSERT INTO person (name,hp,maxhp) VALUES ('test', 85, 85);
-INSERT INTO person (name,hp,maxhp) VALUES ('other', 55, 55);
-INSERT INTO person (name,hp,maxhp,admin) VALUES ('cam', 90, 90, 1);
-INSERT INTO person (name,hp,maxhp) VALUES ('up', 90, 90);
-
-/*
-	Creates all available types of limbs
-*/
-INSERT INTO limb (name) VALUES ('head');
-INSERT INTO limb (name) VALUES ('leftarm');
-INSERT INTO limb (name) VALUES ('rightarm');
-INSERT INTO limb (name) VALUES ('torso');
-INSERT INTO limb (name) VALUES ('leftleg');
-INSERT INTO limb (name) VALUES ('rightleg');
-
-/* 
-	Creates a new version of the limb for each existing person
-*/
-INSERT INTO person_limb (limbowner,limbtype)
-SELECT  person.personid AS limbowner,
-        limb.limbid AS limbtype
-FROM person CROSS JOIN limb;
-
-INSERT INTO quest (name, description) VALUES ('quest one', 'I am quest description one');
-INSERT INTO quest (name, description) VALUES ('quest two', 'I am quest description two');
-INSERT INTO quest (name, description) VALUES ('quest three', 'I am  questdescription three');
-
-INSERT INTO item (name, description) VALUES ('item one', 'I am item description one');
-INSERT INTO item (name, description) VALUES ('item two', 'I am item description two');
-INSERT INTO item (name, description) VALUES ('item three', 'I am item description three');
-
-/*
-	Create all of the ammo entries
-*/
-INSERT INTO ammo (name) VALUES ('Flare');
-INSERT INTO ammo (name) VALUES ('Acid');
-INSERT INTO ammo (name) VALUES ('9mm');
-INSERT INTO ammo (name) VALUES ('308');
-INSERT INTO ammo (name) VALUES ('10mm');
-INSERT INTO ammo (name) VALUES ('5.56mm');
-INSERT INTO ammo (name) VALUES ('0.44');
-INSERT INTO ammo (name) VALUES ('0.357');
-INSERT INTO ammo (name) VALUES ('.10mm');
-INSERT INTO ammo (name) VALUES ('12.7mm');
-INSERT INTO ammo (name) VALUES ('.45-70 Gov''t');
-INSERT INTO ammo (name) VALUES ('Nails');
-INSERT INTO ammo (name) VALUES ('0.45');
-INSERT INTO ammo (name) VALUES ('Syringe');
-INSERT INTO ammo (name) VALUES ('Spike');
-INSERT INTO ammo (name) VALUES ('junk');
-INSERT INTO ammo (name) VALUES ('0.308');
-INSERT INTO ammo (name) VALUES ('.5mm');
-INSERT INTO ammo (name) VALUES ('0.5');
-INSERT INTO ammo (name) VALUES ('20 gauge');
-INSERT INTO ammo (name) VALUES ('12 gauge');
-INSERT INTO ammo (name) VALUES ('fuel');
-INSERT INTO ammo (name) VALUES ('Missile');
-INSERT INTO ammo (name) VALUES ('Mini nuke');
-INSERT INTO ammo (name) VALUES ('The weapon can fire so long as it is in Sunlight');
-INSERT INTO ammo (name) VALUES ('Energy Cell');
-INSERT INTO ammo (name) VALUES ('Microfusion Cell');
-INSERT INTO ammo (name) VALUES ('Gamma cell');
-INSERT INTO ammo (name) VALUES ('Cryo cell');
-INSERT INTO ammo (name) VALUES ('2mm EC');
-INSERT INTO ammo (name) VALUES ('Fusion Core');
-
-/*
-	Create all of the gun entries
-*/
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Flare Gun',0,4,'1d4 fire','x4/x10','20 1d4',1,1,'Incendiary',2,1);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Acid Soaker',0,4,'1 acid','30 ft.','20 1d4',2,20,'Corrosive',4,1);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Pipe pistol',0,5,'1d4 ballistic','x6/x10','20 1d4',3,12,'Breakable Kickback.Semi-Automatic',8,3);
@@ -226,7 +34,7 @@ INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Riot Shotgun',0,5,'3d6 ballistic','x3/x6','20 6d6',21,12,'Powerful Semi-Automatic Spread Two Handed',10,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Flamer',0,6,'2d10 fire','60 ft. line 10 feet wide/a 20 ft cone','-',22,5,'Area of Effect Incendiary Slow Slow Reload Two Handed',60,7);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Missile Launcher',0,6,'10d6 explosive in a 10ft radius','x10/x40','-',23,1,'Area of Effect Destructive Durable Slow Two Handed',50,7);
-INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Minigun',0,6,'5d6 ballistic','x15/x40','20 2d6',18,120,'Uses 10 ammo per attack Automatic: 2 Destructive Durable Slow Reload Spread Two Handed',90,10);
+INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Minigun',0,6,'5d6 ballistic','x15/x40','20 2d6',18,120 (uses 10 per attack),'Automatic: 2 Destructive Durable Slow Reload Spread Two Handed',90,10);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Fat-Man',0,6,'120 feet.','12d10 explosive in a 30 ft. radius and two levels of radiation in a 60 ft radius.120 feet','-',24,1,'Area of Effect Destructive Durable Slow Two Handed',30,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Solar Scorcher',0,3,'1d4 fire','x5/x10','20 applies burning',25,1,'Energy Weapon Semi-Automatic',4,1);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Laser pistol',0,4,'1d8 laser','x10/x20','20 x2 applies burning',26,30,'Energy Weapon Semi-Automatic',6,1);
@@ -243,9 +51,34 @@ INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gauss pistol',0,3,'1d10 ballistic','x8/x16','20 2d10',30,12,'Charge. Energy Weapon. Kickback Powerful. Unstable',12,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gauss rifle',0,3,'1d12 ballistic','x10/x20','20 4d12',30,6,'Charge. Energy Weapon. Powerful Two Handed Unstable',18,5);
 INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values ('Gatling laser',0,6,'2d10 laser','x30/x30','20 1d10  applies burning',31,100,'Automatic: 4 Destructive. Energy Weapon. Unwieldy',50,5);
-
-/*
-	Give Cam a gun and some ammo for it
-*/
-INSERT INTO person_gun (quantity, playergunplayerid, playergungunid) VALUES (1,3,3);
-INSERT INTO person_gun (quantity, playergunplayerid, playergungunid) VALUES (1,3,38);
+INSERT INTO ammo (name) VALUES ('Flare');
+INSERT INTO ammo (name) VALUES ('Acid');
+INSERT INTO ammo (name) VALUES ('9mm');
+INSERT INTO ammo (name) VALUES ('308');
+INSERT INTO ammo (name) VALUES ('10mm');
+INSERT INTO ammo (name) VALUES ('5.56mm');
+INSERT INTO ammo (name) VALUES ('0.44');
+INSERT INTO ammo (name) VALUES ('0.357');
+INSERT INTO ammo (name) VALUES ('.10mm');
+INSERT INTO ammo (name) VALUES ('12.7mm');
+INSERT INTO ammo (name) VALUES ('.45-70 Gov't');
+INSERT INTO ammo (name) VALUES ('Nails');
+INSERT INTO ammo (name) VALUES ('0.45');
+INSERT INTO ammo (name) VALUES ('Syringe');
+INSERT INTO ammo (name) VALUES ('Spike');
+INSERT INTO ammo (name) VALUES ('junk');
+INSERT INTO ammo (name) VALUES ('0.308');
+INSERT INTO ammo (name) VALUES ('.5mm');
+INSERT INTO ammo (name) VALUES ('0.5');
+INSERT INTO ammo (name) VALUES ('20 gauge');
+INSERT INTO ammo (name) VALUES ('12 gauge');
+INSERT INTO ammo (name) VALUES ('fuel');
+INSERT INTO ammo (name) VALUES ('Missile');
+INSERT INTO ammo (name) VALUES ('Mini nuke');
+INSERT INTO ammo (name) VALUES ('The weapon can fire so long as it is in Sunlight');
+INSERT INTO ammo (name) VALUES ('Energy Cell');
+INSERT INTO ammo (name) VALUES ('Microfusion Cell');
+INSERT INTO ammo (name) VALUES ('Gamma cell');
+INSERT INTO ammo (name) VALUES ('Cryo cell');
+INSERT INTO ammo (name) VALUES ('2mm EC');
+INSERT INTO ammo (name) VALUES ('Fusion Core');

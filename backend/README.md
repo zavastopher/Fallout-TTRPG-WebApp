@@ -36,6 +36,12 @@
 | UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | No                             |
 | RemoveItemfromPlayer(int playerid)        | PATCH /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | No                             |
 
+### Player Gun Endpoints
+
+| Function name               | Relative Url                 | Description                          | Input (Request) | Completed Frontend Integration | Output (Response)                      |
+| --------------------------- | ---------------------------- | ------------------------------------ | --------------- | ------------------------------ | -------------------------------------- |
+| GetPlayerGuns(int playerid) | GET /players/guns/{playerid} | Get the guns owned by a given player | N/A             | NO                             | [Array of Guns](#player-guns-response) |
+
 ### Quest Endpoints
 
 | Function name                  | Relative Url             | Description | Input (Request)                                      | Output (Response)                                                      | Completed Frontend Integration |
