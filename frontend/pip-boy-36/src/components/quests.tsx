@@ -64,6 +64,14 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
   const [questOptions, setQuestOptions] = useState<QuestOption[]>([]);
   const [tabIdx, setTabIdx] = useState<number>(0);
 
+  const unaddedQuestOptions = questOptions.filter((questOption) => {
+    if (quests.find((el) => el.name === questOption.value.name)) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+
   // --------------------------------------------------------
   // Functions
   // --------------------------------------------------------
@@ -79,8 +87,21 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
   };
 
   function assignToPlayer() {
-    if (inputs.quest) {
-      console.log("add!");
+    if (inputs.quest && currentUser) {
+      axios
+        .put(
+          `${process.env.REACT_APP_BASEURL}/players/quests/${inputs.quest.questid}`,
+          {
+            playerid: currentUser.id,
+          }
+        )
+        .then((response) => {
+          let quest: Quest = response.data;
+
+          setQuests((val) => {
+            return [...val, quest];
+          });
+        });
     }
   }
 
@@ -268,7 +289,7 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
                   <label htmlFor="quest">Quest</label>
                   <Select
                     id="quest"
-                    options={questOptions}
+                    options={unaddedQuestOptions}
                     styles={ddQuestStyles}
                     theme={ddTheme}
                     isMulti={false}

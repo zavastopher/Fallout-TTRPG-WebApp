@@ -432,23 +432,21 @@ def UpdateDeleteQuestRoute(questid):
 
 
 ## Assign, Unassign assigned to a player
-@app.route("/players/quests/<int:questid>", methods=["PATCH", "DELETE"])
+@app.route("/players/quests/<int:questid>", methods=["PUT", "PATCH"])
 @admin_required()
 def PlayerQuestRoute(questid):
-    if request.method == "PATCH":
+    if request.method == "PUT":
         data = request.get_json()
-        playerids = data["playerids"]
+        playerid = data["playerid"]
 
-        for playerid in playerids:
-            res = AssignQuestToPlayerInDatabase(playerid, questid)
+        res = AssignQuestToPlayerInDatabase(playerid, questid)
 
         return res
-    elif request.method == "DELETE":
+    elif request.method == "PATCH":
         data = request.get_json()
-        playerids = data["playerids"]
+        playerid = data["playerid"]
 
-        for playerid in playerids:
-            res = UnassignQuestToPlayerInDatabase(playerid, questid)
+        res = UnassignQuestToPlayerInDatabase(playerid, questid)
 
         return res
 
