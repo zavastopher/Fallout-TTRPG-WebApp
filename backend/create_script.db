@@ -82,10 +82,10 @@ CREATE TABLE person_gun (
 	FOREIGN KEY (playergungunid)		REFERENCES gun(gunid)
 );
 
-CREATE TABLE person_quest( 
-	personquestid	INTEGER PRIMARY KEY AUTOINCREMENT, 
+CREATE TABLE person_quest(  
 	questassignee	INTEGER, 
 	assignedquest	INTEGER, 
+	PRIMARY KEY (questassignee, assignedquest),
 	FOREIGN KEY (questassignee) REFERENCES person(personid), 
 	CONSTRAINT fk_quests
 		FOREIGN KEY (assignedquest) 
