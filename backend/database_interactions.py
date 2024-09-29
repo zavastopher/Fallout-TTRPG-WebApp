@@ -402,7 +402,7 @@ def AssignQuestToPlayerInDatabase(playerid, questid):
     try:
         cur.execute(turnonForeignKeys)
 
-        cur.execute("INSERT OR IGNORE INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
+        cur.execute("INSERT INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
         data = cur.execute("SELECT person.name AS Assignee, quest.name, quest.description, quest.questid, quest.status AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=? AND quest.questid=?;", (playerid,questid,))
         #data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
         res = data.fetchone()

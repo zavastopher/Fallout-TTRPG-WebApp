@@ -439,9 +439,12 @@ def PlayerQuestRoute(questid):
         data = request.get_json()
         playerid = data["playerid"]
 
-        res = AssignQuestToPlayerInDatabase(playerid, questid)
-
-        return res
+        try:
+            res = AssignQuestToPlayerInDatabase(playerid, questid)
+            return res
+        except Exception as e:
+            app.logger.debug(e)
+            return f"There was an error adding quest {questid} to player {playerid}. Does it already exist?"
     elif request.method == "PATCH":
         data = request.get_json()
         playerid = data["playerid"]
