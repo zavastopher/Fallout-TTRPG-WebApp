@@ -448,6 +448,8 @@ def PlayerQuestRoute(questid):
     elif request.method == "PATCH":
         data = request.get_json()
         playerid = data["playerid"]
+        app.logger.debug(playerid)
+        app.logger.debug(questid)
 
         res = UnassignQuestToPlayerInDatabase(playerid, questid)
 

@@ -403,7 +403,7 @@ def AssignQuestToPlayerInDatabase(playerid, questid):
         cur.execute(turnonForeignKeys)
 
         cur.execute("INSERT INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
-        data = cur.execute("SELECT person.name AS Assignee, quest.name, quest.description, quest.questid, quest.status AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=? AND quest.questid=?;", (playerid,questid,))
+        data = cur.execute("SELECT person.name AS Assignee, quest.name, quest.description, quest.questid, quest.status FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=? AND quest.questid=?;", (playerid,questid,))
         #data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
         res = data.fetchone()
     except Exception as e:
@@ -438,7 +438,7 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
     try:
         cur.execute(turnonForeignKeys)
 
-        data = cur.execute("SELECT * FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
+        data = cur.execute("SELECT assignedquest AS questid, questassignee AS Assignee FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
         deleted = {
             "deleted": data.fetchone()
         }
@@ -447,14 +447,14 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
         data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest, quest.questid FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
         res = data.fetchall()
 
-        res.append(deleted)
+        deleted["items"] = res
     except Exception as e:
         con.commit()
         con.close()
         raise Exception(e)
     con.commit()
     con.close()
-    return res
+    return deleted
 
 ## Limbs
 

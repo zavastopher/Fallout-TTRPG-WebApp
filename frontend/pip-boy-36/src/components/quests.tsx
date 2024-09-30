@@ -97,6 +97,7 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
         )
         .then((response) => {
           let quest: Quest = response.data;
+          console.log(quest);
 
           setQuests((val) => {
             return [...val, quest];
@@ -193,7 +194,20 @@ export function Quests({ self, currentUser, playerOptions }: QuestsProps) {
     var currentQuest: Quest = filteredList[selected];
 
     if (currentUser) {
+      // Delete quest from player
       console.log(`delete quest: ${quest.name} from player ${currentUser.id}`);
+
+      axios
+        .patch(
+          `${process.env.REACT_APP_BASEURL}/players/quests/${quest.questid}`,
+          {
+            playerid: currentUser.id,
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          removeDeletedQuest(response.data.deleted);
+        });
     } else if (self?.isadmin) {
       // Delete quest from database
       console.log(`delete quest: ${quest.name} from database`);
