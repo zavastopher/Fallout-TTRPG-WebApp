@@ -229,30 +229,50 @@ function App() {
   // Good useEffect for syncing socket stuff
   useEffect(() => {
     // create websocket/connect
-    socket = io("localhost:4001");
+    socket = io(window.location.hostname + ":4001");
+    //console.log();
 
     socket.on("connect", function () {
       console.log("connected!");
     });
 
     socket.on("hp", (hp) => {
-      console.log(hp);
-      setSelf((val) => {
-        if (!val) {
-          return null;
-        }
-        return { ...val, hp: hp.hp };
-      });
+      console.log("hp" + hp.hp);
+
+      if (currentUser) {
+        setCurrentUser((val) => {
+          if (!val) {
+            return null;
+          }
+          return { ...val, hp: hp.hp };
+        });
+      } else {
+        setSelf((val) => {
+          if (!val) {
+            return null;
+          }
+          return { ...val, hp: hp.hp };
+        });
+      }
     });
 
     socket.on("maxhp", (maxhp) => {
       console.log(maxhp);
-      setSelf((val) => {
-        if (!val) {
-          return null;
-        }
-        return { ...val, maxhp: maxhp.maxhp };
-      });
+      if (currentUser) {
+        setCurrentUser((val) => {
+          if (!val) {
+            return null;
+          }
+          return { ...val, maxhp: maxhp.maxhp };
+        });
+      } else {
+        setSelf((val) => {
+          if (!val) {
+            return null;
+          }
+          return { ...val, maxhp: maxhp.maxhp };
+        });
+      }
     });
 
     socket.on("limb", ({ limb, status }) => {
