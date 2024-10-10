@@ -1,11 +1,23 @@
+# Overview
+
+This backend directory contains the source code for the server API and the database.
+
 # TOC
 
+- [Server Structure](#server-structure)
 - [Rest API](#rest-api)
 - [Data Formats](#data-formats)
 - [Database](#database)
 - [Testing](#testing)
 
+## Server Structure
+
+The Server
+
 ## Rest API
+
+This rest API provides endpoints for CRUD operations on Player Data. For example there are requests for logging in as a user and
+requesting data on said user. For DM's it also contains endpoints for modifying quest, inventory, and player data.
 
 ### Player Endpoints
 
