@@ -3,11 +3,9 @@ import sqlite3
 database = "/db/data/vault-36-db.sqlite"
 turnonForeignKeys = "PRAGMA FOREIGN_KEYS = ON;"
 
-
 def dict_factory(cursor, row):
     fields = [column[0] for column in cursor.description]
     return {key: value for key, value in zip(fields, row)}
-
 
 def GetPlayerFromDatabaseByName(name):
     con = sqlite3.connect(database)
@@ -26,7 +24,6 @@ def GetPlayerFromDatabaseByName(name):
     con.close()
 
     return res
-
 
 def GetPlayerFromDatabaseById(id):
     con = sqlite3.connect(database)
@@ -139,6 +136,8 @@ def AddItemToPlayerInDatabase(playerid, itemid, quantity):
             "SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND item.itemid = ?;",
             (playerid, itemid),
         )
+        cur.execute("INSERT INTO person_item (quantity,itemowner,owneditem) VALUES (?,?,?);", (quantity, playerid, itemid))
+        data = cur.execute("SELECT item.itemid, item.name, item.description, person_item.quantity FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND item.itemid = ?;", (playerid, itemid))
     except Exception as e:
         con.commit()
         con.close()
@@ -259,12 +258,10 @@ def AddItemToDatabase(name, description):
         con.commit()
         con.close()
         raise Exception(e)
-
     con.commit()
     con.close()
 
     return res
-
 
 def UpdateItemInDatabase(id, newname, newdescription):
     con = sqlite3.connect(database)
@@ -316,7 +313,6 @@ def GetItemsInDatabase():
 
     return res
 
-
 def DeleteItemFromDatabase(itemid):
     con = sqlite3.connect(database)
     con.row_factory = dict_factory
@@ -341,8 +337,6 @@ def DeleteItemFromDatabase(itemid):
 
 
 ## Quests
-
-
 def AddQuestToDatabase(name, description):
     con = sqlite3.connect(database)
     con.row_factory = dict_factory
@@ -492,7 +486,6 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
     try:
         cur.execute(turnonForeignKeys)
 
-
         data = cur.execute("SELECT assignedquest AS questid, questassignee AS Assignee FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
         deleted = {
             "deleted": data.fetchone()
@@ -588,7 +581,6 @@ def UpdatePlayerLimbsInDatabase(playerid, limbtype, status):
         con.commit()
         con.close()
         raise Exception(e)
-
     con.close()
 
     return res
@@ -599,8 +591,6 @@ def UpdatePlayerLimbsInDatabase(playerid, limbtype, status):
 # ammo
 #   ammoid -> PRIMARY KEY AUTOINCREMENT
 #   name
-
-
 def CreateAmmoTypeInDatabase(ammoname):
     con = sqlite3.connect(database)
     con.row_factory = dict_factory
@@ -616,7 +606,6 @@ def CreateAmmoTypeInDatabase(ammoname):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -636,7 +625,6 @@ def GetAmmoTypeInDatabase(ammoid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -659,7 +647,6 @@ def UpdateAmmoNameInDatabase(ammoid, name):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -675,7 +662,6 @@ def DeleteAmmoFromDatabase(ammoid):
 
     try:
         cur.execute(turnonForeignKeys)
-
         data = cur.execute("SELECT * FROM ammo WHERE ammo.ammoid = ?;")
         deleted = {"deleted": data.fetchone}
         data = cur.execute("DELETE FROM ammo WHERE ammoid = ?;", tuple(ammoid))
@@ -687,7 +673,6 @@ def DeleteAmmoFromDatabase(ammoid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -731,7 +716,6 @@ def CreateGunInDatabase(
 
     try:
         cur.execute(turnonForeignKeys)
-
         data = cur.execute(
             "INSERT INTO gun (name,basecost,ap,damage,range,criticalhit,gunammotype,capacity,specialProperties,loadcost,strreq) Values (?,?,?,?,?,?,?,?,?,?);",
             (
@@ -758,7 +742,6 @@ def CreateGunInDatabase(
 
     return res
 
-
 def GetGunInDatabase(gunid):
     con = sqlite3.connect(database)
     con.row_factory = dict_factory
@@ -775,7 +758,6 @@ def GetGunInDatabase(gunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -825,7 +807,6 @@ def UpdateGunInDatabase(
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -847,7 +828,6 @@ def DeleteGunInDatabase(gunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -859,7 +839,6 @@ def DeleteGunInDatabase(gunid):
 #   quantity
 #   ammoowner -> FOREIGN KEY REFERENCES personid
 #   ammotype -> FOREIGN KEY REFERENCES ammoid
-
 
 def CreatePlayerAmmoInDatabase(quantity, ammoid, playerid):
     con = sqlite3.connect(database)
@@ -879,7 +858,6 @@ def CreatePlayerAmmoInDatabase(quantity, ammoid, playerid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -945,7 +923,6 @@ def GetPlayerAmmoTypesInDatabase(playerid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -966,7 +943,6 @@ def GetPlayerAmmoPlayersInDatabase(ammoid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -988,7 +964,6 @@ def UpdatePlayerAmmoInDatabase(quantity, ammoid, playerid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1016,7 +991,6 @@ def DeletePlayerAmmoInDatabase(playerid, ammoid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1028,7 +1002,6 @@ def DeletePlayerAmmoInDatabase(playerid, ammoid):
 #   quantity
 #   playergunplayerid   -> FOREIGN KEY REFERENCES person.personid
 #   playergungunid  -> FOREIGN KEY REFERENCES gun.gunid
-
 
 def CreatePlayerGunInDatabase(quantity, playerid, gunid):
     con = sqlite3.connect(database)
@@ -1071,7 +1044,6 @@ def GetPlayerGunInDatabase(playergunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1094,7 +1066,6 @@ def GetPlayerGunPlayerIDGunIDInDatabase(playergungunid, playergunplayerid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1116,7 +1087,6 @@ def GetPlayerGunsInDatabase(playerid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1138,7 +1108,6 @@ def GetPlayersWithGunInDatabase(gunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1160,7 +1129,6 @@ def UpdatePlayersGunQuantityInDatabase(quantity, playergungunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
 
 
@@ -1187,5 +1155,4 @@ def DeletePlayersGunInDatabase(playerid, gunid):
         con.commit()
         con.close()
         raise Exception(e)
-
     return res
