@@ -29,18 +29,18 @@ This rest API provides endpoints for CRUD operations on Player Data. For example
 | logout_user()             | POST /logout                  | Logout rout                                         | N/A                                                   | Success/Failure                                                            | Yes                            |
 | GetSelf()                 | GET /self                     | Route for retrivieng the player data given your JWT | N/A                                                   | [Players object](#self-response)                                           | Yes                            |
 | GetPlayers()              | GET /players                  | Used by DM to retrieve all available players        | N/A                                                   | [Array of players objects](#player-get-response)                           | Yes                            |
-| UpdateHP(int playerid)    | PUT /players/hp/{playerid}    | Set a players HP to a new value.                    | [New hp of player](#player-hp-update-request)         | [Updated player information w/ new hp](#player-hp-update-response)         | No                             |
+| UpdateHP(int playerid)    | PUT /players/hp/{playerid}    | Set a players HP to a new value.                    | [New hp of player](#player-hp-update-request)         | [Updated player information w/ new hp](#player-hp-update-response)         | Yes                            |
 | UpdateMaxHP(int playerid) | PUT /players/maxhp/{playerid} | Updating a players Max HP                           | [New max hp of player](#player-max-hp-update-request) | [Updated player information w/ new max hp](#player-max-hp-update-response) | No                             |
 
 ### Item Endpoints
 
 
-| Function name | Relative Url           | Description                                            | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
-| --------------- | ------------------------ | -------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
-| AddGetItems() | GET /items             | API Endpoint for getting all items present in database | N/A                                                     | [Array of items](#item-get-response)            | Yes                            |
-| AddGetItems() | POST /items            | API Endpoint for adding an item to the database        | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | Yes                            |
-| UpdateItem()  | PUT /items/{itemid}    |                                                        | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No                             |
-| DeleteItem () | DELETE /items/{itemid} |                                                        | N/A                                                     | [Array of items](#item-delete-response)         | No                             |
+| Function name | Relative Url           | Description                                                                                                                           | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
+| --------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
+| AddGetItems() | GET /items             | API Endpoint for getting all items present in database                                                                                | N/A                                                     | [Array of items](#item-get-response)            | Yes                            |
+| AddGetItems() | POST /items            | API Endpoint for adding an item to the database                                                                                       | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | Yes                            |
+| UpdateItem()  | PUT /items/{itemid}    | Endpoint for updating the record stored for an item                                                                                   | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No                             |
+| DeleteItem () | DELETE /items/{itemid} | Endpoint for deleting an item from the database.*(This should be used for items that are permanatly deleted and can no longer exist)* | N/A                                                     | [Array of items](#item-delete-response)         | No                             |
 
 ### Player Inventory Endpoints
 
@@ -676,7 +676,7 @@ Returns entire new inventory
 
 [(Back to Top)](#toc)
 
-The database is initialized using the [create_script.db](create_script.db) 
+The database is initialized using the [create_script.db](create_script.db)
 
 ### Person
 
