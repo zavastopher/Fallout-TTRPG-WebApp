@@ -35,7 +35,7 @@ def GetPlayerFromDatabaseById(id):
         data = cur.execute("SELECT * FROM person WHERE personid=?", (id,))
 
         res = data.fetchone()
-    except:
+    except Exception as e:
         con.close()
         raise Exception(e)
     #Close the connection so it doesn't dangle
@@ -169,6 +169,11 @@ def RemoveItemFromPlayerInDatabase(playerid, itemid):
     cur = con.cursor()
     try:
         cur.execute(turnonForeignKeys)
+
+        data = cur.execute("SELECT item.itemid, item.name, item.description FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND itemid=?", (playerid, itemid,))
+        deleted = {
+            "deleted": data.fetchone()
+        }
 
         data = cur.execute("SELECT item.itemid, item.name, item.description FROM item INNER JOIN person_item ON item.itemid = person_item.owneditem WHERE person_item.itemowner = ? AND itemid=?", (playerid, itemid,))
         deleted = {
@@ -397,9 +402,10 @@ def AssignQuestToPlayerInDatabase(playerid, questid):
     try:
         cur.execute(turnonForeignKeys)
 
-        cur.execute("INSERT OR IGNORE INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
-        data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
-        res = data.fetchall()
+        cur.execute("INSERT INTO person_quest (questassignee,assignedquest) VALUES (?, ?) ", (playerid, questid))
+        data = cur.execute("SELECT person.name AS Assignee, quest.name, quest.description, quest.questid, quest.status FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=? AND quest.questid=?;", (playerid,questid,))
+        #data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
+        res = data.fetchone()
     except Exception as e:
         con.commit()
         con.close()
@@ -432,7 +438,7 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
     try:
         cur.execute(turnonForeignKeys)
 
-        data = cur.execute("SELECT * FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
+        data = cur.execute("SELECT assignedquest AS questid, questassignee AS Assignee FROM person_quest WHERE assignedquest=? AND questassignee=?;", (questid,playerid))
         deleted = {
             "deleted": data.fetchone()
         }
@@ -441,14 +447,14 @@ def UnassignQuestToPlayerInDatabase(playerid, questid):
         data = cur.execute("SELECT person.name AS Assignee, quest.name AS Quest, quest.questid FROM quest INNER JOIN person_quest ON quest.questid = person_quest.assignedquest INNER JOIN person ON person_quest.questassignee = person.personid WHERE person_quest.questassignee=?;", (playerid,))
         res = data.fetchall()
 
-        res.append(deleted)
+        deleted["items"] = res
     except Exception as e:
         con.commit()
         con.close()
         raise Exception(e)
     con.commit()
     con.close()
-    return res
+    return deleted
 
 ## Limbs
 
@@ -463,7 +469,7 @@ def GetAllPlayerLimbDatabaseConnections():
 
         data = cur.execute("SELECT person.name as person, limb.name as limbname, limb.limbid, person_limb.status FROM person INNER JOIN person_limb ON person.personid = person_limb.limbowner INNER JOIN limb ON person_limb.limbtype = limb.limbid;")
         res = data.fetchall()
-    except:
+    except Exception as e:
         con.close()
         raise Exception(e)
     con.close()

@@ -53,12 +53,12 @@
 
 ### Player Quest Endpoints
 
-| Function name                       | Relative Url                     | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
-| ----------------------------------- | -------------------------------- | ----------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| AssignQuestToPlayers(int questid)   | PATCH /players/quests/{questid}  |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No                             |
-| UnassignQuestToPlayers(int questid) | DELETE /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No                             |
-| GetMyQuest()                        | GET /players/quests              |             |                                                                            | [List of quests assigned to the current player](#my-quest-get-response)                                              | No                             |
-| GetPlayerQuest()                    | GET /players/quests{questid}     |             |                                                                            | [List of quests assigned to the input player](#player-quest-get-response)                                            | No                             |
+| Function name                       | Relative Url                    | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
+| ----------------------------------- | ------------------------------- | ----------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| AssignQuestToPlayers(int questid)   | PUT /players/quests/{questid}   |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No                             |
+| UnassignQuestToPlayers(int questid) | PATCH /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No                             |
+| GetMyQuest()                        | GET /players/quests             |             |                                                                            | [List of quests assigned to the current player](#my-quest-get-response)                                              | No                             |
+| GetPlayerQuest()                    | GET /players/quests{questid}    |             |                                                                            | [List of quests assigned to the input player](#player-quest-get-response)                                            | No                             |
 
 ### Player Limb Endpoints
 
@@ -475,7 +475,7 @@ Returns entire new inventory
 
 ```
 {
-  "playersids" : [1, 2, 3]
+  "playersid" : 1
 }
 
 ```
@@ -488,15 +488,10 @@ Returns entire new inventory
 [
   {
     "assignee": "person1",
-    "quest": "quest one"
-  },
-  {
-    "assignee": "person2",
-    "quest": "quest one"
-  },
-  {
-    "assignee": "person3",
-    "quest": "quest one"
+    "questid": 1,
+    "name": "quest one",
+    "description": "One description",
+    "status": "incomplete"
   },
 ]
 ```
@@ -507,7 +502,7 @@ Returns entire new inventory
 
 ```
 {
-  "playerids" : [2]
+  "playerids" : 2
 }
 ```
 
@@ -516,16 +511,14 @@ Returns entire new inventory
 [(Back to Top)](#rest-api)
 
 ```
-[
-  {
-    "assignee": "person1",
-    "quest": "quest one"
-  },
-  {
-    "assignee": "person3",
-    "quest": "quest one"
-  },
-]
+{
+  "deleted" : {
+      "questid": 1,
+      "name": "quest one",
+      "description": "One description",
+      "status": "incomplete"
+    }
+  }
 ```
 
 #### My Quest Get Response
