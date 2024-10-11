@@ -12,7 +12,9 @@ This backend directory contains the source code for the server API and the datab
 
 ## Server Structure
 
-The Server is a Python Flask application that handles API calls for player data management, quest management, and item management. Attatched to this server is a SQLite database used for storing said information. This database is initialized when this container is spun up, the project as is contains dummy data for testing. For information check the [Database](#database) section.
+The Server is a Python Flask application that handles API calls for player data management, quest management, and item management. The source code is located within [vault-36-db.sqlite](vault-36-server.py).
+
+Attatched to this server is a SQLite database used for storing said information. This database is initialized when this container is spun up, the project as is contains dummy data for testing. For information check the [Database](#database) section.
 
 ## Rest API
 
@@ -33,12 +35,12 @@ This rest API provides endpoints for CRUD operations on Player Data. For example
 ### Item Endpoints
 
 
-| Function name | Relative Url           | Description | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
-| --------------- | ------------------------ | ------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
-| AddGetItems() | GET /items             |             | N/A                                                     | [Array of items](#item-get-response)            | No                             |
-| AddGetItems() | POST /items            |             | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | No                             |
-| UpdateItem()  | PUT /items/{itemid}    |             | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No                             |
-| DeleteItem () | DELETE /items/{itemid} |             | N/A                                                     | [Array of items](#item-delete-response)         | No                             |
+| Function name | Relative Url           | Description                                            | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
+| --------------- | ------------------------ | -------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
+| AddGetItems() | GET /items             | API Endpoint for getting all items present in database | N/A                                                     | [Array of items](#item-get-response)            | Yes                            |
+| AddGetItems() | POST /items            | API Endpoint for adding an item to the database        | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | Yes                            |
+| UpdateItem()  | PUT /items/{itemid}    |                                                        | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No                             |
+| DeleteItem () | DELETE /items/{itemid} |                                                        | N/A                                                     | [Array of items](#item-delete-response)         | No                             |
 
 ### Player Inventory Endpoints
 
@@ -673,6 +675,8 @@ Returns entire new inventory
 ## Database
 
 [(Back to Top)](#toc)
+
+The database is initialized using the [create_script.db](create_script.db) 
 
 ### Person
 
