@@ -45,46 +45,54 @@ This rest API provides endpoints for CRUD operations on Player Data. For example
 
 | Function name                 | Relative Url                   | Description                                            | Input (Request)                                                   | Output (Response)                                                                                                                   | Completed Frontend Integration |
 | ------------------------------- | -------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| PlayerItemRoute(int playerid) | GET /players/item/{playerid}   | Endpoint for getting a specific players inventory      | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | No?                            |
+| PlayerItemRoute(int playerid) | GET /players/item/{playerid}   | Endpoint for getting a specific players inventory      | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | Yes                            |
 | PlayerItemRoute(int playerid) | POST /players/item/{playerid}  | Endpoint for adding at item to a players inventory     | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         | Yes                            |
 | PlayerItemRoute(int playerid) | PUT /players/item/{playerid}   | Endpoint for updating a players item entry             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | Yes                            |
 | PlayerItemRoute(int playerid) | PATCH /players/item/{playerid} | Endpoint for deleting an item from a players inventory | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | Yes                            |
 
 ### Player Gun Endpoints
 
+TODO: Update as gun endpoints get created and updated
 
-| Function name               | Relative Url                 | Description                          | Input (Request) | Completed Frontend Integration | Output (Response)                      |
-| ----------------------------- | ------------------------------ | -------------------------------------- | ----------------- | -------------------------------- | ---------------------------------------- |
-| GetPlayerGuns(int playerid) | GET /players/guns/{playerid} | Get the guns owned by a given player | N/A             | NO                             | [Array of Guns](#player-guns-response) |
+| Function name            | Relative Url                   | Description                                       | Input (Request)                                                 | Completed Frontend Integration | Output (Response)                      |
+| -------------------------- | -------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------- | ---------------------------------------- |
+| PlayerGuns(int playerid) | GET /players/guns/{playerid}   | Endpoint to Get the guns owned by a given player. | N/A                                                             | No                             | [Array of Guns](#player-guns-response) |
+| PlayerGuns(int playerid) | POST /players/guns/{playerid}  | Endpoint to add a gun to a given player.          | [Gun id to add and quantity](#player-gun-addition-request)      | No                             |                                        |
+| PlayerGuns(int playerid) | PUT /players/guns/{playerid}   | Endpoint to update a player gun entry.            | [Gun id to update and new quantity](#player-gun-update-request) | No                             |                                        |
+| playerGuns(int playerid) | PATCH /players/guns/{playerid} | Endpoint to delete a player gun entry.            | [Gun id to remove](#player-gun-delete-request)                  | No                             |                                        |
+
+### Player Ammo Endpoints
+
+TODO: define player ammo routes
 
 ### Quest Endpoints
 
 
-| Function name                  | Relative Url             | Description | Input (Request)                                      | Output (Response)                                                      | Completed Frontend Integration |
-| -------------------------------- | -------------------------- | ------------- | ------------------------------------------------------ | ------------------------------------------------------------------------ | -------------------------------- |
-| GetAllQuests()                 | GET /quests              |             | N/A                                                  | [Array of quests](#quest-get-response)                                 | No                             |
-| CreateQuest()                  | POST /quests             |             | [A list of new quest items](#quest-addition-request) | [Updated array of all quests](#quest-addition-response)                | No                             |
-| UpdateQuestStatus(int questId) | PUT /quests/{questid}    |             | [Quest information to update](#quest-update-request) | [Quest's updated information](#quest-update-response)                  | No                             |
-| RemoveQuest(int questId)       | DELETE /quests/{questid} |             |                                                      | [Updated list of quests and the deleted quest](#quest-delete-response) | No                             |
+| Function name                       | Relative Url             | Description                                               | Input (Request)                                      | Output (Response)                                                      | Completed Frontend Integration |
+| ------------------------------------- | -------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------ | -------------------------------- |
+| AddGetQuestRoute()                  | GET /quests              | Endpoint for returning all of the quests in the database. | N/A                                                  | [Array of quests](#quest-get-response)                                 | Yes                            |
+| AddGetQuestRoute()                  | POST /quests             | Endpoint for adding a quest to the database.              | [A list of new quest items](#quest-addition-request) | [Updated array of all quests](#quest-addition-response)                | Yes                            |
+| UpdateDeleteQuestRoute(int questId) | PUT /quests/{questid}    | Endpoint for updating a quest in the database.            | [Quest information to update](#quest-update-request) | [Quest's updated information](#quest-update-response)                  | Yes                            |
+| UpdateDeleteQuestRoute(int questId) | DELETE /quests/{questid} | Endpoint for removing a quest in the database.            |                                                      | [Updated list of quests and the deleted quest](#quest-delete-response) | Yes                            |
 
 ### Player Quest Endpoints
 
 
-| Function name                       | Relative Url                    | Description | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
-| ------------------------------------- | --------------------------------- | ------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| AssignQuestToPlayers(int questid)   | PUT /players/quests/{questid}   |             | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | No                             |
-| UnassignQuestToPlayers(int questid) | PATCH /players/quests/{questid} |             | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | No                             |
-| GetMyQuest()                        | GET /players/quests             |             |                                                                            | [List of quests assigned to the current player](#my-quest-get-response)                                              | No                             |
-| GetPlayerQuest()                    | GET /players/quests{questid}    |             |                                                                            | [List of quests assigned to the input player](#player-quest-get-response)                                            | No                             |
+| Function name                 | Relative Url                    | Description                                     | Input (Request)                                                            | Output (Response)                                                                                                    | Completed Frontend Integration |
+| ------------------------------- | --------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| PlayerQuestRoute(int questid) | PUT /players/quests/{questid}   | Endpoint for assigning a quest to a player.     | [List of player ids to assign the quest](#player-quest-assign-request)     | [A list of all quests assigned to a player along with the newly added one](#player-quest-assign-response)            | Yes                            |
+| PlayerQuestRoute(int questid) | PATCH /players/quests/{questid} | Endpoint for unassigning a quest to a player.   | [List of player ids to unassign the quest](#player-quest-unassign-request) | [A list of all quests assigned to a player. Then the unassigned quests seperately.](#player-quest-unassign-response) | Yes                            |
+| GetMyQuest()                  | GET /players/quests             | Enpoint for retrieving users quests.            |                                                                            | [List of quests assigned to the current player](#my-quest-get-response)                                              | Yes                            |
+| GetPlayerQuest()              | GET /players/quests{questid}    | Endpoint for getting quests for a given player. |                                                                            | [List of quests assigned to the input player](#player-quest-get-response)                                            | Yes                            |
 
 ### Player Limb Endpoints
 
 
-| Function name                  | Relative Url                  | Description | Input (Request)                                 | Output (Response)                                                        | Completed Frontend Integration |
-| -------------------------------- | ------------------------------- | ------------- | ------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------- |
-| GetAllLimbs()                  | GET /limbs                    |             | N/A                                             | [Object of all limbs assigned to each available player](#limbs-response) | No                             |
-| GetLimbsByPlayer(int playerid) | GET /players/limbs/{playerid} |             |                                                 | [Array of limbs](#limbs-player-response)                                 | No                             |
-| UpdateLimb(int playerid)       | PUT /players/limbs/{playerid} |             | [limb id and new status](#limbs-update-request) | [Updated limb record](#limbs-update-response)                            | No                             |
+| Function name                  | Relative Url                  | Description                                                   | Input (Request)                                 | Output (Response)                                                        | Completed Frontend Integration |
+| -------------------------------- | ------------------------------- | --------------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------- |
+| GetAllLimbs()                  | GET /limbs                    | Endpoint for getting all the player limb data stored.         | N/A                                             | [Object of all limbs assigned to each available player](#limbs-response) | Yes                            |
+| PlayerLimbsRoute(int playerid) | GET /players/limbs/{playerid} | Endpoint for returning all limbs for a given player.          |                                                 | [Array of limbs](#limbs-player-response)                                 | Yes                            |
+| PlayerLimbsRoute(int playerid) | PUT /players/limbs/{playerid} | Endpoint for updating the status of a limb of a given player. | [limb id and new status](#limbs-update-request) | [Updated limb record](#limbs-update-response)                            | Yes                            |
 
 ## Data Formats
 
