@@ -12,9 +12,7 @@ This backend directory contains the source code for the server API and the datab
 
 ## Server Structure
 
-The Server is a Python Flask application that handles API calls for player data management, quest management, and item management. The source code is located within [vault-36-db.sqlite](vault-36-server.py).
-
-Attatched to this server is a SQLite database used for storing said information. This database is initialized when this container is spun up, the project as is contains dummy data for testing. For information check the [Database](#database) section.
+The Server is a Python Flask application that handles API calls for player data management, quest management, and item management. Attatched to this server is a SQLite database used for storing said information. This database is initialized when this container is spun up, the project as is contains dummy data for testing. For information check the [Database](#database) section.
 
 ## Rest API
 
@@ -35,22 +33,22 @@ This rest API provides endpoints for CRUD operations on Player Data. For example
 ### Item Endpoints
 
 
-| Function name | Relative Url           | Description                                                                                                                           | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
-| --------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
-| AddGetItems() | GET /items             | API Endpoint for getting all items present in database                                                                                | N/A                                                     | [Array of items](#item-get-response)            | Yes                            |
-| AddGetItems() | POST /items            | API Endpoint for adding an item to the database                                                                                       | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | Yes                            |
-| UpdateItem()  | PUT /items/{itemid}    | Endpoint for updating the record stored for an item                                                                                   | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | No                             |
-| DeleteItem () | DELETE /items/{itemid} | Endpoint for deleting an item from the database.*(This should be used for items that are permanatly deleted and can no longer exist)* | N/A                                                     | [Array of items](#item-delete-response)         | No                             |
+| Function name                  | Relative Url           | Description                                        | Input (Request)                                         | Output (Response)                               | Completed Frontend Integration |
+| -------------------------------- | ------------------------ | ---------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------- |
+| AddGetItems()                  | GET /items             | Endpoint for retrieving all items in the database. | N/A                                                     | [Array of items](#item-get-response)            | Yes                            |
+| AddGetItems()                  | POST /items            | Endpoint for adding items to the database          | [List of strings of item names](#item-addition-request) | [Array of items](#item-addition-response)       | Yes                            |
+| UpdateDeleteItemsRoute(itemid) | PUT /items/{itemid}    | Endpoint for updating an item record               | [The item name](#item-update-request)                   | [Updated record of item](#item-update-response) | Yes                            |
+| UpdateDeleteItemsRoute(itemid) | DELETE /items/{itemid} | Endpoint for deleting an item from the database    | N/A                                                     | [Array of items](#item-delete-response)         | Yes                            |
 
 ### Player Inventory Endpoints
 
 
-| Function name                             | Relative Url                   | Description | Input (Request)                                                   | Output (Response)                                                                                                                   | Completed Frontend Integration |
-| ------------------------------------------- | -------------------------------- | ------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| GetInventoryByPlayer(int playerid)        | GET /players/item/{playerid}   |             | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | No                             |
-| AddItemToPlayer(int playerid)             | POST /players/item/{playerid}  |             | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         | No                             |
-| UpdateItemQuantityForPlayer(int playerid) | PUT /players/item/{playerid}   |             | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | No                             |
-| RemoveItemfromPlayer(int playerid)        | PATCH /players/item/{playerid} |             | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | No                             |
+| Function name                 | Relative Url                   | Description                                        | Input (Request)                                                   | Output (Response)                                                                                                                   | Completed Frontend Integration |
+| ------------------------------- | -------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| PlayerItemRoute(int playerid) | GET /players/item/{playerid}   | Endpoint for getting a specific players inventory  | N/A                                                               | [Array of items in player inventory](#player-inventory-get-response)                                                                | No?                            |
+| PlayerItemRoute(int playerid) | POST /players/item/{playerid}  | Endpoint for adding at item to a players inventory | [Item id to add and quantity](#player-inventory-addition-request) | [The updated version of the player's entire inventory](#player-inventory-addition-response)                                         | Yes                            |
+| PlayerItemRoute(int playerid) | PUT /players/item/{playerid}   | Endpoint for updating a players item entry         | [Item id to add and quantity](#player-inventory-update-request)   | [The new updated record of the item in the inventory](#player-inventory-update-response), can change to entire inventory if need be | Yes                            |
+| PlayerItemRoute(int playerid) | PATCH /players/item/{playerid} |                                                    | [Item id to remove](#player-inventory-delete-request)             | [The updated version of the player's entire inventory](#player-inventory-delete-response)                                           | No                             |
 
 ### Player Gun Endpoints
 
@@ -675,8 +673,6 @@ Returns entire new inventory
 ## Database
 
 [(Back to Top)](#toc)
-
-The database is initialized using the [create_script.db](create_script.db)
 
 ### Person
 
