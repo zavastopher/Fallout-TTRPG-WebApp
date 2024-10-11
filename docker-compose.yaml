@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: dockerfile.dev
+    container_name: vault-36-central-computer
+    restart: unless-stopped
+    volumes:
+      - "./backend:/usr/src/app"
+      - sqlite_data:/db/data
+    ports:
+      - 4001:3001
+
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: dockerfile.dev
+    container_name: vault-36-terminal
+    restart: unless-stopped
+    ports:
+      - 4000:3000
+    depends_on:
+      - backend
+    volumes:
+      - "./frontend/pip-boy-36:/pip-boy-36-app/"
+      - "/pip-boy-36-app/node_modules"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    env_file:
+      - ./frontend/.env
+
+  nginx:
+    build:
+      context: ./proxy/
+      dockerfile: dockerfile.dev
+    restart: unless-stopped
+    container_name: vault-36-proxy
+    ports:
+      - 80:80
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  sqlite_data:

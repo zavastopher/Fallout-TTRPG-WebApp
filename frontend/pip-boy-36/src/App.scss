@@ -1,0 +1,515 @@
+$beginRect: -20%;
+$endRect: 130%;
+
+$fontGreen: #09a209;
+$lineGreen: #1c9512;
+
+$screenWidth: 893px;
+$contextButtonWidth: 50px;
+
+//-----------------------------------------------------------
+// General Styles
+//-----------------------------------------------------------
+
+a {
+  color: $fontGreen;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button,
+input[type="submit"] {
+  background: transparent;
+  color: $fontGreen;
+  font-size: 20px;
+  border: transparent;
+  padding: 0px;
+  //z-index: 1000;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background-color: rgba(16, 134, 26, 0.336);
+  cursor: pointer;
+}
+
+nav {
+  width: 100%;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+textarea,
+input[type="text"] {
+  background: transparent;
+  border: unset;
+  color: $fontGreen;
+  caret-color: $fontGreen;
+
+  &:focus-visible,
+  &:focus {
+    outline: none;
+  }
+}
+
+input[type="text"] {
+  border-bottom: 1px solid $fontGreen;
+}
+
+@keyframes flicker {
+  $steps: 20;
+  @for $i from 0 through $steps {
+    #{percentage($i * calc(1/$steps))} {
+      opacity: random();
+    }
+  }
+}
+
+/*This adds a "crt scanlines" effect to the screen*/
+#scan {
+  width: 100%;
+  background: #366c39;
+  height: 120px;
+  position: absolute;
+  top: $beginRect;
+  animation: scan-screen 10s infinite;
+  -webkit-mask-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(rgba(0, 0, 0, 0)),
+    to(rgba(0, 0, 0, 0.1))
+  );
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes scan-screen {
+  $steps: 100;
+  @for $i from 0 through $steps {
+    #{percentage($i * calc(1/$steps))} {
+      top: $beginRect + (calc($i/$steps) * $endRect);
+    }
+  }
+}
+
+//-----------------------------------------------------------
+// Context Styles
+//-----------------------------------------------------------
+
+.context-menu-container {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+
+  color: $fontGreen;
+}
+
+.context-toggle-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: end;
+  justify-self: baseline;
+
+  //position: absolute;
+  //right: 0;
+  //bottom: 0;
+
+  width: $contextButtonWidth;
+  height: $contextButtonWidth;
+
+  border: 1px solid $fontGreen;
+
+  &:hover {
+    background-color: #09a209;
+    color: white;
+  }
+}
+
+.context-menu {
+  width: 0;
+  height: 0;
+  background: #ffffff;
+  position: relative;
+  margin-right: 30px;
+  padding: 0;
+  overflow: hidden;
+
+  //width: 400px;
+  //background: rgba(0, 0, 0, 0.5);
+  //position: relative;
+  //margin-right: 30px;
+  //padding: 10px;
+  //padding-bottom: 30px;
+
+  .react-tabs__tab-list {
+    border-bottom: 1px solid $lineGreen;
+  }
+
+  .react-tabs__tab--selected {
+    background: rgba(0, 128, 0, 0.4);
+    border-color: rgba(0, 128, 0, 0.5);
+    color: rgba(256, 256, 256, 0.6);
+  }
+
+  .react-tabs__tab:focus::after {
+    background: rgba(0, 128, 0, 0.8);
+  }
+
+  button {
+    color: inherit;
+  }
+}
+
+.context-submit {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.context-form {
+  text-align: left;
+  font-size: 16px;
+
+  span {
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 20px;
+  }
+
+  textarea {
+    border: 1px solid $fontGreen;
+  }
+}
+
+.fields {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  label {
+    margin-right: 5px;
+  }
+
+  #quantity {
+    width: inherit;
+  }
+}
+
+.field-column {
+  //width: 45%;
+  align-items: center;
+}
+
+//.player-dropdown {
+//  margin-bottom: 20px;
+//}
+//-----------------------------------------------------------
+// Header Styles
+//-----------------------------------------------------------
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 25px;
+  box-sizing: border-box;
+}
+
+.header-title {
+  color: $fontGreen;
+}
+
+//-----------------------------------------------------------
+// Login Styles
+//-----------------------------------------------------------
+
+.login-container {
+  //z-index: 1000;
+}
+
+.logout span {
+  white-space: preserve-spaces;
+}
+
+//-----------------------------------------------------------
+// Navbar Styles
+//-----------------------------------------------------------
+
+.outlet {
+  position: relative;
+  height: 550px;
+}
+
+.pipboy-screen {
+  width: $screenWidth;
+}
+
+.title {
+  border: solid 4px;
+  border-image: linear-gradient(to bottom, $lineGreen, transparent) 1;
+  height: 40px;
+  color: $fontGreen;
+}
+
+.title-box {
+  width: fit-content;
+  padding: 6px;
+
+  margin-left: 110px;
+  margin-top: -23px;
+  background-image: linear-gradient(to bottom, rgb(8, 15, 7), rgb(10, 21, 7));
+}
+
+.navbar-container {
+  height: 40px;
+  border: solid 4px;
+  border-image: linear-gradient(to top, $lineGreen, transparent) 1;
+  position: relative;
+}
+
+.navbar {
+  position: relative;
+  bottom: 2px;
+  left: 0;
+}
+
+.navbar li {
+  // background-image: linear-gradient(to bottom, rgb(9, 30, 12), rgb(11, 21, 9));
+  padding: 5px;
+  margin-bottom: -5px;
+  backdrop-filter: blur(200px);
+}
+
+//-----------------------------------------------------------
+// Stat Styles
+//-----------------------------------------------------------
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats {
+  position: relative;
+}
+
+.pipboy {
+  padding: 20px;
+}
+
+#hp-container {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 200px;
+  color: $lineGreen;
+
+  .hp-fields {
+    position: relative;
+    text-align: right;
+  }
+
+  .hp {
+    input {
+      width: 35%;
+      font-size: 25px;
+    }
+
+    svg {
+      margin-right: 5px;
+      &:hover {
+        color: white;
+        cursor: pointer;
+      }
+    }
+
+    &.hp-label:hover {
+      color: white;
+      cursor: pointer;
+    }
+
+    .hp-buttons {
+      position: absolute;
+      bottom: -35px;
+      left: 0;
+      right: 0;
+    }
+  }
+}
+
+.limb {
+  position: absolute;
+
+  img {
+    height: 450px;
+  }
+}
+
+.limbButton {
+  color: green;
+  border: solid 2px green;
+  position: absolute;
+  border-radius: 20px;
+  padding: 6px;
+  z-index: 10;
+
+  &.rightLeg {
+    bottom: 94px;
+    right: 85px;
+  }
+
+  &.leftLeg {
+    bottom: 94px;
+    left: 85px;
+  }
+
+  &.rightArm {
+    top: 110px;
+    right: -20px;
+  }
+
+  &.leftArm {
+    top: 110px;
+    left: -20px;
+  }
+
+  &.torso {
+    bottom: 184px;
+    left: 116px;
+  }
+
+  &.head {
+    top: 42px;
+    left: 122px;
+  }
+}
+
+//-----------------------------------------------------------
+// Scroll List Styles
+//-----------------------------------------------------------
+
+.item-list-container {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.list {
+  padding: unset;
+  height: 400px;
+  overflow: scroll;
+  position: relative;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  width: 85%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 50px;
+  padding: 5px 0px;
+  font-size: 24px;
+  box-sizing: border-box;
+}
+
+.selected {
+  position: relative;
+  color: yellow;
+  .remove-icon {
+    visibility: visible;
+
+    &:hover {
+      color: white;
+      cursor: pointer;
+    }
+  }
+}
+
+.remove-icon {
+  visibility: hidden;
+  position: absolute;
+  right: 0;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.description {
+  width: 54%;
+}
+
+.description p {
+  font-size: 20px;
+}
+
+.filter-container {
+  position: relative;
+}
+
+.filter-close {
+  color: $fontGreen;
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  font-size: 18px;
+
+  &:hover {
+    color: white;
+    cursor: pointer;
+  }
+}
+
+//-----------------------------------------------------------
+// Quest Styles
+//-----------------------------------------------------------
+
+.under-description {
+  position: absolute;
+  right: 0;
+  width: 56%;
+}
+
+//-----------------------------------------------------------
+// Deprecated Styles
+//-----------------------------------------------------------
+
+#pipIcon {
+  mask-size: 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  width: 450px;
+  height: 457px;
+  background-color: $lineGreen;
+  background-color: rgb(59, 189, 22);
+  filter: blur(400px);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}

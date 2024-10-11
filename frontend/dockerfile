@@ -1,0 +1,9 @@
+FROM node:18-alpine
+
+WORKDIR /pip-boy-36-app/
+
+COPY pip-boy-36/package.json /pip-boy-36-app/
+
+RUN npm install
+
+CMD ["npm", "start"]
