@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Fallout TTRPG Pip-Boy](#fallout-ttrpg-pip-boy)
+  - [Technologies used](#technologies-used)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Project Components](#project-components)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Fallout TTRPG Pip-Boy
 
 Welcome to the Fallout TTRPG Pip-Boy project. This project is a full-stack
@@ -25,8 +39,18 @@ machine. This project is run using docker so you will also need to download
 
 ## Usage
 
+This project is run on a machine (it can be your personal machine or a server) that is capable of spinning up Docker containers.
+
 To run the project you can use docker-compose to build and spin up all of the
 containers that this project uses.
+
+Start up a terminal and navigate to the directory containing the project:
+
+`cd Repos/this-project`
+
+`this-project` is the directory that this project has been cloned in.
+
+Next make sure that the docker engine is running. You can either start the application or run the docker daemon by following the instructions on the [Docker Site](https://docs.docker.com/engine/daemon/start/)
 
 The following command will build and run all of the containers
 
@@ -35,7 +59,15 @@ The following command will build and run all of the containers
 Once you have this running players can connect to it by typing in the IP
 address of the host. If on the same network it should be the local IP address.
 
-note: We are yet to test it with an offsite server so we will update this section when that is accomplished.
+_note: We are yet to test it with an offsite server so we will update this section when that is accomplished._
+
+To take down the containers, which you probably want to do if running on your personal machine, you can execute the following command.
+
+`docker-compose -f docker-compose.yaml down`
+
+If you want to take the service down without any of the data persisting, for example you were simply testing out the project, you can instead run the following command.
+
+`docker-compose -f docker-compose.yaml -v --remove-orphans`
 
 ## Project Components
 
