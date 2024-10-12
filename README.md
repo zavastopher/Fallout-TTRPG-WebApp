@@ -1,6 +1,5 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Fallout TTRPG Pip-Boy](#fallout-ttrpg-pip-boy)
   - [Technologies used](#technologies-used)
@@ -24,6 +23,8 @@ handling requests.
 The app includes a DM view and a Player view, with interactable hp and limb
 statuses. This project requires you to host the server on your machine and then
 your players/dm can access the frontend via web-browser.
+
+![Pip-Boy Showcase](./docs/96hwrf.gif)
 
 ## Technologies used
 
