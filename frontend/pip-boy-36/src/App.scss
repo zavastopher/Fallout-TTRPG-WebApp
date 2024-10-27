@@ -427,6 +427,7 @@ input[type="text"] {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: $fontGreen;
 
   height: 50px;
   padding: 5px 0px;
@@ -434,9 +435,19 @@ input[type="text"] {
   box-sizing: border-box;
 }
 
+.description {
+  color: $fontGreen;
+}
+
 .selected {
   position: relative;
-  color: yellow;
+  color: #31db31;
+
+  &:before {
+      content: '>';
+      position: absolute;
+      left: 0;
+  }
   .remove-icon {
     visibility: visible;
 
@@ -490,7 +501,9 @@ input[type="text"] {
 .under-description {
   position: absolute;
   right: 0;
+  bottom: 0;
   width: 56%;
+  color:$fontGreen;
 }
 
 //-----------------------------------------------------------
