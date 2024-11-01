@@ -126,6 +126,11 @@ INSERT INTO person (name,hp,maxhp) VALUES ('other', 55, 55);
 INSERT INTO person (name,hp,maxhp,admin) VALUES ('cam', 90, 90, 1);
 INSERT INTO person (name,hp,maxhp) VALUES ('up', 90, 90);
 
+INSERT INTO person (name, hp, maxhp) VALUES('Vincent McNeal', 33, 33);
+INSERT INTO person (name, hp, maxhp) VALUES('Scantron', 33, 33);
+INSERT INTO person (name, hp, maxhp) VALUES('Casey Creole', 33, 33);
+INSERT INTO person (name, hp, maxhp) VALUES('Thetis', 29, 29);
+
 /*
 	Creates all available types of limbs
 */
