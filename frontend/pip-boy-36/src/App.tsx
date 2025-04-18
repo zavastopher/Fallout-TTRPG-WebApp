@@ -68,6 +68,7 @@ function App() {
 
   async function logMeIn(event: MouseEvent, name: string) {
     event.preventDefault();
+    console.log(`${process.env.REACT_APP_BASEURL}`);
     let selfHolder: User = {
       id: 0,
       name: "",
@@ -232,7 +233,7 @@ function App() {
     socket = io(window.location.hostname + ":4001");
     //console.log();
 
-    socket.on("connect", function () {
+    socket.on("connect", function() {
       console.log("connected!");
     });
 
